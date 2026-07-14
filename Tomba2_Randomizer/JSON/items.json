@@ -1,0 +1,2151 @@
+[
+	{
+		"id": 1,
+		"name": "Grapple",
+		"color": "Green",
+		"address": "0xfab5",
+		"requirements": [
+			{
+				"events": [ 30 ]
+			}
+		]
+	},
+	{
+		"id": 2,
+		"name": "Doka Pin",
+		"color": "Green",
+		"address": "0xfab6",
+		"requirements": [
+			{
+				"items": [ 8, 13, 30 ],
+				"areas": [ 8 ],
+				"events": [ 100 ]
+			}
+		]
+	},
+	{
+		"id": 3,
+		"name": "Boomerang",
+		"color": "Green",
+		"address": "0xfab7",
+		"requirements": [
+			{
+				"events": [ 5 ]
+			}
+		]
+	},
+	{
+		"id": 4,
+		"name": "Ice Boomerang",
+		"color": "Green",
+		"address": "0xfab8",
+		"requirements": [
+			{
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 5,
+		"name": "Glacier Boomerang",
+		"color": "Green",
+		"address": "0xfab9",
+		"requirements": [
+			{
+				"items": [ 28, 101, 104],
+				"areas": [ 2 ],
+				"events": [ 98 ]
+			}
+		]
+	},
+	{
+		"id": 6,
+		"name": "Hammer",
+		"color": "Green",
+		"address": "0xfaba",
+		"requirements": [
+			{
+				"events": [ 15 ]
+			}
+		]
+	},
+	{
+		"id": 7,
+		"name": "Fire Hammer",
+		"color": "Green",
+		"address": "0xfabb",
+		"requirements": [
+			{
+				"events": [ 20 ]
+			}
+		]
+	},
+	{
+		"id": 8,
+		"name": "Torch Hammer",
+		"color": "Green",
+		"address": "0xfabc",
+		"requirements": [
+			{
+				"items": [ 29 ],
+				"areas": [ 4 ],
+				"events": [ 99 ]
+			}
+		]
+	},
+	{
+		"id": 9,
+		"name": "Pig Ball",
+		"color": "Green",
+		"address": "0xfabd",
+		"requirements": [
+			{
+				"events": [ 129 ]
+			}
+		]
+	},
+	{
+		"id": 10,
+		"name": "Fast Pants",
+		"color": "Green",
+		"address": "0xfabf",
+		"requirements": [
+			{
+				"items": [ 27 ],
+				"events": [ 8 ]
+			}
+		]
+	},
+	{
+		"id": 11,
+		"name": "Turbo Pants",
+		"color": "Green",
+		"address": "0xfac0",
+		"requirements": [
+			{
+				"items": [ 1, 27 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 2, 27 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 11, 14, 27 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 11, 15, 27 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 14, 27, 105 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 15, 27, 105 ],
+				"areas": [ 7 ]
+			}
+		]
+	},
+	{
+		"id": 12,
+		"name": "Bird Clothes",
+		"color": "Green",
+		"address": "0xfac2",
+		"requirements": [
+			{
+				"events": [ 65 ]
+			}
+		]
+	},
+	{
+		"id": 13,
+		"name": "Squirrel Clothes",
+		"color": "Green",
+		"address": "0xfac3",
+		"requirements": [
+			{
+				"items": [ 27, 28 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 14,
+		"name": "Pig Suit",
+		"color": "Green",
+		"address": "0xfac4",
+		"requirements": [
+			{
+				"items": [ 51 ],
+				"areas": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 15,
+		"name": "Swimming Pig Suit",
+		"color": "Green",
+		"address": "0xfac5",
+		"requirements": [
+			{
+				"events": [ 43 ]
+			}
+		]
+	},
+	{
+		"id": 16,
+		"name": "Evil Flame Pig Robe",
+		"color": "Green",
+		"address": "0xfac6",
+		"requirements": [
+			{
+				"events": [ 19 ]
+			}
+		]
+	},
+	{
+		"id": 17,
+		"name": "Evil Ice Pig Robe",
+		"color": "Green",
+		"address": "0xfac7",
+		"requirements": [
+			{
+				"events": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 18,
+		"name": "Evil Ghost Pig Robe",
+		"color": "Green",
+		"address": "0xfac8",
+		"requirements": [
+			{
+				"events": [ 34 ]
+			}
+		]
+	},
+	{
+		"id": 19,
+		"name": "Evil Earth Pig Robe",
+		"color": "Green",
+		"address": "0xfac9",
+		"requirements": [
+			{
+				"events": [ 41 ]
+			}
+		]
+	},
+	{
+		"id": 20,
+		"name": "Evil Water Pig Robe",
+		"color": "Green",
+		"address": "0xfaca",
+		"requirements": [
+			{
+				"events": [ 49 ]
+			}
+		]
+	},
+	{
+		"id": 21,
+		"name": "Flame Pig Bag",
+		"color": "Pink",
+		"address": "0xfacb",
+		"requirements": [
+			{
+				"events": [ 18 ]
+			}
+		]
+	},
+	{
+		"id": 22,
+		"name": "Ice Pig Bag",
+		"color": "Pink",
+		"address": "0xfacc",
+		"requirements": [
+			{
+				"events": [ 25 ]
+			}
+		]
+	},
+	{
+		"id": 23,
+		"name": "Ghost Pig Bag",
+		"color": "Pink",
+		"address": "0xfacd",
+		"requirements": [
+			{
+				"events": [ 33 ]
+			}
+		]
+	},
+	{
+		"id": 24,
+		"name": "Earth Pig Bag",
+		"color": "Pink",
+		"address": "0xface",
+		"requirements": [
+			{
+				"events": [ 40 ]
+			}
+		]
+	},
+	{
+		"id": 25,
+		"name": "Water Pig Bag",
+		"color": "Pink",
+		"address": "0xfacf",
+		"requirements": [
+			{
+				"events": [ 48 ]
+			}
+		]
+	},
+	{
+		"id": 26,
+		"name": "Last Pig Bag",
+		"color": "Pink",
+		"address": "0xfad0",
+		"requirements": [
+			{
+				"events": [ 50 ]
+			}
+		]
+	},
+	{
+		"id": 27,
+		"name": "Red Key",
+		"color": "Pink",
+		"address": "0xfad1",
+		"requirements": [
+			{
+				"events": [ 8 ]
+			}
+		]
+	},
+	{
+		"id": 28,
+		"name": "Green Key",
+		"color": "Pink",
+		"address": "0xfad2",
+		"requirements": [
+			{
+				"events": [ 24 ]
+			}
+		]
+	},
+	{
+		"id": 29,
+		"name": "Blue Key",
+		"color": "Pink",
+		"address": "0xfad3",
+		"requirements": [
+			{
+				"events": [ 31 ]
+			}
+		]
+	},
+	{
+		"id": 30,
+		"name": "White Key",
+		"color": "Pink",
+		"address": "0xfad4",
+		"requirements": [
+			{
+				"items": [ 27 ],
+				"areas": [ 10 ],
+				"events": [ 46 ]
+			}
+		]
+	},
+	{
+		"id": 31,
+		"name": "Cold Powder",
+		"color": "Pink",
+		"address": "0xfad5",
+		"requirements": [
+			{
+				"items": [ 72, 73 ],
+				"areas": [ 6, 7 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 72, 73, 101 ],
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 72, 73, 140 ],
+				"areas": [ 6, 7 ]
+			},
+			{
+				"items": [ 72, 73, 101, 140 ],
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 32,
+		"name": "Hot Powder",
+		"color": "Pink",
+		"address": "0xfad6",
+		"requirements": [
+			{
+				"items": [ 70, 71 ],
+				"areas": [ 6, 7 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 70, 71, 101 ],
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 70, 71, 140 ],
+				"areas": [ 6, 7 ]
+			},
+			{
+				"items": [ 70, 71, 101, 140 ],
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 33,
+		"name": "Mermaid Scale",
+		"color": "Pink",
+		"address": "0xfad7",
+		"requirements": [
+			{
+				"events": [ 67 ]
+			}
+		]
+	},
+	{
+		"id": 34,
+		"name": "Star-Shaped Cog",
+		"color": "Pink",
+		"address": "0xfad8"
+	},
+	{
+		"id": 35,
+		"name": "Hexagon Gear",
+		"color": "Pink",
+		"address": "0xfad9",
+		"requirements": [
+			{
+				"items": [ 13 ],
+				"areas": [ 5 ]
+			},
+			{
+				"areas": [ 5 ],
+				"events": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 36,
+		"name": "Triangle Gear",
+		"color": "Pink",
+		"address": "0xfada",
+		"requirements": [
+			{
+				"events": [ 36 ]
+			}
+		]
+	},
+	{
+		"id": 37,
+		"name": "Round Cog",
+		"color": "Pink",
+		"address": "0xfadb",
+		"requirements": [
+			{
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 38,
+		"name": "Bucket (pink)",
+		"displayname": "Bucket",
+		"color": "Pink",
+		"address": "0xfadc"
+	},
+	{
+		"id": 39,
+		"name": "Crab Basket",
+		"color": "Pink",
+		"address": "0xfadd",
+		"requirements": [
+			{
+				"events": [ 5 ]
+			},
+			{
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 40,
+		"name": "Golden Crab 1",
+		"displayname": "Golden Crab",
+		"color": "Pink",
+		"address": "0xfade",
+		"requirements": [
+			{
+				"events": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 41,
+		"name": "Golden Crab 2",
+		"displayname": "Golden Crab",
+		"color": "Pink",
+		"address": "0xfade",
+		"requirements": [
+			{
+				"items": [ 39 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 39 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 42,
+		"name": "Golden Crab 3",
+		"displayname": "Golden Crab",
+		"color": "Pink",
+		"address": "0xfade",
+		"requirements": [
+			{
+				"items": [ 39 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 39 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 43,
+		"name": "Bombs",
+		"color": "Pink",
+		"address": "0xfadf",
+		"requirements": [
+			{
+				"events": [ 17 ]
+			}
+		]
+	},
+	{
+		"id": 44,
+		"name": "Trolley Rail",
+		"color": "Pink",
+		"address": "0xfae0",
+		"requirements": [
+			{
+				"events": [ 16 ]
+			}
+		]
+	},
+	{
+		"id": 45,
+		"name": "Big Sack",
+		"color": "Pink",
+		"address": "0xfae1",
+		"requirements": [
+			{
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 46,
+		"name": "Mountain Peach",
+		"color": "Pink",
+		"address": "0xfae2",
+		"requirements": [
+			{
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 47,
+		"name": "Traveler's Diary",
+		"color": "Pink",
+		"address": "0xfae3",
+		"requirements": [
+			{
+				"items": [ 27 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 48,
+		"name": "Blue Fruit",
+		"color": "Pink",
+		"address": "0xfae4",
+		"requirements": [
+			{
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 140 ],
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 49,
+		"name": "Rock Crab",
+		"color": "Pink",
+		"address": "0xfae5",
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 8 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 8 ]
+			}
+		]
+	},
+	{
+		"id": 50,
+		"name": "Paon Grass",
+		"color": "Pink",
+		"address": "0xfae6",
+		"requirements": [
+			{
+				"events": [ 38 ]
+			}
+		]
+	},
+	{
+		"id": 51,
+		"name": "Closet Key",
+		"color": "Pink",
+		"address": "0xfae7",
+		"requirements": [
+			{
+				"items": [ 36 ],
+				"areas": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 52,
+		"name": "Carpenter Book",
+		"color": "Pink",
+		"address": "0xfae8",
+		"requirements": [
+			{
+				"events": [ 39 ]
+			}
+		]
+	},
+	{
+		"id": 53,
+		"name": "Pig Nose Panel 1",
+		"displayname": "Pig Nose Panel",
+		"color": "Pink",
+		"address": "0xfae9",
+		"requirements": [
+			{
+				"events": [ 5 ],
+				"AP": 50000
+			},
+			{
+				"areas": [ 2 ],
+				"AP": 50000
+			}
+		]
+	},
+	{
+		"id": 54,
+		"name": "Pig Nose Panel 2",
+		"displayname": "Pig Nose Panel",
+		"color": "Pink",
+		"address": "0xfae9",
+		"requirements": [
+			{
+				"areas": [ 2 ],
+				"events": [ 9 ],
+				"AP": 100000
+			}
+		]
+	},
+	{
+		"id": 55,
+		"name": "Pig Nose Panel 3",
+		"displayname": "Pig Nose Panel",
+		"color": "Pink",
+		"address": "0xfae9",
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 4 ],
+				"AP": 500000
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 4 ],
+				"AP": 500000
+			},
+			{
+				"items": [ 13 ],
+				"areas": [ 4 ],
+				"AP": 500000
+			}
+		]
+	},
+	{
+		"id": 56,
+		"name": "Pig Nose Panel 4",
+		"displayname": "Pig Nose Panel",
+		"color": "Pink",
+		"address": "0xfae9",
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 8 ],
+				"AP": 1000000
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 8 ],
+				"AP": 1000000
+			}
+		]
+	},
+	{
+		"id": 57,
+		"name": "Pig Nose Panel 5",
+		"displayname": "Pig Nose Panel",
+		"color": "Pink",
+		"address": "0xfae9",
+		"requirements": [
+			{
+				"areas": [ 11 ],
+				"AP": 2000000
+			}
+		]
+	},
+	{
+		"id": 58,
+		"name": "Seeds of Strength 1",
+		"displayname": "Seeds of Strength",
+		"color": "Pink",
+		"address": "0xfaea",
+		"requirements": [
+			{
+				"events": [ 82 ]
+			}
+		]
+	},
+	{
+		"id": 59,
+		"name": "Seeds of Strength 2",
+		"displayname": "Seeds of Strength",
+		"color": "Pink",
+		"address": "0xfaea",
+		"requirements": [
+			{
+				"events": [ 82 ]
+			}
+		]
+	},
+	{
+		"id": 60,
+		"name": "Seeds of Strength 3",
+		"displayname": "Seeds of Strength",
+		"color": "Pink",
+		"address": "0xfaea",
+		"requirements": [
+			{
+				"events": [ 82 ]
+			}
+		]
+	},
+	{
+		"id": 61,
+		"name": "Seeds of Strength 4",
+		"displayname": "Seeds of Strength",
+		"color": "Pink",
+		"address": "0xfaea",
+		"requirements": [
+			{
+				"events": [ 82 ]
+			}
+		]
+	},
+	{
+		"id": 62,
+		"name": "Seeds of Strength 5",
+		"displayname": "Seeds of Strength",
+		"color": "Pink",
+		"address": "0xfaea",
+		"requirements": [
+			{
+				"events": [ 82 ]
+			}
+		]
+	},
+	{
+		"id": 63,
+		"name": "Golden Sun",
+		"color": "Pink",
+		"address": "0xfaeb",
+		"requirements": [
+			{
+				"events": [ 85 ]
+			}
+		]
+	},
+	{
+		"id": 64,
+		"name": "Red Chick",
+		"color": "Pink",
+		"address": "0xfaec"
+	},
+	{
+		"id": 65,
+		"name": "Blue Chick",
+		"color": "Pink",
+		"address": "0xfaed"
+	},
+	{
+		"id": 66,
+		"name": "Rare Fish",
+		"color": "Pink",
+		"address": "0xfaee"
+	},
+	{
+		"id": 67,
+		"name": "Rare Squid",
+		"color": "Pink",
+		"address": "0xfaef",
+		"requirements": [
+			{
+				"items": [ 1, 13 ],
+				"areas": [ 5 ]
+			},
+			{
+				"items": [ 2, 13 ],
+				"areas": [ 5 ]
+			},
+			{
+				"items": [ 1, 126 ],
+				"areas": [ 5 ],
+				"events": [ 27 ]
+			},
+			{
+				"items": [ 2, 126 ],
+				"areas": [ 5 ],
+				"events": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 68,
+		"name": "Rare Crab",
+		"color": "Pink",
+		"address": "0xfaf0",
+		"requirements": [
+			{
+				"items": [ 126 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 69,
+		"name": "Rare Shrimp",
+		"color": "Pink",
+		"address": "0xfaf1",
+		"requirements": [
+			{
+				"items": [ 6 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 7 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 8 ],
+				"areas": [ 7 ]
+			}
+		]
+	},
+	{
+		"id": 70,
+		"name": "Anemone's Hot Dregs 1",
+		"displayname": "Anemone's Hot Dregs",
+		"color": "Blue",
+		"address": "0xfaf2",
+		"requirements": [
+			{
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 71,
+		"name": "Anemone's Hot Dregs 2",
+		"displayname": "Anemone's Hot Dregs",
+		"color": "Blue",
+		"address": "0xfaf2",
+		"requirements": [
+			{
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 72,
+		"name": "Anemone's Icy Dregs 1",
+		"displayname": "Anemone's Icy Dregs",
+		"color": "Blue",
+		"address": "0xfaf3",
+		"requirements": [
+			{
+				"items": [ 7 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 8 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 73,
+		"name": "Anemone's Icy Dregs 2",
+		"displayname": "Anemone's Icy Dregs",
+		"color": "Blue",
+		"address": "0xfaf3",
+		"requirements": [
+			{
+				"items": [ 1, 7 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 2, 7 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 7, 13 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 1, 8 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 2, 8 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 8, 13 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 74,
+		"name": "Tiny Flying Pig",
+		"color": "Blue",
+		"address": "0xfaf4",
+		"requirements": [
+			{
+				"items": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 75,
+		"name": "Tiny Flame Pig",
+		"color": "Blue",
+		"address": "0xfaf5",
+		"requirements": [
+			{
+				"items": [ 9 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 76,
+		"name": "Tiny Ice Pig",
+		"color": "Blue",
+		"address": "0xfaf6",
+		"requirements": [
+			{
+				"items": [ 9 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 77,
+		"name": "Tiny Ghost Pig",
+		"color": "Blue",
+		"address": "0xfaf7",
+		"requirements": [
+			{
+				"items": [ 9 ],
+				"areas": [ 6 ]
+			},
+			{
+				"items": [ 1, 9 ],
+				"areas": [ 8 ]
+			},
+			{
+				"items": [ 2, 9 ],
+				"areas": [ 8 ]
+			}
+		]
+	},
+	{
+		"id": 78,
+		"name": "Tiny Water Pig",
+		"color": "Blue",
+		"address": "0xfaf8",
+		"requirements": [
+			{
+				"items": [ 9 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 79,
+		"name": "Gold Fishhook",
+		"color": "Pink",
+		"address": "0xfaf9",
+		"requirements": [
+			{
+				"events": [ 5 ]
+			},
+			{
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 80,
+		"name": "Trolley Ticket",
+		"color": "Pink",
+		"address": "0xfafa",
+		"requirements": [
+			{
+				"areas": [ 2, 3 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 81,
+		"name": "Power Coal",
+		"color": "Pink",
+		"address": "0xfafb",
+		"requirements": [
+			{
+				"items": [ 27 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 82,
+		"name": "Baked Banana",
+		"color": "Pink",
+		"address": "0xfafd",
+		"requirements": [
+			{
+				"items": [ 6, 117 ],
+				"areas": [ 2, 3 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 83,
+		"name": "Clay",
+		"color": "Pink",
+		"address": "0xfafe",
+		"requirements": [
+			{
+				"areas": [ 2, 3 ],
+				"events": [ 12 ]
+			}
+		]
+	},
+	{
+		"id": 84,
+		"name": "Clay Spatula",
+		"color": "Pink",
+		"address": "0xfaff",
+		"requirements": [
+			{
+				"events": [ 73 ]
+			}
+		]
+	},
+	{
+		"id": 85,
+		"name": "Master's Pot",
+		"color": "Pink",
+		"address": "0xfb00",
+		"requirements": [
+			{
+				"items": [ 83, 84 ],
+				"areas": [ 2, 3 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 86,
+		"name": "Chick Food",
+		"color": "Pink",
+		"address": "0xfb01",
+		"requirements": [
+			{
+				"items": [ 27 ],
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			},
+			{
+				"items": [ 1, 11, 27 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 2, 11, 27 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 1, 14, 27 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 2, 14, 27 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 1, 15, 27 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 2, 15, 27 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 1, 105, 27 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 2, 105, 27 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 13, 27 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 13, 27 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 87,
+		"name": "Large Fuse",
+		"color": "Pink",
+		"address": "0xfb02",
+		"requirements": [
+			{
+				"items": [ 13 ],
+				"areas": [ 5 ]
+			},
+			{
+				"areas": [ 5 ],
+				"events": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 88,
+		"name": "Light Cutting Box",
+		"color": "Pink",
+		"address": "0xfb03",
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 6 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 89,
+		"name": "Snow Firefly Box",
+		"color": "Pink",
+		"address": "0xfb04",
+		"requirements": [
+			{
+				"items": [ 88 ],
+				"areas": [ 6 ],
+				"events": [ 109 ]
+			}
+		]
+	},
+	{
+		"id": 90,
+		"name": "Getwell Plant",
+		"color": "Pink",
+		"address": "0xfb05",
+		"requirements": [
+			{
+				"events": [ 35 ]
+			}
+		]
+	},
+	{
+		"id": 91,
+		"name": "Rucksack",
+		"color": "Pink",
+		"address": "0xfb06",
+		"requirements": [
+			{
+				"items": [ 13 ],
+				"areas": [ 4 ],
+				"events": [ 111 ]
+			}
+		]
+	},
+	{
+		"id": 92,
+		"name": "Spoon",
+		"color": "Pink",
+		"address": "0xfb07",
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 2 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 1 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 93,
+		"name": "Nishiki's Wings",
+		"color": "Pink",
+		"address": "0xfb08",
+		"requirements": [
+			{
+				"events": [ 131 ]
+			},
+			{
+				"items": [ 104, 126 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 15, 104 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 94,
+		"name": "Invisible Mirror",
+		"color": "Pink",
+		"address": "0xfb0a",
+		"requirements": [
+			{
+				"items": [ 13 ],
+				"events": [ 26 ]
+			}
+		]
+	},
+	{
+		"id": 95,
+		"name": "Golden Powder",
+		"color": "Blue",
+		"address": "0xfb0c",
+		"requirements": [
+			{
+				"items": [ 2, 5, 8, 14, 63, 126, 129, 130 ],
+				"areas": [ 10 ],
+				"events": [ 60 ]
+			},
+			{
+				"items": [ 2, 5, 8, 15, 63, 129, 130 ],
+				"areas": [ 10 ],
+				"events": [ 60 ]
+			}
+		]
+	},
+	{
+		"id": 96,
+		"name": "Baron",
+		"color": "Blue",
+		"address": "0xfb13",
+		"requirements": [
+			{
+				"items": [ 97 ],
+				"areas": [ 7, 10 ],
+				"events": [ 116 ]
+			},
+			{
+				"items": [ 98 ],
+				"areas": [ 7, 10 ],
+				"events": [ 116 ]
+			}
+		]
+	},
+	{
+		"id": 97,
+		"name": "Bucket (blue) 1",
+		"displayname": "Bucket",
+		"color": "Blue",
+		"address": "0xfb15",
+		"requirements": [
+			{
+				"events": [ 3 ]
+			}
+		]
+	},
+	{
+		"id": 98,
+		"name": "Bucket (blue) 2",
+		"displayname": "Bucket",
+		"color": "Blue",
+		"address": "0xfb15",
+		"requirements": [
+			{
+				"events": [ 83 ]
+			}
+		]
+	},
+	{
+		"id": 99,
+		"name": "Mermaid Bucket",
+		"color": "Blue",
+		"address": "0xfb16",
+		"requirements": [
+			{
+				"events": [ 127 ]
+			}
+		]
+	},
+	{
+		"id": 100,
+		"name": "Toradako Oil Remover",
+		"color": "Blue",
+		"address": "0xfb1d",
+		"requirements": [
+			{
+				"events": [ 121 ]
+			}
+		]
+	},
+	{
+		"id": 101,
+		"name": "Mystery Mushroom",
+		"color": "Blue",
+		"address": "0xfb1e",
+		"requirements": [
+			{
+				"events": [ 88 ]
+			}
+		]
+	},
+	{
+		"id": 102,
+		"name": "Normal Fruit",
+		"color": "Blue",
+		"address": "0xfb1f",
+		"requirements": [
+			{
+				"events": [ 89 ]
+			}
+		]
+	},
+	{
+		"id": 103,
+		"name": "Clear Fruit",
+		"color": "Blue",
+		"address": "0xfb20",
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 8 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 8 ]
+			}
+		]
+	},
+	{
+		"id": 104,
+		"name": "Minitta Mushroom",
+		"color": "Blue",
+		"address": "0xfb21",
+		"requirements": [
+			{
+				"events": [ 70 ]
+			}
+		]
+	},
+	{
+		"id": 105,
+		"name": "Taboo Fruit",
+		"color": "Blue",
+		"address": "0xfb22",
+		"requirements": [
+			{
+				"events": [ 114 ]
+			}
+		]
+	},
+	{
+		"id": 106,
+		"name": "1/2-Spell of Courage 1",
+		"displayname": "1/2-Spell of Courage",
+		"color": "Blue",
+		"address": "0xfb24",
+		"requirements": [
+			{
+				"events": [ 73 ]
+			}
+		]
+	},
+	{
+		"id": 107,
+		"name": "1/2-Spell of Courage 2",
+		"displayname": "1/2-Spell of Courage",
+		"color": "Blue",
+		"address": "0xfb24",
+		"requirements": [
+			{
+				"events": [ 90 ]
+			}
+		]
+	},
+	{
+		"id": 108,
+		"name": "1/2-Spell of Strength 1",
+		"displayname": "1/2-Spell of Strength",
+		"color": "Blue",
+		"address": "0xfb26",
+		"requirements": [
+			{
+				"events": [ 117 ]
+			}
+		]
+	},
+	{
+		"id": 109,
+		"name": "1/2-Spell of Strength 2",
+		"displayname": "1/2-Spell of Strength",
+		"color": "Blue",
+		"address": "0xfb26",
+		"requirements": [
+			{
+				"events": [ 68 ]
+			}
+		]
+	},
+	{
+		"id": 110,
+		"name": "1/2-Spell of Wisdom 1",
+		"displayname": "1/2-Spell of Wisdom",
+		"color": "Blue",
+		"address": "0xfb28",
+		"requirements": [
+			{
+				"events": [ 119 ]
+			}
+		]
+	},
+	{
+		"id": 111,
+		"name": "1/2-Spell of Wisdom 2",
+		"displayname": "1/2-Spell of Wisdom",
+		"color": "Blue",
+		"address": "0xfb28",
+		"requirements": [
+			{
+				"events": [ 110 ]
+			}
+		]
+	},
+	{
+		"id": 112,
+		"name": "Mudball Surprise 1",
+		"displayname": "Mudball Surprise",
+		"color": "Blue",
+		"address": "0xfb34",
+		"requirements": [
+			{
+				"items": [ 6 ],
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			},
+			{
+				"items": [ 7 ],
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			},
+			{
+				"items": [ 8 ],
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 141,
+		"name": "Mudball Surprise 2",
+		"displayname": "Mudball Surprise",
+		"color": "Blue",
+		"address": "0xfb34",
+		"requirements": [
+			{
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 113,
+		"name": "Low-Purity Lightomite",
+		"color": "Blue",
+		"address": "0xfb35",
+		"requirements": [
+			{
+				"items": [ 112 ],
+				"areas": [ 2, 3 ],
+				"events": [ 12 ]
+			},
+			{
+				"items": [ 141 ],
+				"areas": [ 2, 3 ],
+				"events": [ 12 ]
+			}
+		]
+	},
+	{
+		"id": 114,
+		"name": "Low-Purity Hardonium",
+		"color": "Blue",
+		"address": "0xfb36",
+		"requirements": [
+			{
+				"items": [ 112, 141 ],
+				"areas": [ 2, 3 ],
+				"events": [ 12 ]
+			}
+		]
+	},
+	{
+		"id": 115,
+		"name": "Hi-Purity Lightomite",
+		"color": "Blue",
+		"address": "0xfb37",
+		"requirements": [
+			{
+				"items": [ 6, 113 ],
+				"areas": [ 2, 3 ],
+				"events": [ 12, 77 ]
+			}
+		]
+	},
+	{
+		"id": 116,
+		"name": "Hi-Purity Hardonium",
+		"color": "Blue",
+		"address": "0xfb38",
+		"requirements": [
+			{
+				"items": [ 6, 114 ],
+				"areas": [ 2, 3 ],
+				"events": [ 12, 77 ]
+			}
+		]
+	},
+	{
+		"id": 117,
+		"name": "Banana",
+		"color": "Blue",
+		"address": "0xfb39",
+		"requirements": [
+			{
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 118,
+		"name": "Itching Salve",
+		"color": "Blue",
+		"address": "0xfb3a",
+		"requirements": [
+			{
+				"items": [ 13 ],
+				"events": [ 26 ]
+			}
+		]
+	},
+	{
+		"id": 119,
+		"name": "Ice Statue",
+		"color": "Blue",
+		"address": "0xfb3c",
+		"requirements": [
+			{
+				"areas": [ 5 ],
+				"events": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 120,
+		"name": "Small Mud Clump",
+		"color": "Blue",
+		"address": "0xfb46",
+		"requirements": [
+			{
+				"areas": [ 2 ],
+				"events": [ 19 ]
+			}
+		]
+	},
+	{
+		"id": 121,
+		"name": "Miner's Ring",
+		"color": "Pink",
+		"address": "0xfb47",
+		"requirements": [
+			{
+				"items": [ 120 ],
+				"areas": [ 2, 3 ],
+				"events": [ 12 ]
+			}
+		]
+	},
+	{
+		"id": 122,
+		"name": "Large Flower Seed",
+		"color": "Pink",
+		"address": "0xfb48",
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 13 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 123,
+		"name": "Petit-Face Flower",
+		"color": "Pink",
+		"address": "0xfb49",
+		"requirements": [
+			{
+				"items": [ 122 ],
+				"areas": [ 9 ],
+				"events": [ 37 ]
+			},
+			{
+				"items": [ 36, 122 ],
+				"areas": [ 9 ],
+				"events": [ 41 ]
+			}
+		]
+	},
+	{
+		"id": 124,
+		"name": "Dwarf's Proof",
+		"color": "Pink",
+		"address": "0xfb4a",
+		"requirements": [
+			{
+				"events": [ 134 ]
+			}
+		]
+	},
+	{
+		"id": 125,
+		"name": "Mizuno's Proof",
+		"color": "Pink",
+		"address": "0xfb4b",
+		"requirements": [
+			{
+				"events": [ 135 ]
+			}
+		]
+	},
+	{
+		"id": 126,
+		"name": "Minitta Bell",
+		"color": "Blue",
+		"address": "0xfb4c",
+		"requirements": [
+			{
+				"events": [ 131 ]
+			}
+		]
+	},
+	{
+		"id": 127,
+		"name": "Yan's Proof",
+		"color": "Pink",
+		"address": "0xfb4d",
+		"requirements": [
+			{
+				"events": [ 136 ]
+			}
+		]
+	},
+	{
+		"id": 128,
+		"name": "Old Man's Proof",
+		"color": "Pink",
+		"address": "0xfb4e",
+		"requirements": [
+			{
+				"events": [ 137 ]
+			}
+		]
+	},
+	{
+		"id": 129,
+		"name": "Golden Moon",
+		"color": "Pink",
+		"address": "0xfb4f",
+		"requirements": [
+			{
+				"events": [ 123 ]
+			}
+		]
+	},
+	{
+		"id": 130,
+		"name": "Golden Star",
+		"color": "Pink",
+		"address": "0xfb50",
+		"requirements": [
+			{
+				"events": [ 72 ]
+			}
+		]
+	},
+	{
+		"id": 131,
+		"name": "Mystery Reflector",
+		"color": "Pink",
+		"address": "0xfb51",
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 13 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 132,
+		"name": "Crystal",
+		"color": "Pink",
+		"address": "0xfb52",
+		"requirements": [
+			{
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 133,
+		"name": "Crystal Panel",
+		"color": "Pink",
+		"address": "0xfb53",
+		"requirements": [
+			{
+				"items": [ 132 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 134,
+		"name": "Harp's Right Side",
+		"color": "Pink",
+		"address": "0xfb54",
+		"requirements": [
+			{
+				"items": [ 15, 29 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 29, 126 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 135,
+		"name": "Harp's Left Side",
+		"color": "Pink",
+		"address": "0xfb55",
+		"requirements": [
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ],
+				"events": [ 42 ]
+			}
+		]
+	},
+	{
+		"id": 136,
+		"name": "High-Pitch Pearl",
+		"color": "Pink",
+		"address": "0xfb56",
+		"requirements": [
+			{
+				"items": [ 15, 30 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 137,
+		"name": "Low-Pitch Pearl",
+		"color": "Pink",
+		"address": "0xfb57",
+		"requirements": [
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 138,
+		"name": "100-Year Amulet",
+		"color": "Pink",
+		"address": "0xfb59",
+		"requirements": [
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 139,
+		"name": "Coal Mine Bell",
+		"color": "Blue",
+		"address": "0xfb5a",
+		"requirements": [
+			{
+				"items": [ 6, 29 ],
+				"areas": [ 3 ]
+			}
+		]
+	},
+	{
+		"id": 140,
+		"name": "Donglin Bell",
+		"color": "Blue",
+		"address": "0xfb5b",
+		"requirements": [
+			{
+				"events": [ 29 ]
+			}
+		]
+	},
+	{
+		"id": 141,
+		"name": "(empty)",
+		"color": "Green",
+		"address": "0xfac1",
+		"notrandom": true
+	},
+	{
+		"id": 142,
+		"name": "Light Alloy",
+		"color": "Pink",
+		"address": "0xfafc",
+		"notrandom": true
+	},
+	{
+		"id": 143,
+		"name": "Healthy Lunch",
+		"color": "Blue",
+		"address": "0xfb0d",
+		"notrandom": true
+	},
+	{
+		"id": 144,
+		"name": "Special Lunch",
+		"color": "Blue",
+		"address": "0xfb0e",
+		"notrandom": true
+	},
+	{
+		"id": 145,
+		"name": "Large Lunch Box",
+		"color": "Blue",
+		"address": "0xfb0f",
+		"notrandom": true
+	},
+	{
+		"id": 146,
+		"name": "Lunch Box",
+		"color": "Blue",
+		"address": "0xfb10",
+		"notrandom": true
+	},
+	{
+		"id": 147,
+		"name": "Magic Juice",
+		"color": "Blue",
+		"address": "0xfb11",
+		"notrandom": true
+	},
+	{
+		"id": 148,
+		"name": "Magic Water",
+		"color": "Blue",
+		"address": "0xfb12",
+		"notrandom": true
+	},
+	{
+		"id": 149,
+		"name": "Magic Wings",
+		"color": "Blue",
+		"address": "0xfb14",
+		"notrandom": true
+	},
+	{
+		"id": 150,
+		"name": "Water Bucket",
+		"color": "Blue",
+		"address": "0xfb17",
+		"notrandom": true
+	},
+	{
+		"id": 151,
+		"name": "Hot Water Bucket",
+		"color": "Blue",
+		"address": "0xfb18",
+		"notrandom": true
+	},
+	{
+		"id": 152,
+		"name": "Holy Water Bucket",
+		"color": "Blue",
+		"address": "0xfb19",
+		"notrandom": true
+	},
+	{
+		"id": 152,
+		"name": "Steak Sandwich",
+		"color": "Blue",
+		"address": "0xfb1a",
+		"notrandom": true
+	},
+	{
+		"id": 153,
+		"name": "Dried Fish Sandwich",
+		"color": "Blue",
+		"address": "0xfb1b",
+		"notrandom": true
+	},
+	{
+		"id": 154,
+		"name": "Hash Potato Sandwich",
+		"color": "Blue",
+		"address": "0xfb1c",
+		"notrandom": true
+	},
+	{
+		"id": 155,
+		"name": "Spell of Courage",
+		"color": "Blue",
+		"address": "0xfb23",
+		"notrandom": true
+	},
+	{
+		"id": 156,
+		"name": "Spell of Strength",
+		"color": "Blue",
+		"address": "0xfb25",
+		"notrandom": true
+	},
+	{
+		"id": 157,
+		"name": "Spell of Wisdom",
+		"color": "Blue",
+		"address": "0xfb27",
+		"notrandom": true
+	},
+	{
+		"id": 158,
+		"name": "Snow Firefly",
+		"color": "Pink",
+		"address": "0xfb29",
+		"notrandom": true
+	},
+	{
+		"id": 159,
+		"name": "Ice Candy",
+		"color": "Pink",
+		"address": "0xfb2a",
+		"notrandom": true
+	},
+	{
+		"id": 160,
+		"name": "Small Fish",
+		"color": "Blue",
+		"address": "0xfb2b",
+		"notrandom": true
+	},
+	{
+		"id": 161,
+		"name": "Dried Fish",
+		"color": "Blue",
+		"address": "0xfb2c",
+		"notrandom": true
+	},
+	{
+		"id": 162,
+		"name": "Big Piece of Meat",
+		"color": "Blue",
+		"address": "0xfb2d",
+		"notrandom": true
+	},
+	{
+		"id": 163,
+		"name": "Underdone Meat",
+		"color": "Blue",
+		"address": "0xfb2e",
+		"notrandom": true
+	},
+	{
+		"id": 164,
+		"name": "Big Steak",
+		"color": "Blue",
+		"address": "0xfb2f",
+		"notrandom": true
+	},
+	{
+		"id": 165,
+		"name": "Potato",
+		"color": "Blue",
+		"address": "0xfb30",
+		"notrandom": true
+	},
+	{
+		"id": 166,
+		"name": "1/2-Boiled Potato",
+		"color": "Blue",
+		"address": "0xfb31",
+		"notrandom": true
+	},
+	{
+		"id": 167,
+		"name": "Boiled Potato",
+		"color": "Blue",
+		"address": "0xfb32",
+		"notrandom": true
+	},
+	{
+		"id": 168,
+		"name": "Mudball",
+		"color": "Blue",
+		"address": "0xfb33",
+		"notrandom": true
+	},
+	{
+		"id": 169,
+		"name": "Badge of Lying",
+		"color": "Blue",
+		"address": "0xfb3b",
+		"notrandom": true
+	},
+	{
+		"id": 170,
+		"name": "Mermaid's Harp",
+		"color": "Pink",
+		"address": "0xfb58",
+		"notrandom": true
+	},
+	{
+		"id": 171,
+		"name": "Blackjack",
+		"color": "Green",
+		"address": "0xfab4",
+		"notrandom": true
+	},
+	{
+		"id": 172,
+		"name": "Green Pants",
+		"color": "Green",
+		"address": "0xfabe",
+		"notrandom": true
+	}
+]

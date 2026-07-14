@@ -1,0 +1,99 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="using:Tomba2_Randomizer"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" CanResize="False"
+        Width="1340" Height="760"
+        x:Class="Tomba2_Randomizer.MainWindow"
+        Title="Tomba2 Randomizer">
+    <Grid>
+        <TabControl Name="TabControl" SelectionChanged="SelectingItemsControl_OnSelectionChanged">
+            <TabItem Name="TabMain" Header="Main">
+                <Canvas>
+                    <Label Name="LblHooked" Content="Connected" HorizontalAlignment="Left" Margin="139,21,0,0" VerticalAlignment="Top"/>
+                    <Button Name="BtnNewRandom" Content="New Randomization" FontSize="24" Canvas.Left="28" Canvas.Top="99" Height="59" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnNewRandom_OnClick"/>
+                    <Button Name="BtnLoadRandom" Content="Load Randomization" FontSize="24" Canvas.Left="28" Canvas.Top="176" Height="58" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnLoadRandom_OnClick"/>
+                    <CheckBox Name="ChkDebug" Content="Also generate rando logic debug file" Canvas.Left="338" Canvas.Top="121" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                </Canvas>
+            </TabItem>
+            <TabItem IsEnabled="false" Header="Inventory" Name="TabInventory" Height="20" VerticalAlignment="Top">
+                <StackPanel Background="#191919" Orientation="Horizontal">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Width="920">
+                        <Canvas Name="CnvItems" VerticalAlignment="Top" ></Canvas>
+                    </ScrollViewer>
+                    <Canvas>
+                        <TextBox Name="TxtSelectedItemAmount" Width="34" Height="18" Canvas.Left="161" Canvas.Top="100" HorizontalAlignment="Center" VerticalAlignment="Top" HorizontalContentAlignment="Right"></TextBox>
+                        <Label Content="Amount" Canvas.Left="87" Canvas.Top="105" Foreground="White"/>
+                        <Button Name="BtnSelectedItemApply" Classes="apply" Content="Apply" Height="31" Canvas.Left="69" Canvas.Top="151" Width="126" Background="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnSelectedItemApply_OnClick"/>
+                        <ComboBox Name="CmbItems" Canvas.Left="50" Canvas.Top="37" Width="164" HorizontalAlignment="Center" VerticalAlignment="Top" SelectionChanged="CmbItems_OnSelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="local:ItemDto">
+                                    <TextBlock Text="{Binding GUIName}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Name="BtnGiveAll" Classes="apply" Content="Give All Items" Height="31" Canvas.Left="69" Canvas.Top="201" Width="126" Background="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnGiveAll_Click"/>
+                    </Canvas>
+                </StackPanel>
+            </TabItem>
+            <TabItem IsEnabled="false" Header="Events" Name="TabEvents" Height="20" VerticalAlignment="Top">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Canvas Name="CnvEvents" Background="#191919" VerticalAlignment="Top"></Canvas>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem IsEnabled="false" Header="Teleport" Name="TabTeleport" Height="20" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <Canvas>
+                    <Button Name="BtnTeleport" Content="Teleport" FontSize="64" Height="123" Canvas.Left="340" Canvas.Top="328" Width="314" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnTeleport_OnClick"/>
+                    <ComboBox Name="CmbAreas" Canvas.Left="102" Canvas.Top="147" Width="223" Height="30" SelectionChanged="CmbAreas_OnSelectionChanged" PlaceholderText="Select an Area">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="local:TeleportArea">
+                                <TextBlock Text="{Binding Name}" FontSize="18"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox Name="CmbSections" Canvas.Left="458" Canvas.Top="147" Width="450" Height="30" HorizontalAlignment="Left" PlaceholderText="Select a Destination">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="local:Section">
+                                <TextBlock Text="{Binding Destination}" FontSize="18"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Canvas>
+            </TabItem>
+            <TabItem IsEnabled="false" Header="Game Progress" Name="TabProgress" Height="20" VerticalAlignment="Top">
+                <Canvas>
+                    <Grid Name="GrdProgress" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1120" Height="690"
+                          ColumnDefinitions="140,140,140,140,140,140,140,140"
+                          RowDefinitions="32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32">
+                    </Grid>
+                    <Button Name="BtnProgressRefresh" Content="Refresh" FontSize="24" Canvas.Left="1160" Canvas.Top="562" Height="50" Width="145" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnProgressRefresh_OnClick"/>
+                    <Button Name="BtnProgressSetValues" Content="Set Values" FontSize="24" Canvas.Left="1160" Canvas.Top="634" Height="50" Width="145" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnProgressSetValues_OnClick"/>
+                </Canvas>
+            </TabItem>
+        </TabControl>
+    </Grid>
+    <Window.Styles>
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="LightGray"/>
+        </Style>
+        <Style Selector="Button.item:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#2D2D2D"/>
+        </Style>
+        <Style Selector="Button.green:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#73D66B"/>
+        </Style>
+        <Style Selector="Button.blue:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#5ABDDE"/>
+        </Style>
+        <Style Selector="Button.pink:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#DE6394"/>
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </Window.Styles>
+</Window>

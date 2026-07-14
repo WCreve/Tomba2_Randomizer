@@ -1,0 +1,694 @@
+[
+	{
+		"id": 0,
+		"name": "Starting Beach",
+		"sections": [ 
+			{
+				"id" : 0,
+				"destination": "[WARP] Town of Fishermen"
+			},
+			{
+				"id" : 1,
+				"destination": "[WARP] Waterfall"
+			},
+			{
+				"id" : 2,
+				"destination": "Drown right"
+			},
+			{
+				"id" : 3,
+				"destination": "Drown left"
+			},
+			{
+				"id" : 4,
+				"destination": "Gold hook"
+			},
+			{
+				"id" : 5,
+				"destination": "Outside windmill"
+			},
+			{
+				"id" : 6,
+				"destination": "Mouse entrance"
+			},
+			{
+				"id" : 7,
+				"destination": "[TRAVEL] From Pipe Area"
+			},
+			{
+				"id" : 8,
+				"destination": "Drown barrels"
+			},
+			{
+				"id" : 9,
+				"destination": "[TRAVEL] From Tiny Mouse Village"
+			},
+			{
+				"id" : 10,
+				"destination": "[TRAVEL] From Water Temple"
+			}
+		]
+	},
+	{
+		"id": 1,
+		"name": "Pipe Area",
+		"sections":	[
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Starting Beach"
+			},
+			{
+				"id" : 1,
+				"destination": "[WARP] Pipe Area"
+			},
+			{
+				"id" : 2,
+				"destination": "[TRAVEL] From Coal-Mining Town"
+			},
+			{
+				"id" : 3,
+				"destination": "[WARP] Trolley Entrance"
+			},
+			{
+				"id" : 4,
+				"destination": "Finishing Trolley Minigame"
+			},
+			{
+				"id" : 5,
+				"destination": "After beating Ghost Pig"
+			},
+			{
+				"id" : 6,
+				"destination": "[TRAVEL] From Tower of Courage"
+			},
+			{
+				"id" : 7,
+				"destination": "Chain 1 [Above]"
+			},
+			{
+				"id" : 8,
+				"destination": "Chain 2 [Above]"
+			},
+			{
+				"id" : 9,
+				"destination": "Chain 3 [Above]"
+			},
+			{
+				"id" : 10,
+				"destination": "Chain 4 [Above]"
+			},
+			{
+				"id" : 11,
+				"destination": "Chain 5 [Above]"
+			},
+			{
+				"id" : 12,
+				"destination": "Chain 6 [Above]"
+			},
+			{
+				"id" : 13,
+				"destination": "Chain 7 [Above]"
+			},
+			{
+				"id" : 14,
+				"destination": "Leaving Tiny Mud Clump room"
+			},
+			{
+				"id" : 15,
+				"destination": "Chain 1 [Below]"
+			},
+			{
+				"id" : 16,
+				"destination": "Chain 2 [Below]"
+			},
+			{
+				"id" : 17,
+				"destination": "Chain 3 [Below]"
+			},
+			{
+				"id" : 18,
+				"destination": "Chain 4 [Below]"
+			},
+			{
+				"id" : 19,
+				"destination": "Chain 5 [Below]"
+			},
+			{
+				"id" : 20,
+				"destination": "Chain 6 [Below]"
+			},
+			{
+				"id" : 21,
+				"destination": "Chain 7 [Below]"
+			},
+			{
+				"id" : 22,
+				"destination": "Underground doorway 1"
+			},
+			{
+				"id" : 23,
+				"destination": "Underground doorway 2"
+			},
+			{
+				"id" : 24,
+				"destination": "Underground doorway 3"
+			},
+			{
+				"id" : 25,
+				"destination": "Underground doorway 4"
+			},
+			{
+				"id" : 26,
+				"destination": "Tiny mud clump room"
+			},
+			{
+				"id" : 27,
+				"destination": "[TRAVEL] Kujara Summit door"
+			},
+			{
+				"id" : 28,
+				"destination": "[TRAVEL] L/C Forest door"
+			},
+			{
+				"id" : 29,
+				"destination": "[TRAVEL] Circus Village door"
+			},
+			{
+				"id" : 30,
+				"destination": "[TRAVEL] Water Temple door"
+			},
+			{
+				"id" : 31,
+				"destination": "[WARP] ...???"
+			},
+			{
+				"id" : 32,
+				"destination": "[TRAVEL] From ???"
+			}
+		]
+	},
+	{
+		"id": 2,
+		"name": "Coal-Mining Town",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Pipe Area"
+			},
+			{
+				"id" : 1,
+				"destination": "[WARP] Coal-Mining Town"
+			},
+			{
+				"id" : 2,
+				"destination": "Outside machine room"
+			},
+			{
+				"id" : 3,
+				"destination": "[WARP] Bell"
+			},
+			{
+				"id" : 4,
+				"destination": "Outside cafeteria"
+			},
+			{
+				"id" : 5,
+				"destination": "Trolley cart"
+			},
+			{
+				"id" : 6,
+				"destination": "Near Tool shed"
+			},
+			{
+				"id" : 7,
+				"destination": "Charles' house"
+			},
+			{
+				"id" : 8,
+				"destination": "[TRAVEL] From Kujara ranch"
+			},
+			{
+				"id" : 9,
+				"destination": "[TRAVEL] From Pipe Area (2)"
+			}
+		]
+	},
+	{
+		"id": 3,
+		"name": "Trolley minigame",
+		"sections":[
+			{
+				"id" : 0,
+				"destination": "Minigame start"
+			}
+		]
+	},
+	{
+		"id": 4,
+		"name": "Kujara Ranch Area",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Coal-Mining Town"
+			},
+			{
+				"id" : 1,
+				"destination": "[WARP] Kujara Ranch Area"
+			},
+			{
+				"id" : 2,
+				"destination": "Holy tree flight fall"
+			},
+			{
+				"id" : 3,
+				"destination": "Top of slide"
+			},
+			{
+				"id" : 4,
+				"destination": "After beating Earth Pig"
+			},
+			{
+				"id" : 5,
+				"destination": "[TRAVEL] From Tower of Strength"
+			},
+			{
+				"id" : 6,
+				"destination": "[TRAVEL] From Kujara Summit"
+			},
+			{
+				"id" : 7,
+				"destination": "Going up Holy tree"
+			},
+			{
+				"id" : 8,
+				"destination": "Going down Holy tree"
+			},
+			{
+				"id" : 9,
+				"destination": "Bugged inside trolley cart"
+			}
+		]
+	},
+	{
+		"id": 5,
+		"name": "Kujara Summit",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Kujara Ranch"
+			},
+			{
+				"id" : 1,
+				"destination": "Entering Kujara Wash"
+			},
+			{
+				"id" : 2,
+				"destination": "Finishing/Quitting Kujara Wash"
+			},
+			{
+				"id" : 3,
+				"destination": "Kujara Wash starting position"
+			},
+			{
+				"id" : 4,
+				"destination": "[WARP] Kujara Summit"
+			},
+			{
+				"id" : 5,
+				"destination": "[TRAVEL] From Donglin Forest"
+			},
+			{
+				"id" : 6,
+				"destination": "[WARP] Kujara Wash"
+			},
+			{
+				"id" : 7,
+				"destination": "[TRAVEL] Pipe Area Underground"
+			}
+		]
+	},
+	{
+		"id": 6,
+		"name": "Donglin Forest",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Kujara Summit [ENTR]"
+			},
+			{
+				"id" : 1,
+				"destination": "[WARP] Forest Entrance [ENTR]"
+			},
+			{
+				"id" : 2,
+				"destination": "Drown right [ENTR]"
+			},
+			{
+				"id" : 3,
+				"destination": "[WARP] Bell / Drown left [ENTR]"
+			},
+			{
+				"id" : 4,
+				"destination": "Leave Flame Pig cave right [ENTR]"
+			},
+			{
+				"id" : 5,
+				"destination": "Enter from L/C Forest [ENTR]"
+			},
+			{
+				"id" : 6,
+				"destination": "Enter Flame Pig cave right"
+			},
+			{
+				"id" : 7,
+				"destination": "After beating Flame Pig"
+			},
+			{
+				"id" : 8,
+				"destination": "Enter Flame Pig cave left"
+			},
+			{
+				"id" : 9,
+				"destination": "Enter from Forest Entrance [L/C]"
+			},
+			{
+				"id" : 10,
+				"destination": "Leave Flame Pig cave left [L/C]"
+			},
+			{
+				"id" : 11,
+				"destination": "Drown right [L/C]"
+			},
+			{
+				"id" : 12,
+				"destination": "Drown middle [L/C]"
+			},
+			{
+				"id" : 13,
+				"destination": "Drown left [L/C]"
+			},
+			{
+				"id" : 14,
+				"destination": "[TRAVEL] From Pipe Area Underground [L/C]"
+			},
+			{
+				"id" : 15,
+				"destination": "[WARP] Laughing/Crying Forest [L/C]"
+			},
+			{
+				"id" : 16,
+				"destination": "[TRAVEL] From Circus Village [DEEP]"
+			},
+			{
+				"id" : 17,
+				"destination": "[WARP] Deep Forest [DEEP]"
+			},
+			{
+				"id" : 18,
+				"destination": "Mouse house [DEEP]"
+			},
+			{
+				"id" : 19,
+				"destination": "Mouse house (wrong interior) [DEEP]"
+			},
+			{
+				"id" : 20,
+				"destination": "[TRAVEL] From Tower of Wisdom [DEEP]"
+			}
+		]
+	},
+	{
+		"id": 7,
+		"name": "Circus Village",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Deep Forest"
+			},
+			{
+				"id" : 1,
+				"destination": "[WARP] Circus Village"
+			},
+			{
+				"id" : 2,
+				"destination": "[TRAVEL] From Pipe Area Underground"
+			},
+			{
+				"id" : 3,
+				"destination": "[TRAVEL] From Water Temple"
+			}
+		]
+	},
+	{
+		"id": 8,
+		"name": "Water Temple",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Circus Village"
+			},
+			{
+				"id" : 1,
+				"destination": "[WARP] Water Village / Drown"
+			},
+			{
+				"id" : 2,
+				"destination": "Doorway to Holy water left"
+			},
+			{
+				"id" : 3,
+				"destination": "Waterfall left"
+			},
+			{
+				"id" : 4,
+				"destination": "Plant Mermaid outside front"
+			},
+			{
+				"id" : 5,
+				"destination": "Plant Mermaid outside back"
+			},
+			{
+				"id" : 6,
+				"destination": "Unused Circus Village doorway 1"
+			},
+			{
+				"id" : 7,
+				"destination": "Unused Circus Village doorway 2"
+			},
+			{
+				"id" : 8,
+				"destination": "Unused Circus Village doorway 3"
+			},
+			{
+				"id" : 9,
+				"destination": "Doorway to Holy water right"
+			},
+			{
+				"id" : 10,
+				"destination": "[WARP] Minitta Bell"
+			},
+			{
+				"id" : 11,
+				"destination": "[TRAVEL] From Golden Tower"
+			},
+			{
+				"id" : 12,
+				"destination": "After beating Ice Pig"
+			},
+			{
+				"id" : 13,
+				"destination": "Outside Mini Temple front"
+			},
+			{
+				"id" : 14,
+				"destination": "Out of bounds 1"
+			},
+			{
+				"id" : 15,
+				"destination": "Out of bounds 2"
+			},
+			{
+				"id" : 16,
+				"destination": "[WARP] Nishiki Wings to Mini Temple"
+			},
+			{
+				"id" : 17,
+				"destination": "Waterfall right"
+			},
+			{
+				"id" : 18,
+				"destination": "Inside Mini Temple"
+			},
+			{
+				"id" : 19,
+				"destination": "[TRAVEL] From Starting Beach"
+			},
+			{
+				"id" : 20,
+				"destination": "[TRAVEL] From Pipe Area Underground"
+			},
+			{
+				"id" : 21,
+				"destination": "Plant Mermaid inside front"
+			},
+			{
+				"id" : 22,
+				"destination": "Plant Mermaid inside back"
+			},
+			{
+				"id" : 23,
+				"destination": "[TRAVEL] From Kujara Ranch"
+			}
+		]
+	},
+	{
+		"id": 9,
+		"name": "???",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Pipe Area Underground"
+			}
+		]
+	},
+	{
+		"id": 10,
+		"name": "Flame Pig Battle",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "Flame Pig Battle"
+			}
+		]
+	},
+	{
+		"id": 11,
+		"name": "Ice Pig Battle",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "Ice Pig Battle"
+			}
+		]
+	},
+	{
+		"id": 12,
+		"name": "Ghost Pig Battle",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "Ghost Pig Battle"
+			}
+		]
+	},
+	{
+		"id": 13,
+		"name": "Earth Pig Battle",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "Earth Pig Battle"
+			}
+		]
+	},
+	{
+		"id": 14,
+		"name": "Water Pig Battle",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "Water Pig Battle"
+			}
+		]
+	},
+	{
+		"id": 15,
+		"name": "Last Pig Battle",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "Last Pig Battle"
+			}
+		]
+	},
+	{
+		"id": 16,
+		"name": "Tower of Courage",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Pipe Area"
+			}
+		]
+	},
+	{
+		"id": 17,
+		"name": "Tower of Strength",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Kujara Ranch"
+			}
+		]
+	},
+	{
+		"id": 18,
+		"name": "Tower of Wisdom",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From L/C Forest"
+			}
+		]
+	},
+	{
+		"id": 19,
+		"name": "Golden Tower",
+		"sections": [
+			{
+				"id" : 0,
+				"destination": "[TRAVEL] From Water Temple"
+			}
+		]
+	},
+	{
+		"id": 20,
+		"name": "Mouse Village",
+		"sections": [
+			{
+				"id": 0,
+				"destination": "[TRAVEL] From Starting Beach"
+			}
+		]
+	},
+	{
+		"id": 21,
+		"name": "Final Cutscenes",
+		"sections": [
+			{
+				"id": 0,
+				"destination": "Purification"
+			},
+			{
+				"id": 1,
+				"destination": "Flying on Baron"
+			},
+			{
+				"id": 2,
+				"destination": "At Tabby's"
+			},
+			{
+				"id": 3,
+				"destination": "Flying on Baron"
+			},
+			{
+				"id": 4,
+				"destination": "All Events scene 1"
+			},
+			{
+				"id": 5,
+				"destination": "All Events scene 2"
+			}
+		]
+	}
+]

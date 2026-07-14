@@ -1,0 +1,141 @@
+[
+	{
+		"id": 1,
+		"name": "Starting Beach"
+	},
+	{
+		"id": 2,
+		"name": "Pipe Area",
+		"requirements": [
+			{
+				"events": [ 8 ]
+			},
+			{
+				"areas": [ 3 ]
+			}
+		]
+	},
+	{
+		"id": 3,
+		"name": "Coal-Mining Town",
+		"requirements": [
+			{
+				"items": [ 139 ]
+			},
+			{
+				"events": [ 11 ]
+			},
+			{
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 4,
+		"name": "Kujara Ranch Area",
+		"requirements": [
+			{
+				"events": [ 18 ]
+			},
+			{
+				"areas": [ 5 ]
+			}
+		]
+	},
+	{
+		"id": 5,
+		"name": "Kujara Summit",
+		"requirements": [
+			{
+				"events": [ 22 ]
+			},
+			{
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 6,
+		"name": "Donglin Forest - Forest Entrance",
+		"requirements": [
+			{
+				"events": [ 25 ]
+			},
+			{
+				"items": [ 140 ]
+			},
+			{
+				"areas": [ 7 ]
+			},
+			{
+				"areas": [ 8 ]
+			}
+		]
+	},
+	{
+		"id": 7,
+		"name": "Donglin Forest - Laughing/Crying Forest",
+		"requirements": [
+			{
+				"events": [ 29 ]
+			}
+		]
+	},
+	{
+		"id": 8,
+		"name": "Donglin Forest - Deep Forest",
+		"requirements": [
+			{
+				"items": [ 6 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 7 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 8 ],
+				"areas": [ 7 ]
+			},
+			{
+				"areas": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 9,
+		"name": "Circus Village",
+		"requirements": [
+			{
+				"events": [ 33 ]
+			},
+			{
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 10,
+		"name": "Water Temple",
+		"requirements": [
+			{
+				"items": [ 126 ]
+			},
+			{
+				"events": [ 40 ]
+			},
+			{
+				"items": [ 64, 65, 86, 93, 104 ]
+			}
+		]
+	},
+	{
+		"id": 11,
+		"name": "Mouse Village",
+		"requirements": [
+			{
+				"events": [ 69 ]
+			}
+		]
+	}
+]

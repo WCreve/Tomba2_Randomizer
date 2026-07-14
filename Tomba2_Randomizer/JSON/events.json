@@ -1,0 +1,2220 @@
+[
+	{
+		"id": 1,
+		"name": "Find Tabby!",
+		"address": "0xf8b5",
+		"primary": true
+	},
+	{
+		"id": 2,
+		"name": "Go to the Burning House!",
+		"address": "0xf8b6",
+		"AP": 2000,
+		"primary": true
+	},
+	{
+		"id": 3,
+		"name": "Pour the Water In!",
+		"address": "0xf8b7",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{				
+				"items": [ 38 ],
+				"events": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 4,
+		"name": "Save the Crab!",
+		"address": "0xf8b8",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"events": [ 3 ]
+			}
+		]
+	},
+	{
+		"id": 5,
+		"name": "Wind it Up!",
+		"address": "0xf8b9",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 34 ]
+			}
+		]
+	},
+	{
+		"id": 6,
+		"name": "The Crab Basket!",
+		"address": "0xf8ba",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"events": [ 5 ]
+			}, 
+			{
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 7,
+		"name": "Collect the Golden Crabs!",
+		"address": "0xf8bb",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 39 ],
+				"events": [ 4, 5 ]
+			}, 
+			{
+				"items": [ 39 ],
+				"areas": [ 2 ],
+				"events": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 8,
+		"name": "Win's Windmill!",
+		"address": "0xf8bc",
+		"AP": 10000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 40, 41, 42 ],
+				"events": [ 5 ]
+			}, 
+			{
+				"items": [ 40, 41, 42 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 9,
+		"name": "Cools Off and Disappears!",
+		"address": "0xf8bd",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 4 ],
+				"areas": [ 2 ]
+			}, 
+			{
+				"items": [ 5 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 10,
+		"name": "Remove all the Cappers!",
+		"address": "0xf8be",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 4 ],
+				"areas": [ 2 ]
+			}, 
+			{
+				"items": [ 5 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 11,
+		"name": "Pull and Open!",
+		"address": "0xf8bf",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 4 ],
+				"areas": [ 2 ]
+			}, 
+			{
+				"items": [ 5 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 12,
+		"name": "Bury it in the sand!",
+		"address": "0xf8c0",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"areas": [ 3 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 13,
+		"name": "Let's Go to Tabby's House!",
+		"address": "0xf8c1",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"areas": [ 3 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 14,
+		"name": "Wash the Strange Lump!",
+		"address": "0xf8c2",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"areas": [ 3 ],
+				"events": [ 12, 13 ]
+			}
+		]
+	},
+	{
+		"id": 15,
+		"name": "Look for the Hammer!",
+		"address": "0xf8c3",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"areas": [ 2, 3 ],
+				"events": [ 14 ]
+			}
+		]
+	},
+	{
+		"id": 16,
+		"name": "Blast the Rock!",
+		"address": "0xf8c4",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 6, 43 ],
+				"areas": [ 2 ],
+				"events": [ 15 ]
+			},
+			{
+				"items": [ 7, 43 ],
+				"areas": [ 2 ],
+				"events": [ 15 ]
+			},
+			{
+				"items": [ 8, 43 ],
+				"areas": [ 2 ],
+				"events": [ 15 ]
+			}
+		]
+	},
+	{
+		"id": 17,
+		"name": "Get Bombs!",
+		"address": "0xf8c5",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 6 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 7 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 8 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 18,
+		"name": "Deliver to Gran!",
+		"address": "0xf8c6",
+		"AP": 10000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 44 ],
+				"areas": [ 3 ],
+				"events": [ 16 ]
+			}
+		]
+	},
+	{
+		"id": 19,
+		"name": "Capture Evil Flame Pig!",
+		"address": "0xf8c7",
+		"AP": 100000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 15, 21 ],
+				"areas": [ 6 ],
+				"events": [ 34 ]
+			}
+		]
+	},
+	{
+		"id": 20,
+		"name": "Bring the Big Sack!",
+		"address": "0xf8c8",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 45 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 21,
+		"name": "Melt the Giant Ice!",
+		"address": "0xf8c9",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 7 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 8 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 22,
+		"name": "Let's Take the Lift!",
+		"address": "0xf8ca",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"events": [ 23 ]
+			}
+		]
+	},
+	{
+		"id": 23,
+		"name": "Kujara's Favorite",
+		"address": "0xf8cb",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 46 ],
+				"events": [ 21 ]
+			}
+		]
+	},
+	{
+		"id": 24,
+		"name": "The Hidden Diary!",
+		"address": "0xf8cc",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 47 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 25,
+		"name": "Static Explosion!",
+		"address": "0xf8cd",
+		"AP": 10000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 13 ],
+				"areas": [ 5 ],
+				"events": [ 26 ]
+			}
+		]
+	},
+	{
+		"id": 26,
+		"name": "Raise the Ladder!",
+		"address": "0xf8ce",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 13, 35 ],
+				"areas": [ 5 ]
+			},
+			{
+				"items": [ 35 ],
+				"areas": [ 5 ],
+				"events": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 27,
+		"name": "Capture Evil Ice Pig!",
+		"address": "0xf8cf",
+		"AP": 100000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 15, 22 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 22, 126 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 28,
+		"name": "Put in the Spirit's Eye!",
+		"address": "0xf8d0",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 4 ],
+				"areas": [ 6 ]
+			},
+			{
+				"items": [ 5 ],
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 29,
+		"name": "Kill the Guards!",
+		"address": "0xf8d1",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 6 ],
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 7 ],
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 8 ],
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			}
+		]
+	},
+	{
+		"id": 30,
+		"name": "Take the Grapple!",
+		"address": "0xf8d2",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 6, 29 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 7, 29 ],
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 8, 29 ],
+				"areas": [ 7 ]
+			}
+		]
+	},
+	{
+		"id": 31,
+		"name": "More Blue for the Picture!",
+		"address": "0xf8d3",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 48 ],
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 48, 140 ],
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 32,
+		"name": "Device Guards the Treasure!",
+		"address": "0xf8d4",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 8 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 8 ]
+			}
+		]
+	},
+	{
+		"id": 33,
+		"name": "Use Rock Crabs for Balance!",
+		"address": "0xf8d5",
+		"AP": 10000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 49 ],
+				"areas": [ 8 ],
+				"events": [ 32 ]
+			}
+		]
+	},
+	{
+		"id": 34,
+		"name": "Capture Evil Ghost Pig!",
+		"address": "0xf8d6",
+		"AP": 100000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 1, 23 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 2, 23 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 13, 23 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 35,
+		"name": "Use Pig Suit to Talk!",
+		"address": "0xf8d7",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 14 ],
+				"areas": [ 9 ]
+			},
+			{
+				"items": [ 15 ],
+				"areas": [ 9 ]
+			}
+
+		]
+	},
+	{
+		"id": 36,
+		"name": "Use the Seesaw!",
+		"address": "0xf8d8",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 6 ],
+				"areas": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 37,
+		"name": "Let's See the Clown Circus!",
+		"address": "0xf8d9",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 36 ],
+				"areas": [ 9 ],
+				"events": [ 35 ]
+			}
+		]
+	},
+	{
+		"id": 38,
+		"name": "Let's Help the Clown!",
+		"address": "0xf8da",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 14 ],
+				"areas": [ 9 ],
+				"events": [ 37 ]
+			},
+			{
+				"items": [ 15 ],
+				"areas": [ 9 ],
+				"events": [ 37 ]
+			}
+		]
+	},
+	{
+		"id": 39,
+		"name": "Lift the Lid on the Well!",
+		"address": "0xf8db",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 14, 50 ],
+				"areas": [ 9 ],
+				"events": [ 38 ]
+			},
+			{
+				"items": [ 15, 50 ],
+				"areas": [ 9 ],
+				"events": [ 38 ]
+			}
+		]
+	},
+	{
+		"id": 40,
+		"name": "A Pig Tribe Clown Statue!",
+		"address": "0xf8dc",
+		"AP": 10000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 14, 52 ],
+				"areas": [ 9 ],
+				"events": [ 39 ]
+			},
+			{
+				"items": [ 15, 52 ],
+				"areas": [ 9 ],
+				"events": [ 39 ]
+			}
+		]
+	},
+	{
+		"id": 41,
+		"name": "Capture Evil Earth Pig!",
+		"address": "0xf8dd",
+		"AP": 100000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 24 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 42,
+		"name": "A Mermaid in a Water Tank!",
+		"address": "0xf8de",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"areas": [ 10 ],
+				"events": [ 43, 44 ]
+			}
+		]
+	},
+	{
+		"id": 43,
+		"name": "Crystal Panel Blocks a Hole!",
+		"address": "0xf93e",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 133 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 44,
+		"name": "Open the Water Gate",
+		"address": "0xf8df",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 37 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 45,
+		"name": "The Broken-Up Mermaid Harp!",
+		"address": "0xf8e0",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 134, 135, 136, 137 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 46,
+		"name": "Sink the White Platform!",
+		"address": "0xf8e1",
+		"AP": 2000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 47,
+		"name": "Wake Up the Giant Fish!",
+		"address": "0xf8e2",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 15, 134, 135, 136, 137 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 48,
+		"name": "Find Another Reflector!",
+		"address": "0xf8e3",
+		"AP": 10000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 131 ],
+				"areas": [ 10 ],
+				"events": [ 47 ]
+			}
+		]
+	},
+	{
+		"id": 49,
+		"name": "Capture Evil Water Pig!",
+		"address": "0xf8e4",
+		"AP": 100000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 1, 25 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 2, 25 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 10, 25 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 13, 25 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 14, 25 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 15, 25 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 25, 105 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 1, 25 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 2, 25 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 10, 25 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 13, 25 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 14, 25 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 15, 25 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 25, 105 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 50,
+		"name": "Look for the Last Evil Pig!",
+		"address": "0xf8e5",
+		"AP": 5000,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 16, 17, 18, 19, 20 ],
+				"events": [ 19, 27, 34, 41, 49 ]
+			}
+		]
+	},
+	{
+		"id": 51,
+		"name": "The Evil Flame Pig plate!",
+		"address": "0xf8e6",
+		"AP": 0,
+		"primary": true,
+		"requirements": [
+			{
+				"events": [ 50 ]
+			}
+		]
+	},
+	{
+		"id": 52,
+		"name": "The Evil Ice Pig plate!",
+		"address": "0xf8e7",
+		"AP": 0,
+		"primary": true,
+		"requirements": [
+			{	
+				"events": [ 50 ]
+			}
+		]
+	},
+	{
+		"id": 53,
+		"name": "The Evil Ghost Pig plate!",
+		"address": "0xf8e8",
+		"AP": 0,
+		"primary": true,
+		"requirements": [
+			{
+				"events": [ 50 ]
+			}
+		]
+	},
+	{
+		"id": 54,
+		"name": "The Evil Earth Pig plate!",
+		"address": "0xf8e9",
+		"AP": 0,
+		"primary": true,
+		"requirements": [
+			{
+				"events": [ 50 ]
+			}
+		]
+	},
+	{
+		"id": 55,
+		"name": "The Evil Water Pig plate!",
+		"address": "0xf8ea",
+		"AP": 0,
+		"primary": true,
+		"requirements": [
+			{
+				"events": [ 50 ]
+			}
+		]
+	},
+	{
+		"id": 56,
+		"name": "Capture the Last Evil Pig!",
+		"address": "0xf8eb",
+		"AP": 0,
+		"primary": true,
+		"requirements": [
+			{
+				"items": [ 26 ],
+				"events": [ 51, 52, 53, 54, 55 ]
+			}
+		]
+	},
+	{
+		"id": 57,
+		"name": "A Red Treasure Chest",
+		"address": "0xf8ec",
+		"AP": 2000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 58,
+		"name": "Adventurer's Chest",
+		"address": "0xf8ed",
+		"AP": 7000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 5 ],
+				"AP": 50000
+			},
+			{
+				"areas": [ 2 ],
+				"AP": 50000
+			},
+			{
+				"areas": [ 2 ],
+				"events": [ 9 ],
+				"AP": 100000
+			},
+			{
+				"items": [ 1 ],
+				"areas": [ 4 ],
+				"AP": 500000
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 4 ],
+				"AP": 500000
+			},
+			{
+				"items": [ 1 ],
+				"areas": [ 8 ],
+				"AP": 1000000
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 8 ],
+				"AP": 1000000
+			},
+			{
+				"areas": [ 11 ],
+				"AP": 2000000
+			}
+		]
+	},
+	{
+		"id": 59,
+		"name": "Adventurer's Clue",
+		"address": "0xf8ee",
+		"AP": 22000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 2, 4, 8, 10 ],
+				"events": [ 9 ],
+				"AP": 2000000
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 2, 4, 8, 10 ],
+				"events": [ 9 ],
+				"AP": 2000000
+			}
+		]
+	},
+	{
+		"id": 60,
+		"name": "Golden Tower",
+		"address": "0xf8ef",
+		"AP": 15000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 15, 53, 54, 55, 56, 57 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 53, 54, 55, 56, 57, 126 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 61,
+		"name": "Chick from an Egg",
+		"address": "0xf8f0",
+		"AP": 5000,
+		"primary": false
+	},
+	{
+		"id": 62,
+		"name": "Where is the Bird's Nest?",
+		"address": "0xf8f1",
+		"AP": 7000,
+		"primary": false
+	},
+	{
+		"id": 63,
+		"name": "Feed the Chicks",
+		"address": "0xf8f2",
+		"AP": 13000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 64, 65, 86 ]
+			}
+		]
+	},
+	{
+		"id": 64,
+		"name": "With the Nishiki Bird",
+		"address": "0xf8f4",
+		"AP": 30000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 104 ],
+				"events": [ 63 ]
+			},
+			{
+				"events": [ 63, 131 ]
+			}
+		]
+	},
+	{
+		"id": 65,
+		"name": "Other Side of the Waterfall",
+		"address": "0xf8f5",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 126 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 66,
+		"name": "The Stuck Fishhook Line",
+		"address": "0xf8f6",
+		"AP": 2000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 5 ]
+			},
+			{
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 67,
+		"name": "Lost and Found",
+		"address": "0xf8f7",
+		"AP": 25000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 5 ]
+			},
+			{
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 68,
+		"name": "Closed Clamshell",
+		"address": "0xf8f8",
+		"AP": 23000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 15, 33 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 69,
+		"name": "The Tiny Mouse's House",
+		"address": "0xf8f9",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 104 ]
+			},
+			{
+				"events": [ 131 ]
+			}
+		]
+	},
+	{
+		"id": 70,
+		"name": "Tiny Mouse's Berry Nuts",
+		"address": "0xf8fa",
+		"AP": 22000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 69 ]
+			}
+		]
+	},
+	{
+		"id": 71,
+		"name": "Annoying Mushroom",
+		"address": "0xf8fb",
+		"AP": 11000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 92 ],
+				"events": [ 70 ]
+			}
+		]
+	},
+	{
+		"id": 72,
+		"name": "Berry Nuts Harvest",
+		"address": "0xf8fc",
+		"AP": 101000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 71 ]
+			}
+		]
+	},
+	{
+		"id": 73,
+		"name": "Let's Make a Pot!",
+		"address": "0xf8fd",
+		"AP": 13000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 85 ],
+				"areas": [ 3 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 74,
+		"name": "Lost Clay Spatula!",
+		"address": "0xf8fe",
+		"AP": 7000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 73 ]
+			}
+		]
+	},
+	{
+		"id": 75,
+		"name": "Get Clay from the Mud",
+		"address": "0xf8ff",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 12 ]
+			}
+		]
+	},
+	{
+		"id": 76,
+		"name": "What's Inside the Mud?",
+		"address": "0xf900",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 112 ],
+				"events": [ 12 ]
+			},
+			{
+				"items": [ 141 ],
+				"events": [ 12 ]
+			}
+		]
+	},
+	{
+		"id": 77,
+		"name": "The Fuel that Burns Well",
+		"address": "0xf901",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"areas": [ 3 ],
+				"items": [ 81 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 78,
+		"name": "Let's Make Dried Fish",
+		"address": "0xf902",
+		"AP": 22000,
+		"primary": false,
+		"requirements": [
+			{
+				"areas": [ 3 ]
+			}
+		]
+	},
+	{
+		"id": 79,
+		"name": "Cooking with Tomba!",
+		"address": "0xf903",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 6 ],
+				"events": [ 12, 77 ]
+			}
+		]
+	},
+	{
+		"id": 80,
+		"name": "The Best Hash Potatoes!",
+		"address": "0xf904",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 6 ],
+				"events": [ 10, 21 ]
+			},
+			{
+				"items": [ 7 ],
+				"events": [ 10, 21 ]
+			},
+			{
+				"items": [ 8 ],
+				"events": [ 10, 21 ]
+			},
+			{
+				"items": [ 6, 28 ],
+				"areas": [ 4 ],
+				"events": [ 10 ]
+			},
+			{
+				"items": [ 7, 28 ],
+				"areas": [ 4 ],
+				"events": [ 10 ]
+			},
+			{
+				"items": [ 8, 28 ],
+				"areas": [ 4 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 81,
+		"name": "The Cook's Special Menu",
+		"address": "0xf905",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 78 ]
+			},
+			{
+				"events": [ 79 ]
+			},
+			{
+				"events": [ 80 ]
+			}
+		]
+	},
+	{
+		"id": 82,
+		"name": "Trolley Ticket",
+		"address": "0xf906",
+		"AP": 3000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 80 ],
+				"events": [ 15 ]
+			}
+		]
+	},
+	{
+		"id": 83,
+		"name": "Quick! The Trolley!",
+		"address": "0xf907",
+		"AP": 23000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 82 ]
+			}
+		]
+	},
+	{
+		"id": 84,
+		"name": "Make a Light Alloy!",
+		"address": "0xf908",
+		"AP": 25000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 6, 115, 116 ],
+				"events": [ 77 ]
+			}
+		]
+	},
+	{
+		"id": 85,
+		"name": "Turbo Trolley",
+		"address": "0xf909",
+		"AP": 101000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 83, 84 ]
+			}
+		]
+	},
+	{
+		"id": 86,
+		"name": "The Laughing Door",
+		"address": "0xf90a",
+		"AP": 5000,
+		"primary": false,
+		"requirements": [
+			{
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 101 ],
+				"areas": [ 2 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 87,
+		"name": "The Crying Door",
+		"address": "0xf90b",
+		"AP": 5000,
+		"primary": false,
+		"requirements": [
+			{
+				"areas": [ 7 ]
+			},
+			{
+				"items": [ 101 ],
+				"areas": [ 5 ],
+				"events": [ 26 ]
+			}
+		]
+	},
+	{
+		"id": 88,
+		"name": "Strange Fruit",
+		"address": "0xf90c",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 29 ],
+				"areas": [ 6, 7 ],
+				"events": [ 25 ]
+			},
+			{
+				"items": [ 29, 101 ],
+				"areas": [ 6 ],
+				"events": [ 25 ]
+			}
+		]
+	},
+	{
+		"id": 89,
+		"name": "Normal Fruit",
+		"address": "0xf90d",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 30 ],
+				"areas": [ 2, 7 ],
+				"events": [ 10 ]
+			},
+			{
+				"items": [ 30, 101 ],
+				"areas": [ 2 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 90,
+		"name": "Where's My Son?",
+		"address": "0xf90e",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 10, 91 ]
+			}
+		]
+	},
+	{
+		"id": 91,
+		"name": "Getwell Plant Heals Wounds",
+		"address": "0xf90f",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 101 ],
+				"areas": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 92,
+		"name": "I'm Thirsty!",
+		"address": "0xf910",
+		"AP": 5000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 97 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 98 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 99 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 93,
+		"name": "Oil-Smeared Traveler",
+		"address": "0xf911",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 79 ]
+			}
+		]
+	},
+	{
+		"id": 94,
+		"name": "Laughing Traveler",
+		"address": "0xf912",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 80 ]
+			}
+		]
+	},
+	{
+		"id": 95,
+		"name": "Invisible Traveler",
+		"address": "0xf913",
+		"AP": 10000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 81 ]
+			}
+		]
+	},
+	{
+		"id": 96,
+		"name": "Starving Traveler",
+		"address": "0xf914",
+		"AP": 3000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 97,
+		"name": "Forgotten Rucksack",
+		"address": "0xf915",
+		"AP": 20000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 91 ],
+				"events": [ 96 ]
+			}
+		]
+	},
+	{
+		"id": 98,
+		"name": "Mythical Tower of Courage",
+		"address": "0xf916",
+		"AP": 110000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 106, 107 ],
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 99,
+		"name": "Mythical Tower of Strength",
+		"address": "0xf917",
+		"AP": 110000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 108, 109 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 100,
+		"name": "Mythical Tower of Wisdom",
+		"address": "0xf918",
+		"AP": 110000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 1, 110, 111 ],
+				"areas": [ 8 ]
+			},
+			{
+				"items": [ 2, 110, 111 ],
+				"areas": [ 8 ]
+			}
+		]
+	},
+	{
+		"id": 101,
+		"name": "Sea Anemone's Burning Dregs",
+		"address": "0xf919",
+		"AP": 15000,
+		"primary": false,
+		"requirements": [
+			{
+				"areas": [ 2 ],
+				"events": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 102,
+		"name": "Sea Anemone's Ice",
+		"address": "0xf91a",
+		"AP": 15000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 7 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 8 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 103,
+		"name": "Witch's Concoction",
+		"address": "0xf91b",
+		"AP": 25000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 70, 71 ],
+				"areas": [ 6, 7 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 70, 71, 101 ],
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 70, 71, 140 ],
+				"areas": [ 6, 7 ]
+			},
+			{
+				"items": [ 70, 71, 101, 140 ],
+				"areas": [ 6 ]
+			},
+			{
+				"items": [ 72, 73 ],
+				"areas": [ 6, 7 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 72, 73, 101 ],
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 72, 73, 140 ],
+				"areas": [ 6, 7 ]
+			},
+			{
+				"items": [ 72, 73, 101, 140 ],
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 104,
+		"name": "Starving Charles",
+		"address": "0xf91c",
+		"AP": 7000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 82 ],
+				"areas": [ 3 ],
+				"events": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 105,
+		"name": "Itchy Charles",
+		"address": "0xf91d",
+		"AP": 8000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 13, 118 ],
+				"areas": [ 5 ],
+				"events": [ 104 ]
+			},
+			{
+				"items": [ 118 ],
+				"areas": [ 5 ],
+				"events": [ 27, 104 ]
+			}
+		]
+	},
+	{
+		"id": 106,
+		"name": "Wormy Charles",
+		"address": "0xf91e",
+		"AP": 15000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 105, 107 ]
+			}
+		]
+	},
+	{
+		"id": 107,
+		"name": "Potato Bug Eats Leaves",
+		"address": "0xf91f",
+		"AP": 25000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 8 ],
+				"events": [ 105 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 8 ],
+				"events": [ 105 ]
+			}
+		]
+	},
+	{
+		"id": 108,
+		"name": "Snow Firefly Nest",
+		"address": "0xf920",
+		"AP": 15000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 4 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 109,
+		"name": "Collect Snow Fireflies",
+		"address": "0xf921",
+		"AP": 22000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 6 ],
+				"events": [ 108, 117 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 6 ],
+				"events": [ 108, 117 ]
+			}
+		]
+	},
+	{
+		"id": 110,
+		"name": "Too Dark to See!",
+		"address": "0xf922",
+		"AP": 23000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 89 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 111,
+		"name": "Holy Tree",
+		"address": "0xf923",
+		"AP": 23000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 97 ],
+				"areas": [ 4, 10 ],
+				"events": [ 116 ]
+			},
+			{
+				"items": [ 98 ],
+				"areas": [ 4, 10 ],
+				"events": [ 116 ]
+			}
+		]
+	},
+	{
+		"id": 112,
+		"name": "Fatigue-Curing Spa",
+		"address": "0xf924",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 6, 97 ],
+				"areas": [ 2, 5 ],
+				"events": [ 9 ]
+			},
+			{
+				"items": [ 7, 97 ],
+				"areas": [ 2, 5 ],
+				"events": [ 9 ]
+			},
+			{
+				"items": [ 8, 97 ],
+				"areas": [ 2, 5 ],
+				"events": [ 9 ]
+			},
+			{
+				"items": [ 6, 98 ],
+				"areas": [ 2, 5 ],
+				"events": [ 9 ]
+			},
+			{
+				"items": [ 7, 98 ],
+				"areas": [ 2, 5 ],
+				"events": [ 9 ]
+			},
+			{
+				"items": [ 8, 98 ],
+				"areas": [ 2, 5 ],
+				"events": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 113,
+		"name": "A Rare Collection",
+		"address": "0xf925",
+		"AP": 22000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 13, 66, 67, 68, 69 ],
+				"areas": [ 5 ]
+			},
+			{
+				"items": [ 66, 67, 68, 69 ],
+				"areas": [ 5 ],
+				"events": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 114,
+		"name": "Taboo Fruit",
+		"address": "0xf926",
+		"AP": 25000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 13 ],
+				"events": [ 111, 113 ]
+			}
+		]
+	},
+	{
+		"id": 115,
+		"name": "The Ultimate Sculpture",
+		"address": "0xf927",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"areas": [ 5 ],
+				"events": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 116,
+		"name": "Holy Pedestal",
+		"address": "0xf928",
+		"AP": 22000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 119 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 117,
+		"name": "Ready Or Not! Here I Come!",
+		"address": "0xf929",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 13 ],
+				"areas": [ 4, 5 ],
+				"events": [ 21 ]
+			},
+			{
+				"items": [ 1 ],
+				"areas": [ 4, 5 ],
+				"events": [ 21, 27 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 4, 5 ],
+				"events": [ 21, 27 ]
+			}
+		]
+	},
+	{
+		"id": 118,
+		"name": "Who's the Liar?",
+		"address": "0xf92a",
+		"AP": 13000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 117 ]
+			}
+		]
+	},
+	{
+		"id": 119,
+		"name": "Escaped Kujara",
+		"address": "0xf92b",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 25, 27 ]
+			}
+		]
+	},
+	{
+		"id": 120,
+		"name": "Kujara Washing Shed",
+		"address": "0xf92c",
+		"AP": 7000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 13 ],
+				"areas": [ 5 ]
+			},
+			{
+				"areas": [ 5 ],
+				"events": [ 27 ]
+			}
+		]
+	},
+	{
+		"id": 121,
+		"name": "Wash the Kujara",
+		"address": "0xf92d",
+		"AP": 22000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 120 ]
+			}
+		]
+	},
+	{
+		"id": 122,
+		"name": "The Washing Machine Fuse",
+		"address": "0xf92e",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 87 ],
+				"events": [ 121 ]
+			}
+		]
+	},
+	{
+		"id": 123,
+		"name": "A Kujara Washing Expert",
+		"address": "0xf92f",
+		"AP": 101000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 122 ]
+			}
+		]
+	},
+	{
+		"id": 124,
+		"name": "Ghost Sticker",
+		"address": "0xf930",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 125,
+		"name": "Baron Turned to Stone",
+		"address": "0xf931",
+		"AP": 23000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 97 ],
+				"areas": [ 7, 10 ],
+				"events": [ 116 ]
+			},
+			{
+				"items": [ 98 ],
+				"areas": [ 7, 10 ],
+				"events": [ 116 ]
+			}
+		]
+	},
+	{
+		"id": 126,
+		"name": "Switch with Donglin",
+		"address": "0xf932",
+		"AP": 7000,
+		"primary": false,
+		"requirements": [
+			{
+				"areas": [ 7 ]
+			}
+		]
+	},
+	{
+		"id": 127,
+		"name": "Secret of the Aquatic Plant",
+		"address": "0xf933",
+		"AP": 23000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 1, 7, 15 ],
+				"areas": [ 4, 5, 8, 10 ]
+			},
+			{
+				"items": [ 2, 7, 15 ],
+				"areas": [ 4, 5, 8, 10 ]
+			},
+			{
+				"items": [ 1, 8, 15 ],
+				"areas": [ 4, 5, 8, 10 ]
+			},
+			{
+				"items": [ 2, 8, 15 ],
+				"areas": [ 4, 5, 8, 10 ]
+			},
+			{
+				"items": [ 1, 7, 126 ],
+				"areas": [ 4, 5, 8, 10 ]
+			},
+			{
+				"items": [ 2, 7, 126 ],
+				"areas": [ 4, 5, 8, 10 ]
+			},
+			{
+				"items": [ 1, 8, 126 ],
+				"areas": [ 4, 5, 8, 10 ]
+			},
+			{
+				"items": [ 2, 8, 126 ],
+				"areas": [ 4, 5, 8, 10 ]
+			}
+		]
+	},
+	{
+		"id": 128,
+		"name": "Unmoving Blessed Priest",
+		"address": "0xf934",
+		"AP": 23000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 97 ],
+				"areas": [ 2, 5, 9, 10 ],
+				"events": [ 9 ]
+			},
+			{
+				"items": [ 98 ],
+				"areas": [ 2, 5, 9, 10 ],
+				"events": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 129,
+		"name": "Collect Ice Candy",
+		"address": "0xf935",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 17, 36 ],
+				"areas": [ 9 ],
+				"events": [ 36, 41 ]
+			},
+			{
+				"items": [ 17, 36 ],
+				"areas": [ 9 ],
+				"events": [ 35, 36 ]
+			}
+		]
+	},
+	{
+		"id": 130,
+		"name": "Ball to the Pigs",
+		"address": "0xf936",
+		"AP": 22000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 74, 75, 76, 77, 78 ],
+				"areas": [ 9 ],
+				"events": [ 36, 41, 129 ]
+			},
+			{
+				"items": [ 74, 75, 76, 77, 78 ],
+				"areas": [ 9 ],
+				"events": [ 35, 36, 129 ]
+			}
+		]
+	},
+	{
+		"id": 131,
+		"name": "Tiny Tomba/Mini Tomba",
+		"address": "0xf937",
+		"AP": 12000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 15, 34, 35, 36, 37 ],
+				"areas": [ 5, 9, 10 ],
+				"events": [ 5, 26, 36, 44 ]
+			},
+			{
+				"items": [ 34, 35, 36, 37, 126 ],
+				"areas": [ 5, 9, 10 ],
+				"events": [ 5, 26, 36, 44 ]
+			}
+		]
+	},
+	{
+		"id": 132,
+		"name": "Nishiki Bird Servants",
+		"address": "0xf938",
+		"AP": 23000,
+		"primary": false,
+		"requirements": [
+			{
+				"events": [ 63 ]
+			}
+		]
+	},
+	{
+		"id": 133,
+		"name": "Precious Ring",
+		"address": "0xf93b",
+		"AP": 106000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 121 ],
+				"areas": [ 3 ]
+			}
+		]
+	},
+	{
+		"id": 134,
+		"name": "A Large Flower Seed",
+		"address": "0xf939",
+		"AP": 125000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 123 ],
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 135,
+		"name": "Invisible Mirror",
+		"address": "0xf93a",
+		"AP": 125000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 94 ],
+				"areas": [ 6, 7 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 94, 140 ],
+				"areas": [ 6, 7 ]
+			},
+			{
+				"items": [ 94, 101 ],
+				"areas": [ 6 ],
+				"events": [ 28 ]
+			},
+			{
+				"items": [ 94, 101, 140 ],
+				"areas": [ 6 ]
+			}
+		]
+	},
+	{
+		"id": 136,
+		"name": "Yan of the Hidden Village",
+		"address": "0xf93c",
+		"AP": 125000,
+		"primary": false,
+		"requirements": [
+			{
+				"areas": [ 7, 9 ]
+			},
+			{
+				"items": [ 101 ],
+				"areas": [ 9 ]
+			}
+		]
+	},
+	{
+		"id": 137,
+		"name": "100-Year-Old Man",
+		"address": "0xf93d",
+		"AP": 125000,
+		"primary": false,
+		"requirements": [
+			{
+				"items": [ 15, 138 ],
+				"areas": [ 9, 10 ]
+			},
+			{
+				"items": [ 15, 101, 138 ],
+				"areas": [ 10 ]
+			}
+		]
+	}
+]
