@@ -325,21 +325,21 @@ public class MemoryManipulator
             var rareFishInInventory = ReadMemory(0xfaee);
             var rareFishDelivered = ReadMemory(0xf9c0);
 
-            if (!rareFishGrabbed)
+            if (!rareFishGrabbed) // rare fish hasn't been grabbed
             {
-                if (rareFishInInventory > 0)
+                if (rareFishInInventory > 0) // rare fish in inventory -> temporarily remove until area loaded
                 {
                     writeQueue.Enqueue(new AddressValuePair { Address = 0xfaee, Value = rareFishInInventory });
                     WriteMemory(0xfaee, 0, true);
                 }
-                if (((rareFishDelivered >> 0) & 1) == 1)
+                if (((rareFishDelivered >> 0) & 1) == 1) // rare fish delivered -> temporarily set flag to false, then change back after loading in
                 {
                     writeQueue.Enqueue(new AddressValuePair { Address = 0xf9c0, Value = rareFishDelivered });
                     WriteMemory(0xf9c0, 0);
                 }
             }
-            else
-            {
+            else if (rareFishInInventory == 0) // stop rare fish from appearing if grabbed and no fish in inventory
+            { 
                 writeQueue.Enqueue(new AddressValuePair { Address = 0xfaee, Value = 0 });
                 WriteMemory(0xfaee, 1, true);
             }
@@ -358,7 +358,7 @@ public class MemoryManipulator
         }
         WriteMemory(0xfb14, 80);
 
-        bits = (byte)(bits ^ 0b_0000_0001);
+        bits = (byte)(bits | 0b_0000_0001);
 
         WriteMemory(0xf9c1, bits);
     }
@@ -374,6 +374,6 @@ public class MemoryManipulator
         return kvp;
     }
 
-    private void SetFlagRareFish() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) ^ 0b_0000_0010));
+    private void SetFlagRareFish() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0010));
 
 }
