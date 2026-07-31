@@ -17,15 +17,16 @@ public class MemoryManipulator
     private IntPtr handle;
 
     private IntPtr basePtr;
+    private IntPtr binPtr;
 
     private byte[] prevItemCounts;
 
     private int igt;
 
     private bool warping;
-    private byte[] warpDestination;
 
-    private Queue<AddressValuePair> writeQueue;
+    private List<QueuedChange> writeQueueWarp;
+    private List<QueuedChange> writeQueueSafe;
 
     private Randomizer randomizer;
 
@@ -40,9 +41,16 @@ public class MemoryManipulator
         byte[] buffer = new byte[8];
 
         ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
+
         IntPtr ptr = IntPtr.Add(BitConverter.ToInt32(buffer), 0x58);
         ReadProcessMemory((int)handle, (int)ptr, buffer, buffer.Length, out bytesRead);
         basePtr = BitConverter.ToInt32(buffer);
+
+        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
+
+        IntPtr ptr2 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x188);
+        ReadProcessMemory((int)handle, (int)ptr2, buffer, buffer.Length, out bytesRead);
+        binPtr = BitConverter.ToInt32(buffer);
     }
 
     public bool ProcessIsActive { get; set; } = true;
@@ -70,19 +78,27 @@ public class MemoryManipulator
 
         IgnoreChanges = true;
 
-        writeQueue = new Queue<AddressValuePair>();
+        writeQueueWarp = new List<QueuedChange>();
+        writeQueueSafe = new List<QueuedChange>();
 
         Task.Run(CheckForUpdates);
         Task.Run(PerformChecks);
+        Task.Run(ClearQueueHistories);
     }
 
-    private async void CheckForUpdates()
-    {
+    private async void CheckForUpdates() //TODO: for writequeues: player can rewind after avp's have been dequeued from the writequeues. need to keep track of dequeues with igt timestamps to ensure they are re-added to queue when necessary
+    {                                       // ---> should probably keep track of timestamps when enqueueing too, would make this easier. can then compare both timestamps to see if it needs to be re-queued.
         while (ProcessIsActive && randomizer != null)
         {
             var itemCounts = ReadMemory(0xfab4, 168);
+            var newIgt = ReadTimer();
 
-            if (igt > ReadTimer() || Math.Abs(igt - ReadTimer()) > 50 || IgnoreChanges) //rewinds/savestate loads
+            if (newIgt < igt) //rewind detected
+            {
+                HandleRewind(newIgt);
+                prevItemCounts = itemCounts;
+            }
+            else if (Math.Abs(igt - newIgt) > 50 || IgnoreChanges) //savestate loaded
             {
                 prevItemCounts = itemCounts;
             }
@@ -90,28 +106,78 @@ public class MemoryManipulator
             {
                 for (int i = 0; i < itemCounts.Length; i++)
                 {
-                    if (itemCounts[i] != prevItemCounts[i])
+                    if (itemCounts[i] > prevItemCounts[i])
                     {
                         var itemPair = randomizer.RandomizedItems.FirstOrDefault(r => r.Key.CountAddress == i + 0xfab4);
 
                         if (itemPair.Value != null)
                         {
-                            if (itemPair.Key.Id == 64 || itemPair.Key.Id == 65) //red/blue chick pickup checks
+                            var key = itemPair.Key;
+                            var value = itemPair.Value;
+
+                            if (key.Id == 98)
                             {
-                                itemPair = ModifyChickPickup(itemPair);
+                                if (!(ReadMemory(0xf870) == 1))
+                                {
+                                    continue; //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
+                                }
                             }
-                            else if (itemPair.Key.Id == 66) //rare fish collected
+                            else if (key.Id == 38)
+                            {
+                                var x = ReadMemory(0x37eaa);
+                                if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
+                                {
+                                    continue; //Only randomize the correct pink bucket pickup
+                                }
+                            }
+                            else if (key.Id == 64 || key.Id == 65) //red/blue chick pickup checks
+                            {
+                                value = ModifyChickPickup(key.Id);
+                            }
+                            else if (key.Id == 66) //rare fish collected
                             {
                                 SetFlagRareFish();
                             }
 
-                            ItemPopup(itemPair.Key, itemPair.Value, prevItemCounts[i]);
+                            if (value.Id == 38) //random pink bucket received
+                            {
+                                if (ReadMemory(0xf8b8) == 255) //give blue bucket instead of pink if Save the Crab is completed
+                                {
+                                    value = randomizer.RandomizedItems.Values.First(r => r.Id == 98);
+                                }
+                                else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
+                                {
+                                    var pairs = new List<AddressValuePair>
+                                    {
+                                        new AddressValuePair { Address = 0xf88e, Value = 40 },
+                                        new AddressValuePair { Address = 0xf81c, Value = 1 },
+                                        new AddressValuePair { Address = 0x37e85, Value = 17 }
+                                    };
+
+                                    writeQueueSafe.Add(new QueuedChange(ReadTimer(), pairs));
+                                }
+                            }
+
+                            ItemPopup(key, value, prevItemCounts[i]);
                         }
                     }
                 }
                 prevItemCounts = ReadMemory(0xfab4, 168);
             }
 
+            if (ReadMemory(0x37e85) == 0)
+            {
+                foreach (var item in writeQueueSafe.Where(i => i.DequeueTimeStamp == 0))
+                {
+                    foreach (var pair in item.AddressValuePairs)
+                    {
+                        WriteMemory(pair.Address, pair.Value, true);
+                    }
+                    item.DequeueTimeStamp = newIgt;
+                }
+            }
+
+            igt = newIgt;
             IgnoreChanges = false;
             Thread.Sleep(17);
         }
@@ -222,10 +288,10 @@ public class MemoryManipulator
         return new Inventory();
     }
 
-    public byte[] ReadMemory(int ptrAddress, int amountOfBytes)
+    public byte[] ReadMemory(int ptrAddress, int amountOfBytes, bool binMemory = false)
     {
         IntPtr bytesRead = 0;
-        IntPtr ptr = IntPtr.Add(basePtr, ptrAddress);
+        IntPtr ptr = IntPtr.Add(binMemory ? binPtr : basePtr, ptrAddress);
 
         var bytes = new byte[amountOfBytes];
         ReadProcessMemory((int)handle, (int)ptr, bytes, bytes.Length, out bytesRead);
@@ -233,7 +299,7 @@ public class MemoryManipulator
         return bytes;
     }
 
-    public byte ReadMemory(int ptrAddress) => ReadMemory(ptrAddress, 1)[0];
+    public byte ReadMemory(int ptrAddress, bool binMemory = false) => ReadMemory(ptrAddress, 1, binMemory)[0];
 
     public byte ReadInventoryTopBottomAmount(bool top) => ReadMemory(top ? 0xf8a2 : 0xf8a1);
 
@@ -249,24 +315,19 @@ public class MemoryManipulator
 
     public byte[] ReadProgress() => ReadMemory(0xf9b4, 168);
 
-    private int ReadTimer()
-    {
-        igt = BitConverter.ToInt32(ReadMemory(0xf878, 4));
+    private int ReadTimer() => BitConverter.ToInt32(ReadMemory(0xf878, 4));
 
-        return igt;
-    }
-
-    public void WriteMemory(int address, byte[] values, bool isManual = false)
+    public void WriteMemory(int address, byte[] values, bool ignoreRandom = false, bool binMemory = false)
     {
-        if (isManual) IgnoreChanges = true;
+        if (ignoreRandom) IgnoreChanges = true;
 
         IntPtr bytesWritten = 0;
 
-        IntPtr textPtr = IntPtr.Add(basePtr, address);
+        IntPtr textPtr = IntPtr.Add(binMemory ? binPtr : basePtr, address);
         WriteProcessMemory((int)handle, (int)textPtr, values, values.Count(), out bytesWritten);
     }
 
-    public void WriteMemory(int address, byte value, bool isManual = false) => WriteMemory(address, [value], isManual);
+    public void WriteMemory(int address, byte value, bool ignoreRandom = false, bool binMemory = false) => WriteMemory(address, [value], ignoreRandom, binMemory);
 
     public void WriteProgress(byte[] bytes) => WriteMemory(0xf9b4, bytes);
 
@@ -274,13 +335,7 @@ public class MemoryManipulator
 
     public void Teleport(byte area, byte section) => WriteMemory(0xf839, [1, section, area]);
 
-    public bool IsGameRunning()
-    {
-        int igt = ReadTimer();
-        var checkByte = ReadMemory(0xf9d0);
-
-        return igt > 0 || checkByte == 95;
-    }
+    public bool IsGameRunning() => ReadTimer() > 0 || ReadMemory(0xf9d0) == 95;
 
     public async Task PerformChecks()
     {
@@ -297,17 +352,31 @@ public class MemoryManipulator
                 {
                     warping = false;
 
-                    while (writeQueue.Any())
+                    switch (ReadMemory(0xf870)) //current area
                     {
-                        var avp = writeQueue.Dequeue();
-                        WriteMemory(avp.Address, avp.Value, true);
+                        case 0:
+                            WriteMemory(0x7c30, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], binMemory: true); //disable pink bucket auto-equip
+                            break;
+                        default:
+                            break;
                     }
+
+                    foreach (var item in writeQueueWarp.Where(i => i.DequeueTimeStamp == 0))
+                    {
+                        foreach (var pair in item.AddressValuePairs)
+                        {
+                            WriteMemory(pair.Address, pair.Value, true);
+                        }
+                        item.DequeueTimeStamp = ReadTimer();
+                    }
+
+                    var customByte1 = ReadMemory(0xf9c1);
+
+                    if (((customByte1 >> 0) & 1) == 0) GiveStarterWings(customByte1);
                 }
             }
 
-            var customByte1 = ReadMemory(0xf9c1);
-
-            if (((customByte1 >> 0) & 1) == 0) GiveStarterWings(customByte1);
+           
 
             Thread.Sleep(100);
         }
@@ -329,20 +398,40 @@ public class MemoryManipulator
             {
                 if (rareFishInInventory > 0) // rare fish in inventory -> temporarily remove until area loaded
                 {
-                    writeQueue.Enqueue(new AddressValuePair { Address = 0xfaee, Value = rareFishInInventory });
+                    writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xfaee, Value = rareFishInInventory }));
                     WriteMemory(0xfaee, 0, true);
                 }
                 if (((rareFishDelivered >> 0) & 1) == 1) // rare fish delivered -> temporarily set flag to false, then change back after loading in
                 {
-                    writeQueue.Enqueue(new AddressValuePair { Address = 0xf9c0, Value = rareFishDelivered });
+                    writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xf9c0, Value = rareFishDelivered }));
                     WriteMemory(0xf9c0, 0);
                 }
             }
             else if (rareFishInInventory == 0) // stop rare fish from appearing if grabbed and no fish in inventory
             { 
-                writeQueue.Enqueue(new AddressValuePair { Address = 0xfaee, Value = 0 });
+                writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xfaee, Value = 0 }));
                 WriteMemory(0xfaee, 1, true);
             }
+
+            
+        }
+
+        if (ReadMemory(0xfadc) > 0) 
+        {
+            if (warpDestination[1] == 0) //equip pink bucket if present in inventory and in starting beach
+            {
+                WriteMemory(0xf88e, 40);
+                WriteMemory(0x37eee, 40);
+            }
+            else
+            {
+                if (ReadMemory(0xf88e) == 40) //unequip pink bucket if present in inventory and not in starting beach
+                {
+                    WriteMemory(0xf88e, 0);
+                    WriteMemory(0x37eee, 0);
+                }
+            }
+            
         }
     }
 
@@ -363,17 +452,41 @@ public class MemoryManipulator
         WriteMemory(0xf9c1, bits);
     }
 
-    private KeyValuePair<Item, Item> ModifyChickPickup(KeyValuePair<Item, Item> kvp)
+    private Item ModifyChickPickup(int key)
     {
         //If a player picks up 2 of the same chick, the second one needs to give the item corresponding to the other color chick
         var chickStatus = ReadMemory(0xf9f2);
 
-        if (chickStatus == 136) return new KeyValuePair<Item, Item>(kvp.Key, randomizer.RandomizedItems.First(i => i.Key.Id == 64).Value); //Player has picked up 2 red chicks
-        if (chickStatus == 204) return new KeyValuePair<Item, Item>(kvp.Key, randomizer.RandomizedItems.First(i => i.Key.Id == 65).Value); //Player has picked up 2 blue chicks
+        if (chickStatus == 136) return randomizer.RandomizedItems.First(i => i.Key.Id == 64).Value; //Player has picked up 2 red chicks
+        if (chickStatus == 204) return randomizer.RandomizedItems.First(i => i.Key.Id == 65).Value; //Player has picked up 2 blue chicks
 
-        return kvp;
+        return randomizer.RandomizedItems.First(i => i.Key.Id == key).Value;
     }
 
     private void SetFlagRareFish() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0010));
 
+    private void HandleRewind(int time)
+    {
+        writeQueueSafe.RemoveAll(i => i.EnqueueTimeStamp > time);
+        writeQueueWarp.RemoveAll(i => i.EnqueueTimeStamp > time);
+
+        foreach (var item in writeQueueSafe.Where(i => i.DequeueTimeStamp != 0))
+        {
+            if (time < item.DequeueTimeStamp)
+            {
+                item.DequeueTimeStamp = 0;
+            }
+        }
+    }
+
+    private void ClearQueueHistories()
+    {
+        while (ProcessIsActive)
+        {
+            writeQueueSafe.RemoveAll(i => i.DequeueTimeStamp != 0 && igt - i.DequeueTimeStamp > 50000);
+            writeQueueWarp.RemoveAll(i => i.DequeueTimeStamp != 0 && igt - i.DequeueTimeStamp > 50000);
+
+            Thread.Sleep(10000);
+        }
+    }
 }

@@ -1344,6 +1344,7 @@
 		"displayname": "Bucket",
 		"color": "Blue",
 		"address": "0xfb15",
+		"notrandom": true,
 		"requirements": [
 			{
 				"events": [ 3 ]

@@ -282,7 +282,7 @@ public partial class MainWindow : Window
                     {
                         var item2 = itemDtosGUI.First(id => Convert.ToInt32(id.Address, 16) + 256 == itemPos.Address);
 
-                        if (item.Color == "Green" && item2.Color == "Green" || item.Color != "Green" && item2.Color != "Green")
+                        if (item.Color == "Green" == (item2.Color == "Green"))
                         {
                             memory.WriteMemory(itemPos.Address, --itemPos.Value);
                         }
