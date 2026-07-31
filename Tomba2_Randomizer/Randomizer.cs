@@ -180,7 +180,16 @@ namespace Tomba2_Randomizer
 
                     UpdateEventsAndAreas(true);
 
-                    DebugString += $"{randomAvailableItem.Name} gives {RandomizedItems[randomAvailableItem].Name}\n";
+                    if (AvailableItems.Except(RandomizedItems.Keys).Count() > availableItemPool.Count() + 1)
+                    {
+                        RandomizedItems[randomAvailableItem].Important = true;
+                        DebugString += $"{randomAvailableItem.Name} gives {RandomizedItems[randomAvailableItem].Name} [IMPORTANT]\n";
+                    }
+                    else
+                    {
+                        DebugString += $"{randomAvailableItem.Name} gives {RandomizedItems[randomAvailableItem].Name}\n";
+                    }
+
                     if (!string.IsNullOrEmpty(debugQueue)) DebugString += $"{debugQueue}\n";
                     debugQueue = "";
                 }
@@ -196,7 +205,7 @@ namespace Tomba2_Randomizer
                     {
                         bool noPossibleUnlocks = false;
 
-                        var keyPool = RandomizedItems.Keys.Except(deadKeys);
+                        var keyPool = RandomizedItems.Keys.Where(k => !k.Important).Except(deadKeys);
 
                         if (!keyPool.Any())
                         {
@@ -224,8 +233,9 @@ namespace Tomba2_Randomizer
 
                             if ((!currentAvailableItems.Except(AvailableItems).Any() && (AvailableItems.Count() > currentAvailableItems.Count())) || noPossibleUnlocks)
                             {
+                                RandomizedItems[randomKey].Important = true;
                                 replaced = true;
-                                DebugString += $"\n{randomKey.Name} gave {item.Name}, now it gives {RandomizedItems[randomKey].Name}\n";
+                                DebugString += $"\n{randomKey.Name} gave {item.Name}, now it gives {RandomizedItems[randomKey].Name} [IMPORTANT]\n";
                                 if (!string.IsNullOrEmpty(debugQueue)) DebugString += $"{debugQueue}\n";
                                 debugQueue = "";
                             }

@@ -21,5 +21,7 @@ public class Item
 
     public ItemColor Color { get; set; }
 
+    public bool Important { get; set; }
+
     public List<RequirementGroup> RequirementGroups { get; set; } = new();
 }
