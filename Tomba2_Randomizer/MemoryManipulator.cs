@@ -86,8 +86,8 @@ public class MemoryManipulator
         Task.Run(ClearQueueHistories);
     }
 
-    private async void CheckForUpdates() //TODO: for writequeues: player can rewind after avp's have been dequeued from the writequeues. need to keep track of dequeues with igt timestamps to ensure they are re-added to queue when necessary
-    {                                       // ---> should probably keep track of timestamps when enqueueing too, would make this easier. can then compare both timestamps to see if it needs to be re-queued.
+    private async void CheckForUpdates() 
+    {
         while (ProcessIsActive && randomizer != null)
         {
             var itemCounts = ReadMemory(0xfab4, 168);
@@ -115,16 +115,12 @@ public class MemoryManipulator
                             var key = itemPair.Key;
                             var value = itemPair.Value;
 
-                            if (key.Id == 98)
+                            if (key.Id == 34) //star-shaped cog collected
                             {
-                                if (!(ReadMemory(0xf870) == 1))
-                                {
-                                    continue; //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
-                                }
+                                SetFlagStarShapedCog();
                             }
                             else if (key.Id == 38)
                             {
-                                var x = ReadMemory(0x37eaa);
                                 if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
                                 {
                                     continue; //Only randomize the correct pink bucket pickup
@@ -137,6 +133,13 @@ public class MemoryManipulator
                             else if (key.Id == 66) //rare fish collected
                             {
                                 SetFlagRareFish();
+                            }
+                            else if (key.Id == 98)
+                            {
+                                if (!(ReadMemory(0xf870) == 1))
+                                {
+                                    continue; //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
+                                }
                             }
 
                             if (value.Id == 38) //random pink bucket received
@@ -352,6 +355,8 @@ public class MemoryManipulator
                 {
                     warping = false;
 
+                    Thread.Sleep(100);
+
                     switch (ReadMemory(0xf870)) //current area
                     {
                         case 0:
@@ -413,7 +418,28 @@ public class MemoryManipulator
                 WriteMemory(0xfaee, 1, true);
             }
 
-            
+            var cogGrabbed = ((ReadMemory(0xf9c1) >> 2) & 1) == 1;
+            var cogInInventory = ReadMemory(0xfad8);
+            var windItUpCompleted = ReadMemory(0xf8b9);
+
+            if (!cogGrabbed) // star-shaped cog hasn't been grabbed
+            {
+                if (cogInInventory > 0) // star-shaped cog in inventory -> temporarily remove until area loaded
+                {
+                    writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xfad8, Value = cogInInventory }));
+                    WriteMemory(0xfad8, 0, true);
+                }
+                if (windItUpCompleted == 255) // wind it up event completed -> temporarily set to not started, then change back after loading in
+                {
+                    writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xf8b9, Value = windItUpCompleted }));
+                    WriteMemory(0xf8b9, 0);
+                }
+            }
+            else if (cogInInventory == 0 && windItUpCompleted != 255) // stop star-shaped cog from appearing if grabbed and no cog in inventory and event not completed
+            {
+                writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xfad8, Value = 0 }));
+                WriteMemory(0xfad8, 1, true);
+            }
         }
 
         if (ReadMemory(0xfadc) > 0) 
@@ -464,6 +490,7 @@ public class MemoryManipulator
     }
 
     private void SetFlagRareFish() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0010));
+    private void SetFlagStarShapedCog() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0100));
 
     private void HandleRewind(int time)
     {
