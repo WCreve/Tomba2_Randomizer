@@ -115,50 +115,81 @@ public class MemoryManipulator
                             var key = itemPair.Key;
                             var value = itemPair.Value;
 
-                            if (key.Id == 34) //star-shaped cog collected
+                            switch (key.Id)
                             {
-                                SetFlagStarShapedCog();
-                            }
-                            else if (key.Id == 38)
-                            {
-                                if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
-                                {
-                                    continue; //Only randomize the correct pink bucket pickup
-                                }
-                            }
-                            else if (key.Id == 64 || key.Id == 65) //red/blue chick pickup checks
-                            {
-                                value = ModifyChickPickup(key.Id);
-                            }
-                            else if (key.Id == 66) //rare fish collected
-                            {
-                                SetFlagRareFish();
-                            }
-                            else if (key.Id == 98)
-                            {
-                                if (!(ReadMemory(0xf870) == 1))
-                                {
-                                    continue; //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
-                                }
+                                case 21:
+                                case 22:
+                                case 23:
+                                case 24:
+                                case 25:
+                                case 26:
+                                    var amountOfBags = ReadMemory(0xf883);
+
+                                    WriteMemory(0xf883 + amountOfBags, 0);
+                                    WriteMemory(0xf883, --amountOfBags);
+                                    break;
+
+                                case 34: //star-shaped cog collected
+                                    SetFlagStarShapedCog();
+                                    break;
+
+                                case 38:
+                                    if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
+                                    {
+                                        continue; //Only randomize the correct pink bucket pickup
+                                    }
+                                    break;
+
+                                case 64:
+                                case 65: //red/blue chick pickup checks
+                                    value = ModifyChickPickup(key.Id);
+                                    break;
+
+                                case 66: //rare fish collected
+                                    SetFlagRareFish();
+                                    break;
+
+                                case 98:
+                                    if (!(ReadMemory(0xf870) == 1))
+                                    {
+                                        continue; //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
+                                    }
+                                    break;
+
+                                default:
+                                    break;
                             }
 
-                            if (value.Id == 38) //random pink bucket received
+                            switch (value.Id)
                             {
-                                if (ReadMemory(0xf8b8) == 255) //give blue bucket instead of pink if Save the Crab is completed
-                                {
-                                    value = randomizer.RandomizedItems.Values.First(r => r.Id == 98);
-                                }
-                                else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
-                                {
-                                    var pairs = new List<AddressValuePair>
+                                case 21:
+                                case 22:
+                                case 23:
+                                case 24:
+                                case 25:
+                                case 26:
+                                    PigBagObtained(value.Id);
+                                    break;
+
+                                case 38: //random pink bucket received
+                                    if (ReadMemory(0xf8b8) == 255) //give blue bucket instead of pink if Save the Crab is completed
+                                    {
+                                        value = randomizer.RandomizedItems.Values.First(r => r.Id == 98);
+                                    }
+                                    else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
+                                    {
+                                        var pairs = new List<AddressValuePair>
                                     {
                                         new AddressValuePair { Address = 0xf88e, Value = 40 },
                                         new AddressValuePair { Address = 0xf81c, Value = 1 },
                                         new AddressValuePair { Address = 0x37e85, Value = 17 }
                                     };
 
-                                    writeQueueSafe.Add(new QueuedChange(ReadTimer(), pairs));
-                                }
+                                        writeQueueSafe.Add(new QueuedChange(ReadTimer(), pairs));
+                                    }
+                                    break;
+                                default:
+                                    break;
                             }
 
                             ItemPopup(key, value, prevItemCounts[i]);
@@ -440,6 +471,43 @@ public class MemoryManipulator
                 writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xfad8, Value = 0 }));
                 WriteMemory(0xfad8, 1, true);
             }
+
+            if (warpDestination[0] != 0 && warpDestination[0] != 9) //Entering waterfall area of starting beach
+            {
+                if (ReadMemory(0xf9dd) < 11)
+                {
+                    WriteMemory(0xf9dd, 11); //Can now jump over unraised net bridge
+                }
+            }
+        }
+
+        var pigDoorsOpened = ReadMemory(0xfa17);
+
+        //Prepare pig doors in case player gets the pig bag for that area in that area
+        if ((warpDestination[0] == 0 && (((pigDoorsOpened >> 4) & 1) != 1)) || (warpDestination[0] == 1 && (((pigDoorsOpened >> 2) & 1) != 1)) || (warpDestination[0] == 4 && (((pigDoorsOpened >> 1) & 1) != 1)))
+        {
+            var bags = ReadMemory(0xf884, 6);
+            var bagList = bags.ToList();
+
+            if ((warpDestination[0] == 0 && !(bagList.Contains(27) || bagList.Contains(155))) || (warpDestination[0] == 1 && !(bagList.Contains(23) || bagList.Contains(151))) || (warpDestination[0] == 4 && !(bagList.Contains(24) || bagList.Contains(152))))
+            {
+                var bagCount = ReadMemory(0xf883);
+
+                var pairs = new List<AddressValuePair>()
+                    {
+                        new AddressValuePair { Address = 0xf883, Value = bagCount },
+                        new AddressValuePair { Address = 0xf884, Value = bags[0] },
+                        new AddressValuePair { Address = 0xf885, Value = bags[1] },
+                        new AddressValuePair { Address = 0xf886, Value = bags[2] },
+                        new AddressValuePair { Address = 0xf887, Value = bags[3] },
+                        new AddressValuePair { Address = 0xf888, Value = bags[4] },
+                        new AddressValuePair { Address = 0xf889, Value = bags[5] },
+                        new AddressValuePair { Address = warpDestination[0] == 0 ? 0x4e81d : 0x4e26d, Value = 4 },
+                    };
+                writeQueueWarp.Add(new QueuedChange(ReadTimer(), pairs));
+
+                WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
+            }
         }
 
         if (ReadMemory(0xfadc) > 0) 
@@ -487,6 +555,32 @@ public class MemoryManipulator
         if (chickStatus == 204) return randomizer.RandomizedItems.First(i => i.Key.Id == 65).Value; //Player has picked up 2 blue chicks
 
         return randomizer.RandomizedItems.First(i => i.Key.Id == key).Value;
+    }
+
+    private void PigBagObtained(int id)
+    {
+        var amountOfBags = ReadMemory(0xf883);
+        WriteMemory(0xf883, ++amountOfBags);
+
+        WriteMemory(0xf883 + amountOfBags, (byte)(id + 2));
+
+        switch (ReadMemory(0xf870)) //un-hide pig door if player collects pig bag corresponding to current level
+        {
+            case 0:
+                if (id == 25) WriteMemory(0x4e81d, 2);
+                break;
+            case 1:
+            case 4:
+                if (id == 21 || id == 24) WriteMemory(0x4e26d, 2);
+                break;
+            default:
+                break;
+
+        }
+        if (ReadMemory(0xf870) == 0)
+        {
+            WriteMemory(0x4e81d, 2);
+        }
     }
 
     private void SetFlagRareFish() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0010));
