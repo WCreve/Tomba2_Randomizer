@@ -24,11 +24,14 @@ public class MemoryManipulator
     private int igt;
 
     private bool warping;
+    private bool interiorTransition;
 
     private List<QueuedChange> writeQueueWarp;
     private List<QueuedChange> writeQueueSafe;
 
     private Randomizer randomizer;
+
+    private byte crabsObtained;
 
     public MemoryManipulator(Process process)
     {
@@ -133,11 +136,42 @@ public class MemoryManipulator
                                     SetFlagStarShapedCog();
                                     break;
 
-                                case 38:
+                                case 38: //pink bucket
                                     if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
                                     {
                                         continue; //Only randomize the correct pink bucket pickup
                                     }
+                                    break;
+
+                                case 39: //crab basket
+                                    if ((ReadMemory(0xfadd) <= 1 || ReadMemory(0xf8bb) == 255) && value.Id != 39) //if no crab basket in inventory, or all crabs have been caught, re-disable crab catching
+                                    {
+                                        WriteMemory(0xf9e5, 7);
+                                    }
+
+                                    WriteMemory(0xc954, new byte[96], binMemory: true); //disable spawning basket pig when raising bridge
+                                    WriteMemory(0xc9c0, new byte[4], binMemory: true);
+                                    break;
+
+                                case 40:
+                                case 41:
+                                case 42: //golden crab
+                                    switch (ReadMemory(0xf9e3) - crabsObtained)
+                                    {
+                                        case 1:
+                                            value = randomizer.RandomizedItems.First(r => r.Key.Id == 42).Value;
+                                            crabsObtained++;
+                                            break;
+                                        case 2:
+                                            value = randomizer.RandomizedItems.First(r => r.Key.Id == 41).Value;
+                                            crabsObtained += 2;
+                                            break;
+                                        case 4:
+                                            value = randomizer.RandomizedItems.First(r => r.Key.Id == 40).Value;
+                                            crabsObtained += 4;
+                                            break;
+                                    }
+
                                     break;
 
                                 case 64:
@@ -184,10 +218,14 @@ public class MemoryManipulator
                                         new AddressValuePair { Address = 0xf81c, Value = 1 },
                                         new AddressValuePair { Address = 0x37e85, Value = 17 }
                                     };
-
-                                        writeQueueSafe.Add(new QueuedChange(ReadTimer(), pairs));
+                                        Enqueue(writeQueueSafe, pairs);
                                     }
                                     break;
+
+                                case 39: //crab basket
+                                    WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6));
+                                    break;
+
                                 default:
                                     break;
                             }
@@ -283,8 +321,6 @@ public class MemoryManipulator
             }
         }
 
-        
-
         WriteMemory(newItem.CountAddress, (byte)(newItemCount + 1));
     }
 
@@ -379,6 +415,50 @@ public class MemoryManipulator
             if (!warping)
             {
                 if (isWarping) WarpChecks();
+
+                switch (ReadMemory(0xf870)) //current area
+                {
+                    case 0:
+                        var enteringInterior = ReadMemory(0xf817, 2);
+
+                        if (!interiorTransition)
+                        {
+                            if (enteringInterior[0] == 2 && enteringInterior[1] == 1 && ReadMemory(0xf8bc) != 255) //entering windmill while windmill event incomplete
+                            {
+                                interiorTransition = true;
+                                var obtainedCrabs = ReadMemory(0xf9e3);
+                                WriteMemory(0xf9e2, obtainedCrabs); //temporarily store information about obtained crabs
+                                var crabsInInventory = ReadMemory(0xfade);
+
+                                obtainedCrabs = (byte)(obtainedCrabs >> 4 << 4);
+
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    if (crabsInInventory > 0 && ((obtainedCrabs >> i + 4) & 1) != 1)
+                                    {
+                                        obtainedCrabs |= (byte)Math.Pow(2, i);
+                                        crabsInInventory--;
+                                    }
+                                }
+
+                                WriteMemory(0xf9e3, obtainedCrabs);
+
+                            }
+                            else if (enteringInterior[0] == 2 && enteringInterior[1] == 3 && ReadMemory(0xf8bc) != 255) //leaving windmill
+                            {
+                                interiorTransition = true;
+
+                                var tempCrabInfo = ReadMemory(0xf9e2, 2);
+
+                                if (ReadMemory(0xf8bc) != 255 || tempCrabInfo[0] != 0) //store the correct crab data in 0xbf9e3
+                                {
+                                    WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
+                                }
+                            }
+                        }
+                        else if (enteringInterior[1] == 2 || enteringInterior[1] == 4) interiorTransition = false;
+                    break;
+                }
             }
             else
             {
@@ -392,6 +472,7 @@ public class MemoryManipulator
                     {
                         case 0:
                             WriteMemory(0x7c30, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], binMemory: true); //disable pink bucket auto-equip
+                            WriteMemory(0x6f34, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 36, 1, 0, 2, 162, 0, 0, 0, 0, 0, 0, 0, 0], binMemory: true); //disable attaching crab basket to tomba
                             break;
                         default:
                             break;
@@ -411,8 +492,6 @@ public class MemoryManipulator
                     if (((customByte1 >> 0) & 1) == 0) GiveStarterWings(customByte1);
                 }
             }
-
-           
 
             Thread.Sleep(100);
         }
@@ -434,18 +513,18 @@ public class MemoryManipulator
             {
                 if (rareFishInInventory > 0) // rare fish in inventory -> temporarily remove until area loaded
                 {
-                    writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xfaee, Value = rareFishInInventory }));
+                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfaee, Value = rareFishInInventory });
                     WriteMemory(0xfaee, 0, true);
                 }
                 if (((rareFishDelivered >> 0) & 1) == 1) // rare fish delivered -> temporarily set flag to false, then change back after loading in
                 {
-                    writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xf9c0, Value = rareFishDelivered }));
+                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf9c0, Value = rareFishDelivered });
                     WriteMemory(0xf9c0, 0);
                 }
             }
             else if (rareFishInInventory == 0) // stop rare fish from appearing if grabbed and no fish in inventory
-            { 
-                writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xfaee, Value = 0 }));
+            {
+                Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfaee, Value = 0 });
                 WriteMemory(0xfaee, 1, true);
             }
 
@@ -457,18 +536,18 @@ public class MemoryManipulator
             {
                 if (cogInInventory > 0) // star-shaped cog in inventory -> temporarily remove until area loaded
                 {
-                    writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xfad8, Value = cogInInventory }));
+                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = cogInInventory });
                     WriteMemory(0xfad8, 0, true);
                 }
                 if (windItUpCompleted == 255) // wind it up event completed -> temporarily set to not started, then change back after loading in
                 {
-                    writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xf8b9, Value = windItUpCompleted }));
+                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf8b9, Value = windItUpCompleted });
                     WriteMemory(0xf8b9, 0);
                 }
             }
             else if (cogInInventory == 0 && windItUpCompleted != 255) // stop star-shaped cog from appearing if grabbed and no cog in inventory and event not completed
             {
-                writeQueueWarp.Add(new QueuedChange(ReadTimer(), new AddressValuePair { Address = 0xfad8, Value = 0 }));
+                Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = 0 });
                 WriteMemory(0xfad8, 1, true);
             }
 
@@ -477,19 +556,52 @@ public class MemoryManipulator
                 if (ReadMemory(0xf9dd) < 11)
                 {
                     WriteMemory(0xf9dd, 11); //Can now jump over unraised net bridge
+                    WriteMemory(0xf9e5, 2); //Spawn pig holding crab basket and crabs
                 }
+            }
+
+            crabsObtained = ReadMemory(0xf9e3);
+
+            if (ReadMemory(0xfadd) > 0) //player has crab basket in inventory
+            {
+                if (ReadMemory(0xf8ba) != 255) //The Crab Basket event not completed
+                {
+                    WriteMemory(0xf9e5, 2); //spawn basket-holding pig
+                }
+                else if (ReadMemory(0xf8bb) != 255) // Collect the Golden Crabs event not completed
+                {
+                    WriteMemory(0xf9e5, 6); //enable crab catching
+                }
+                else
+                {
+                    WriteMemory(0xf9e5, 7); //disable crab catching
+                }
+            }
+
+            if (ReadMemory(0xf9e5) > 0) //disable spawning basket pig when raising bridge if pig has already been spawned/basket has been collected.
+            {
+
+                WriteMemory(0xc954, new byte[96], binMemory: true); 
+                WriteMemory(0xc9c0, new byte[4], binMemory: true);
+            }
+
+            var tempCrabInfo = ReadMemory(0xf9e2, 2);
+
+            if (tempCrabInfo[0] != 0)
+            {
+                WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
             }
         }
 
         var pigDoorsOpened = ReadMemory(0xfa17);
 
         //Prepare pig doors in case player gets the pig bag for that area in that area
-        if ((warpDestination[0] == 0 && (((pigDoorsOpened >> 4) & 1) != 1)) || (warpDestination[0] == 1 && (((pigDoorsOpened >> 2) & 1) != 1)) || (warpDestination[0] == 4 && (((pigDoorsOpened >> 1) & 1) != 1)))
+        if ((warpDestination[1] == 0 && (((pigDoorsOpened >> 4) & 1) != 1)) || (warpDestination[1] == 1 && (((pigDoorsOpened >> 2) & 1) != 1)) || (warpDestination[1] == 4 && (((pigDoorsOpened >> 1) & 1) != 1)))
         {
             var bags = ReadMemory(0xf884, 6);
             var bagList = bags.ToList();
 
-            if ((warpDestination[0] == 0 && !(bagList.Contains(27) || bagList.Contains(155))) || (warpDestination[0] == 1 && !(bagList.Contains(23) || bagList.Contains(151))) || (warpDestination[0] == 4 && !(bagList.Contains(24) || bagList.Contains(152))))
+            if ((warpDestination[1] == 0 && !(bagList.Contains(27) || bagList.Contains(155))) || (warpDestination[1] == 1 && !(bagList.Contains(23) || bagList.Contains(151))) || (warpDestination[1] == 4 && !(bagList.Contains(24) || bagList.Contains(152))))
             {
                 var bagCount = ReadMemory(0xf883);
 
@@ -502,10 +614,10 @@ public class MemoryManipulator
                         new AddressValuePair { Address = 0xf887, Value = bags[3] },
                         new AddressValuePair { Address = 0xf888, Value = bags[4] },
                         new AddressValuePair { Address = 0xf889, Value = bags[5] },
-                        new AddressValuePair { Address = warpDestination[0] == 0 ? 0x4e81d : 0x4e26d, Value = 4 },
+                        new AddressValuePair { Address = warpDestination[1] == 0 ? 0x4e81d : 0x4e26d, Value = 4 },
                     };
-                writeQueueWarp.Add(new QueuedChange(ReadTimer(), pairs));
 
+                Enqueue(writeQueueWarp, pairs);
                 WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
             }
         }
@@ -577,10 +689,6 @@ public class MemoryManipulator
                 break;
 
         }
-        if (ReadMemory(0xf870) == 0)
-        {
-            WriteMemory(0x4e81d, 2);
-        }
     }
 
     private void SetFlagRareFish() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0010));
@@ -598,7 +706,20 @@ public class MemoryManipulator
                 item.DequeueTimeStamp = 0;
             }
         }
+
+        foreach (var item in writeQueueWarp.Where(i => i.DequeueTimeStamp != 0))
+        {
+            if (time < item.DequeueTimeStamp)
+            {
+                item.DequeueTimeStamp = 0;
+            }
+        }
+
+        crabsObtained = ReadMemory(0xf9e3);
     }
+
+    public void Enqueue(List<QueuedChange> queue, List<AddressValuePair> pairs) => queue.Add(new QueuedChange(ReadTimer(), pairs));
+    public void Enqueue(List<QueuedChange> queue, AddressValuePair pair) => Enqueue(queue, new List<AddressValuePair> { pair });
 
     private void ClearQueueHistories()
     {
