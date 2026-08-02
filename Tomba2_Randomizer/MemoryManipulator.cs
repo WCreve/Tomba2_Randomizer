@@ -17,6 +17,8 @@ public class MemoryManipulator
     private IntPtr handle;
 
     private IntPtr basePtr;
+
+    private IntPtr mainPtr;
     private IntPtr binPtr;
 
     private byte[] prevItemCounts;
@@ -51,8 +53,14 @@ public class MemoryManipulator
 
         ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
 
-        IntPtr ptr2 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x188);
+        IntPtr ptr2 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x20);
         ReadProcessMemory((int)handle, (int)ptr2, buffer, buffer.Length, out bytesRead);
+        mainPtr = BitConverter.ToInt32(buffer);
+
+        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
+
+        IntPtr ptr3 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x188);
+        ReadProcessMemory((int)handle, (int)ptr3, buffer, buffer.Length, out bytesRead);
         binPtr = BitConverter.ToInt32(buffer);
     }
 
@@ -81,12 +89,24 @@ public class MemoryManipulator
 
         IgnoreChanges = true;
 
-        writeQueueWarp = new List<QueuedChange>();
-        writeQueueSafe = new List<QueuedChange>();
+        InitializeGame();
 
         Task.Run(CheckForUpdates);
         Task.Run(PerformChecks);
         Task.Run(ClearQueueHistories);
+    }
+
+    private void InitializeGame()
+    {
+        writeQueueWarp = new List<QueuedChange>();
+        writeQueueSafe = new List<QueuedChange>();
+
+        WriteMemory(0xa468, new byte[12], mainPtr); //disable auto-equipping weapons on pickup
+        WriteMemory(0xa478, new byte[4], mainPtr);
+        WriteMemory(0xa494, new byte[4], mainPtr);
+        WriteMemory(0xa4a0, new byte[4], mainPtr);
+
+        WriteMemory(0x28380, new byte[32], mainPtr); //disable attaching crab basket to tomba on area load
     }
 
     private async void CheckForUpdates() 
@@ -101,10 +121,12 @@ public class MemoryManipulator
                 HandleRewind(newIgt);
                 prevItemCounts = itemCounts;
             }
-            else if (Math.Abs(igt - newIgt) > 50 || IgnoreChanges) //savestate loaded
+            else if (Math.Abs(igt - newIgt) > 500) //savestate loaded
             {
                 prevItemCounts = itemCounts;
+                InitializeGame();
             }
+            else if (IgnoreChanges) prevItemCounts = itemCounts;
             else if (!itemCounts.SequenceEqual(prevItemCounts))
             {
                 for (int i = 0; i < itemCounts.Length; i++)
@@ -149,8 +171,8 @@ public class MemoryManipulator
                                         WriteMemory(0xf9e5, 7);
                                     }
 
-                                    WriteMemory(0xc954, new byte[96], binMemory: true); //disable spawning basket pig when raising bridge
-                                    WriteMemory(0xc9c0, new byte[4], binMemory: true);
+                                    WriteMemory(0xc954, new byte[96], binPtr); //disable spawning basket pig when raising bridge
+                                    WriteMemory(0xc9c0, new byte[4], binPtr);
                                     break;
 
                                 case 40:
@@ -196,6 +218,19 @@ public class MemoryManipulator
 
                             switch (value.Id)
                             {
+                                case 1:
+                                case 2:
+                                case 3:
+                                case 4:
+                                case 5:
+                                case 6:
+                                case 7:
+                                case 8:
+                                case 9:
+                                    WriteMemory(0xf88c, (byte)value.Id); //auto-equip weapon
+                                    WriteMemory(0x37eec, (byte)value.Id); 
+                                    break;
+
                                 case 21:
                                 case 22:
                                 case 23:
@@ -387,17 +422,21 @@ public class MemoryManipulator
 
     private int ReadTimer() => BitConverter.ToInt32(ReadMemory(0xf878, 4));
 
-    public void WriteMemory(int address, byte[] values, bool ignoreRandom = false, bool binMemory = false)
+    public void WriteMemory(int address, byte[] values, IntPtr ptr, bool ignoreRandom = false)
     {
         if (ignoreRandom) IgnoreChanges = true;
 
         IntPtr bytesWritten = 0;
 
-        IntPtr textPtr = IntPtr.Add(binMemory ? binPtr : basePtr, address);
+        IntPtr textPtr = IntPtr.Add(ptr, address);
         WriteProcessMemory((int)handle, (int)textPtr, values, values.Count(), out bytesWritten);
     }
 
-    public void WriteMemory(int address, byte value, bool ignoreRandom = false, bool binMemory = false) => WriteMemory(address, [value], ignoreRandom, binMemory);
+    public void WriteMemory(int address, byte value, IntPtr ptr, bool ignoreRandom = false) => WriteMemory(address, [value], ptr, ignoreRandom);
+
+    public void WriteMemory(int address, byte[] values, bool ignoreRandom = false) => WriteMemory(address, values, basePtr, ignoreRandom);
+
+    public void WriteMemory(int address, byte value, bool ignoreRandom = false) => WriteMemory(address, [value], basePtr, ignoreRandom);
 
     public void WriteProgress(byte[] bytes) => WriteMemory(0xf9b4, bytes);
 
@@ -471,8 +510,8 @@ public class MemoryManipulator
                     switch (ReadMemory(0xf870)) //current area
                     {
                         case 0:
-                            WriteMemory(0x7c30, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], binMemory: true); //disable pink bucket auto-equip
-                            WriteMemory(0x6f34, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 36, 1, 0, 2, 162, 0, 0, 0, 0, 0, 0, 0, 0], binMemory: true); //disable attaching crab basket to tomba
+                            WriteMemory(0x7c30, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], binPtr); //disable pink bucket auto-equip
+                            WriteMemory(0x6f34, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 36, 1, 0, 2, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr); //disable attaching crab basket to tomba
                             break;
                         default:
                             break;
@@ -581,8 +620,8 @@ public class MemoryManipulator
             if (ReadMemory(0xf9e5) > 0) //disable spawning basket pig when raising bridge if pig has already been spawned/basket has been collected.
             {
 
-                WriteMemory(0xc954, new byte[96], binMemory: true); 
-                WriteMemory(0xc9c0, new byte[4], binMemory: true);
+                WriteMemory(0xc954, new byte[96], binPtr); 
+                WriteMemory(0xc9c0, new byte[4], binPtr);
             }
 
             var tempCrabInfo = ReadMemory(0xf9e2, 2);
