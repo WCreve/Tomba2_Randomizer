@@ -18,7 +18,7 @@ public class MemoryManipulator
 
     private IntPtr basePtr;
 
-    private IntPtr mainPtr;
+    private IntPtr globalPtr;
     private IntPtr binPtr;
 
     private byte[] prevItemCounts;
@@ -55,7 +55,7 @@ public class MemoryManipulator
 
         IntPtr ptr2 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x20);
         ReadProcessMemory((int)handle, (int)ptr2, buffer, buffer.Length, out bytesRead);
-        mainPtr = BitConverter.ToInt32(buffer);
+        globalPtr = BitConverter.ToInt32(buffer);
 
         ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
 
@@ -101,12 +101,19 @@ public class MemoryManipulator
         writeQueueWarp = new List<QueuedChange>();
         writeQueueSafe = new List<QueuedChange>();
 
-        WriteMemory(0xa468, new byte[12], mainPtr); //disable auto-equipping weapons on pickup
-        WriteMemory(0xa478, new byte[4], mainPtr);
-        WriteMemory(0xa494, new byte[4], mainPtr);
-        WriteMemory(0xa4a0, new byte[4], mainPtr);
+        WriteMemory(0xa468, new byte[12], globalPtr); //disable auto-equipping weapons on pickup
+        WriteMemory(0xa478, new byte[4], globalPtr);
+        WriteMemory(0xa494, new byte[4], globalPtr);
+        WriteMemory(0xa4a0, new byte[4], globalPtr);
 
-        WriteMemory(0x28380, new byte[32], mainPtr); //disable attaching crab basket to tomba on area load
+        WriteMemory(0xa4b8, new byte[8], globalPtr); //disable auto-equipping pants and incrementing pants found counter on pickup
+        WriteMemory(0xa4c4, new byte[4], globalPtr);
+        WriteMemory(0xa4d4, new byte[44], globalPtr);
+        WriteMemory(0xa504, new byte[4], globalPtr);
+
+        WriteMemory(0xa570, new byte[224], globalPtr); //disable all 1/2 spell item pickup logic
+
+        WriteMemory(0x28380, new byte[32], globalPtr); //disable attaching crab basket to tomba on area load
     }
 
     private async void CheckForUpdates() 
@@ -142,7 +149,12 @@ public class MemoryManipulator
 
                             switch (key.Id)
                             {
-                                case 21:
+                                case 10: //pants
+                                case 11:
+                                    value = randomizer.RandomizedItems.First(r => r.Key.Id == (ReadMemory(0xf870) == 0 ? 10 : 11)).Value; //check which pants you're picking up based on current area
+                                    break;
+
+                                case 21: //pig bags
                                 case 22:
                                 case 23:
                                 case 24:
@@ -218,7 +230,7 @@ public class MemoryManipulator
 
                             switch (value.Id)
                             {
-                                case 1:
+                                case 1: //weapons
                                 case 2:
                                 case 3:
                                 case 4:
@@ -228,10 +240,18 @@ public class MemoryManipulator
                                 case 8:
                                 case 9:
                                     WriteMemory(0xf88c, (byte)value.Id); //auto-equip weapon
-                                    WriteMemory(0x37eec, (byte)value.Id); 
+                                    WriteMemory(0x37eec, (byte)value.Id);
                                     break;
 
-                                case 21:
+                                case 10: //pants
+                                case 11:
+                                    var pantsFound = ReadMemory(0xf9cf);
+                                    value = randomizer.Items[pantsFound == 0 ? 10 : 11];
+
+                                    WriteMemory(0xf9cf, ++pantsFound);
+                                    break;
+
+                                case 21: //pig bags
                                 case 22:
                                 case 23:
                                 case 24:
@@ -243,17 +263,17 @@ public class MemoryManipulator
                                 case 38: //random pink bucket received
                                     if (ReadMemory(0xf8b8) == 255) //give blue bucket instead of pink if Save the Crab is completed
                                     {
-                                        value = randomizer.RandomizedItems.Values.First(r => r.Id == 98);
+                                        value = randomizer.Items[98];
                                     }
                                     else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
                                     {
-                                        var pairs = new List<AddressValuePair>
-                                    {
-                                        new AddressValuePair { Address = 0xf88e, Value = 40 },
-                                        new AddressValuePair { Address = 0xf81c, Value = 1 },
-                                        new AddressValuePair { Address = 0x37e85, Value = 17 }
-                                    };
-                                        Enqueue(writeQueueSafe, pairs);
+                                        var bucketPairs = new List<AddressValuePair>
+                                        {
+                                            new AddressValuePair { Address = 0xf88e, Value = 40 },
+                                            new AddressValuePair { Address = 0xf81c, Value = 1 },
+                                            new AddressValuePair { Address = 0x37e85, Value = 17 }
+                                        };
+                                        Enqueue(writeQueueSafe, bucketPairs);
                                     }
                                     break;
 
