@@ -259,36 +259,11 @@ public partial class MainWindow : Window
             if (CmbItems.SelectedItem != null)
             {
                 var item = (ItemDto)CmbItems.SelectedItem;
-                var itemPosition = inventory.Positions.First(p => p.Address == Convert.ToInt32(item.Address, 16) + 256);
 
-                var countAddress = Convert.ToInt32(item.Address, 16);
-                var positionAddress = countAddress + 256;
+                var currentItemCount = memory.ReadMemory(0xfab4 + item.InternalId);
 
-                memory.WriteMemory(Convert.ToInt32(item.Address, 16), (byte)input, true);
-
-                var amountOfItems = memory.ReadInventoryTopBottomAmount(item.Color == "Green");
-
-                if (inventory.Counts.First(c => c.Address == Convert.ToInt32(item.Address, 16)).Value == 0 && input != 0)
-                {
-                    memory.WriteMemory(positionAddress, amountOfItems);
-                    memory.WriteInventoryTopBottomAmount(item.Color == "Green", (byte)(amountOfItems + 1));
-                }
-                else if (inventory.Counts.First(c => c.Address == Convert.ToInt32(item.Address, 16)).Value != 0 && (byte)input == 0)
-                {
-                    memory.WriteMemory(positionAddress, 0);
-                    memory.WriteInventoryTopBottomAmount(item.Color == "Green", (byte)(amountOfItems - 1));
-
-                    foreach (var itemPos in inventory.Positions.Where(p => p.Value > itemPosition.Value))
-                    {
-                        var item2 = itemDtosGUI.First(id => Convert.ToInt32(id.Address, 16) + 256 == itemPos.Address);
-
-                        if (item.Color == "Green" == (item2.Color == "Green"))
-                        {
-                            memory.WriteMemory(itemPos.Address, --itemPos.Value);
-                        }
-                    }
-
-                }
+                if (currentItemCount > input) memory.RemoveItemWithMessage(item.InternalId, (byte)(currentItemCount - input));
+                else if (currentItemCount < input) memory.AddItemWithMessage(item.InternalId, (byte)(input - currentItemCount));
             }
         }
     }
@@ -757,6 +732,4 @@ public partial class MainWindow : Window
             }
         }
     }
-
-    
 }

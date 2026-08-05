@@ -12,14 +12,25 @@ public class MemoryManipulator
 {
     const int PROCESS_ALL_ACCESS = 0x1F0FFF;
 
+    const uint STRING_COURAGE_HALF = 0x415;
+    const uint STRING_COURAGE_FULL = 0x430;
+    const uint STRING_STRENGTH_HALF = 0x47B;
+    const uint STRING_STRENGTH_FULL = 0x497;
+    const uint STRING_WISDOM_HALF = 0x4E5;
+    const uint STRING_WISDOM_FULL = 0x4FF;
+    
+
+
     private IntPtr baseAddress;
     private Process _process;
     private IntPtr handle;
 
-    private IntPtr basePtr;
+    private IntPtr basePtr; //0xb0000
 
-    private IntPtr globalPtr;
-    private IntPtr binPtr;
+    private IntPtr globalPtr; //0x40000
+    private IntPtr binPtr; //0x110000
+
+    private IntPtr stringPtr; //0x160000
 
     private byte[] prevItemCounts;
 
@@ -62,6 +73,12 @@ public class MemoryManipulator
         IntPtr ptr3 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x188);
         ReadProcessMemory((int)handle, (int)ptr3, buffer, buffer.Length, out bytesRead);
         binPtr = BitConverter.ToInt32(buffer);
+
+        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
+
+        IntPtr ptr4 = IntPtr.Add(BitConverter.ToInt32(buffer), 0xb0);
+        ReadProcessMemory((int)handle, (int)ptr4, buffer, buffer.Length, out bytesRead);
+        stringPtr = BitConverter.ToInt32(buffer);
     }
 
     public bool ProcessIsActive { get; set; } = true;
@@ -86,8 +103,6 @@ public class MemoryManipulator
     {
         randomizer = r;
         prevItemCounts = new byte[168];
-
-        IgnoreChanges = true;
 
         InitializeGame();
 
@@ -114,182 +129,170 @@ public class MemoryManipulator
         WriteMemory(0xa570, new byte[224], globalPtr); //disable all 1/2 spell item pickup logic
 
         WriteMemory(0x28380, new byte[32], globalPtr); //disable attaching crab basket to tomba on area load
+
+        WriteMemory(0xd338, [12, 128, 2, 60, 176, 248, 68, 160, 12, 128, 2, 60, 177, 248, 69, 160], globalPtr); //override AddInventoryQuantity function
+        WriteMemory(0xd348, new byte[372], globalPtr);
+        WriteMemory(0xd4bc, [8, 0, 224, 3], globalPtr);
+        WriteMemory(0xd4c0, new byte[4], globalPtr);
+
+        WriteMemory(0xd4d8, [12, 128, 2, 60, 2, 0, 3, 36, 178, 248, 67, 160], globalPtr); //override AddItemWithMessage function
+
+        WriteMemory(0xf8b3, 1); //initialized
     }
 
     private async void CheckForUpdates() 
     {
         while (ProcessIsActive && randomizer != null)
         {
-            var itemCounts = ReadMemory(0xfab4, 168);
+            if (ReadMemory(0xfb83) == 0) InitializeGame();
+
+            var itemPickedUp = ReadMemory(0xf8b0, 3);
+
             var newIgt = ReadTimer();
 
             if (newIgt < igt) //rewind detected
             {
                 HandleRewind(newIgt);
-                prevItemCounts = itemCounts;
             }
-            else if (Math.Abs(igt - newIgt) > 500) //savestate loaded
+            if (Math.Abs(igt - newIgt) > 500) //savestate loaded
             {
-                prevItemCounts = itemCounts;
-                InitializeGame();
+                HandleRewind(newIgt);
             }
-            else if (IgnoreChanges) prevItemCounts = itemCounts;
-            else if (!itemCounts.SequenceEqual(prevItemCounts))
+            else if (itemPickedUp[0] != 0)
             {
-                for (int i = 0; i < itemCounts.Length; i++)
+                if (IgnoreChanges)
                 {
-                    if (itemCounts[i] > prevItemCounts[i])
+                    AddItemWithMessage(itemPickedUp[0], itemPickedUp[1]);
+                }
+                else
+                {
+                    var newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == itemPickedUp[0]).Value.InternalId;
+
+                    switch (itemPickedUp[0])
                     {
-                        var itemPair = randomizer.RandomizedItems.FirstOrDefault(r => r.Key.CountAddress == i + 0xfab4);
+                        case 11: //pants
+                        case 12:
+                            newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == (ReadMemory(0xf870) == 0 ? 11 : 12)).Value.InternalId; //check which pants you're picking up based on current area
+                            break;
 
-                        if (itemPair.Value != null)
-                        {
-                            var key = itemPair.Key;
-                            var value = itemPair.Value;
+                        case 36: //star-shaped cog collected
+                            SetFlagStarShapedCog();
+                            break;
 
-                            switch (key.Id)
+                        case 40: //pink bucket
+                            if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
                             {
-                                case 10: //pants
-                                case 11:
-                                    value = randomizer.RandomizedItems.First(r => r.Key.Id == (ReadMemory(0xf870) == 0 ? 10 : 11)).Value; //check which pants you're picking up based on current area
+                                continue; //Only randomize the correct pink bucket pickup
+                            }
+                            break;
+
+                        case 41: //crab basket
+                            if ((ReadMemory(0xfadd) <= 1 || ReadMemory(0xf8bb) == 255) && newItemId != 41) //if no crab basket in inventory, or all crabs have been caught, re-disable crab catching
+                            {
+                                WriteMemory(0xf9e5, 7);
+                            }
+
+                            WriteMemory(0xc954, new byte[96], binPtr); //disable spawning basket pig when raising bridge
+                            WriteMemory(0xc9c0, new byte[4], binPtr);
+                            break;
+
+                        case 42:
+                        case 43:
+                        case 44: //golden crab
+                            switch (ReadMemory(0xf9e3) - crabsObtained)
+                            {
+                                case 1:
+                                    newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 42).Value.InternalId;
+                                    crabsObtained++;
                                     break;
-
-                                case 21: //pig bags
-                                case 22:
-                                case 23:
-                                case 24:
-                                case 25:
-                                case 26:
-                                    var amountOfBags = ReadMemory(0xf883);
-
-                                    WriteMemory(0xf883 + amountOfBags, 0);
-                                    WriteMemory(0xf883, --amountOfBags);
+                                case 2:
+                                    newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 41).Value.InternalId;
+                                    crabsObtained += 2;
                                     break;
-
-                                case 34: //star-shaped cog collected
-                                    SetFlagStarShapedCog();
-                                    break;
-
-                                case 38: //pink bucket
-                                    if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
-                                    {
-                                        continue; //Only randomize the correct pink bucket pickup
-                                    }
-                                    break;
-
-                                case 39: //crab basket
-                                    if ((ReadMemory(0xfadd) <= 1 || ReadMemory(0xf8bb) == 255) && value.Id != 39) //if no crab basket in inventory, or all crabs have been caught, re-disable crab catching
-                                    {
-                                        WriteMemory(0xf9e5, 7);
-                                    }
-
-                                    WriteMemory(0xc954, new byte[96], binPtr); //disable spawning basket pig when raising bridge
-                                    WriteMemory(0xc9c0, new byte[4], binPtr);
-                                    break;
-
-                                case 40:
-                                case 41:
-                                case 42: //golden crab
-                                    switch (ReadMemory(0xf9e3) - crabsObtained)
-                                    {
-                                        case 1:
-                                            value = randomizer.RandomizedItems.First(r => r.Key.Id == 42).Value;
-                                            crabsObtained++;
-                                            break;
-                                        case 2:
-                                            value = randomizer.RandomizedItems.First(r => r.Key.Id == 41).Value;
-                                            crabsObtained += 2;
-                                            break;
-                                        case 4:
-                                            value = randomizer.RandomizedItems.First(r => r.Key.Id == 40).Value;
-                                            crabsObtained += 4;
-                                            break;
-                                    }
-
-                                    break;
-
-                                case 64:
-                                case 65: //red/blue chick pickup checks
-                                    value = ModifyChickPickup(key.Id);
-                                    break;
-
-                                case 66: //rare fish collected
-                                    SetFlagRareFish();
-                                    break;
-
-                                case 98:
-                                    if (!(ReadMemory(0xf870) == 1))
-                                    {
-                                        continue; //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
-                                    }
-                                    break;
-
-                                default:
+                                case 4:
+                                    newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 40).Value.InternalId;
+                                    crabsObtained += 4;
                                     break;
                             }
 
-                            switch (value.Id)
+                            break;
+
+                        case 56:
+                        case 57: //red/blue chick pickup checks
+                            var chickStatus = ReadMemory(0xf9f2);
+
+                            if (chickStatus == 136) newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == 56).Value.InternalId; //Player has picked up 2 red chicks
+                            if (chickStatus == 204) newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == 57).Value.InternalId; //Player has picked up 2 blue chicks
+
+                            break;
+
+                        case 58: //rare fish collected
+                            SetFlagRareFish();
+                            break;
+
+                        case 97: //blue bucket
+                            if (!(ReadMemory(0xf870) == 1))
                             {
-                                case 1: //weapons
-                                case 2:
-                                case 3:
-                                case 4:
-                                case 5:
-                                case 6:
-                                case 7:
-                                case 8:
-                                case 9:
-                                    WriteMemory(0xf88c, (byte)value.Id); //auto-equip weapon
-                                    WriteMemory(0x37eec, (byte)value.Id);
-                                    break;
+                                continue; //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
+                            }
+                            break;
 
-                                case 10: //pants
-                                case 11:
-                                    var pantsFound = ReadMemory(0xf9cf);
-                                    value = randomizer.Items[pantsFound == 0 ? 10 : 11];
+                        default:
+                            break;
+                    }
 
-                                    WriteMemory(0xf9cf, ++pantsFound);
-                                    break;
+                    switch (newItemId)
+                    {
+                        case 1: //weapons
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 8:
+                        case 9:
+                            WriteMemory(0xf88c, newItemId); //auto-equip weapon
+                            WriteMemory(0x37eec, newItemId);
+                            break;
 
-                                case 21: //pig bags
-                                case 22:
-                                case 23:
-                                case 24:
-                                case 25:
-                                case 26:
-                                    PigBagObtained(value.Id);
-                                    break;
+                        case 11: //pants
+                        case 12:
+                            var pantsFound = ReadMemory(0xf9cf);
+                            newItemId = (byte)(pantsFound == 0 ? 11 : 12);
 
-                                case 38: //random pink bucket received
-                                    if (ReadMemory(0xf8b8) == 255) //give blue bucket instead of pink if Save the Crab is completed
-                                    {
-                                        value = randomizer.Items[98];
-                                    }
-                                    else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
-                                    {
-                                        var bucketPairs = new List<AddressValuePair>
+                            WriteMemory(0xf9cf, ++pantsFound);
+                            break;
+
+                        case 40: //random pink bucket received
+                            if (ReadMemory(0xf8b8) == 255) //give blue bucket instead of pink if Save the Crab is completed
+                            {
+                                newItemId = 97;
+                            }
+                            else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
+                            {
+                                var bucketPairs = new List<AddressValuePair>
                                         {
                                             new AddressValuePair { Address = 0xf88e, Value = 40 },
                                             new AddressValuePair { Address = 0xf81c, Value = 1 },
                                             new AddressValuePair { Address = 0x37e85, Value = 17 }
                                         };
-                                        Enqueue(writeQueueSafe, bucketPairs);
-                                    }
-                                    break;
-
-                                case 39: //crab basket
-                                    WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6));
-                                    break;
-
-                                default:
-                                    break;
+                                Enqueue(writeQueueSafe, bucketPairs);
                             }
+                            break;
 
-                            ItemPopup(key, value, prevItemCounts[i]);
-                        }
+                        case 41: //crab basket
+                            WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6));
+                            break;
+
+                        default:
+                            break;
                     }
+
+                    AddItemWithMessage(newItemId, 1);
                 }
-                prevItemCounts = ReadMemory(0xfab4, 168);
+
+                WriteMemory(0xf8b0, [0, 0, 0]);
             }
 
             if (ReadMemory(0x37e85) == 0)
@@ -304,127 +307,111 @@ public class MemoryManipulator
                 }
             }
 
+
             igt = newIgt;
             IgnoreChanges = false;
             Thread.Sleep(17);
         }
     }
 
-    private void ItemPopup(Item oldItem, Item newItem, byte oldItemCount)
+    public void AddItemWithMessage(byte itemId, byte amount)
     {
-        var popupCount = ReadPopupAmount();
-        var popupPtr = popupCount == 1 ? 0xF564 : 0xF5F0;
-
-        List<byte> boxText = [(byte)newItem.Color];
-
-        for (int i = 0; i < newItem.DisplayName.Length; i++)
-        {
-            if (newItem.DisplayName[i] == ' ') boxText.Add(251);
-            else boxText.Add((byte)(newItem.DisplayName[i] - 32));
-        }
-        boxText.AddRange([240, 251, 65, 67, 81, 85, 73, 82, 69, 68, 1, 255]);
-
-        WriteMemory(popupPtr, boxText.ToArray());
-
-        WriteMemory(popupPtr - 0x10, (byte)(120 - newItem.DisplayName.Length * 4));
-
-        WriteMemory(popupPtr - 0xC, (byte)(80 + newItem.DisplayName.Length * 8));
-
-        WriteMemory(oldItem.CountAddress, oldItemCount);
-
-        var inventory = ReadInventory();
-
-        if (oldItemCount == 0)
-        {
-            var invAmount = ReadInventoryTopBottomAmount(oldItem.Color == ItemColor.Green);
-
-            WriteInventoryTopBottomAmount(oldItem.Color == ItemColor.Green, (byte)(invAmount - 1));
-            WriteMemory(oldItem.PositionAddress, 0);
-
-            if (oldItem.Color == ItemColor.Green != (newItem.Color == ItemColor.Green))
-            {
-                var oldItemPositions = oldItem.Color == ItemColor.Green ? inventory.Positions.Where(p => p.Address <= 0xfbca) : inventory.Positions.Where(p => p.Address > 0xfbca);
-
-                byte oldItemIndex = 0;
-                foreach (var pos in oldItemPositions.OrderBy(p => p.Value))
-                {
-                    if (inventory.Counts.First(c => c.Address == pos.Address - 256).Value != 0)
-                    {
-                        WriteMemory(pos.Address, oldItemIndex++);
-                    }
-                }
-            }
-        }
-
-        var newItemCount = ReadMemory(newItem.CountAddress);
-
-        if (newItemCount == 0)
-        {
-            var invAmount = ReadInventoryTopBottomAmount(newItem.Color == ItemColor.Green);
-
-            WriteInventoryTopBottomAmount(newItem.Color == ItemColor.Green, (byte)(invAmount + 1));
-
-            var positions = newItem.Color == ItemColor.Green ? inventory.Positions.Where(p => p.Address <= 0xfbca) : inventory.Positions.Where(p => p.Address > 0xfbca);
-
-            var index = newItemCount == 0 ? 1 : 0;
-            foreach (var pos in positions.OrderBy(p => p.Value))
-            {
-                if (inventory.Counts.First(c => c.Address == pos.Address - 256).Value != 0)
-                {
-                    WriteMemory(pos.Address, (byte)index++);
-                }
-            }
-        }
-
-        WriteMemory(newItem.CountAddress, (byte)(newItemCount + 1));
+        AddInventoryQuantity(itemId, amount);
+        QueuePopupMessage(itemId, 2, 66);
     }
 
-    public Inventory ReadInventory()
+    private void AddItemWithoutMessage(byte itemId, byte amount) => AddInventoryQuantity(itemId, amount);
+
+    private void AddInventoryQuantity(byte itemId, byte amount)
+    {
+        if (itemId > 22 && itemId < 29) 
+        {
+            var pigBagsStatusAmount = ReadMemory(0xf883);
+            WriteMemory(0xf884 + pigBagsStatusAmount, itemId);
+            WriteMemory(0xf883, (byte)(pigBagsStatusAmount + 1));
+            EnablePigDoor(itemId);
+        }
+
+        var itemCounts = ReadMemory(0xfab4, 168);
+        if (itemCounts[itemId] == 0)
+        {
+            var itemData = ReadMemory(0x62be8, 0xc00, globalPtr);
+            var isTopItem = itemData[itemId * 0xc] == 0;
+
+            for (int i = 0; i < 168; i++)
+            {
+                if (itemCounts[i] != 0 && (isTopItem ? itemData[i * 0xc] == 0 : itemData[i * 0xc] != 0))
+                {
+                    WriteMemory(0xfbb4 + i, (byte)(ReadMemory(0xfbb4 + i) + 1));
+                }
+            }
+            WriteMemory(0xfbb4 + itemId, 0);
+
+            WriteMemory(isTopItem ? 0xf8a2 : 0xf8a1, (byte)(ReadMemory(isTopItem ? 0xf8a2 : 0xf8a1) + 1));
+        }
+
+        var newItemCount = itemCounts[itemId] + amount;
+        WriteMemory(0xfab4 + itemId, (byte)(newItemCount > 99 ? 99 : newItemCount));
+    }
+
+    public void RemoveItemWithMessage(byte itemId, byte amount)
+    {
+        WriteMemory(0xfab4 + itemId, (byte)(ReadMemory(0xfab4 + itemId) - amount));
+        QueuePopupMessage(itemId, 1, 65);
+        CompactInventoryAfterRemoval(itemId);
+    }
+
+    private void CompactInventoryAfterRemoval(byte itemId)
     {
         var itemCounts = ReadMemory(0xfab4, 168);
-        var itemPositions = ReadMemory(0xfbb4, 168);
 
-        if (itemCounts.Length > 0)
+        if (itemCounts[itemId] == 0)
         {
-            var inventory = new Inventory
-            {
-                Counts = new AddressValuePair[168],
-                Positions = new AddressValuePair[168]
-            };
+            var itemData = ReadMemory(0x62be8, 0xc00, globalPtr);
+            var itemPositions = ReadMemory(0xfbb4, 168);
+            WriteMemory(0xfbb4 + itemId, 0);
+            var isTopItem = itemData[itemId * 0xc] == 0;
 
-            for (int i = 0; i < itemCounts.Length; i++)
+            for (int i = 0; i < 168; i++)
             {
-                inventory.Counts[i] = new AddressValuePair
+                if ((itemPositions[itemId] < itemPositions[i]) && (isTopItem ? itemData[i * 0xc] == 0 : itemData[i * 0xc] != 0))
                 {
-                    Address = 0xfab4 + i,
-                    Value = itemCounts[i]
-                };
-
-                inventory.Positions[i] = new AddressValuePair
-                {
-                    Address = 0xfbb4 + i,
-                    Value = itemPositions[i]
-                };
+                    WriteMemory(0xfbb4 + i, (byte)(itemPositions[i] - 1));
+                }
             }
 
-            return inventory;
+            WriteMemory(isTopItem ? 0xf8a2 : 0xf8a1, (byte)(ReadMemory(isTopItem ? 0xf8a2 : 0xf8a1) - 1));
         }
-
-        return new Inventory();
     }
 
-    public byte[] ReadMemory(int ptrAddress, int amountOfBytes, bool binMemory = false)
+    public void QueuePopupMessage(byte item, byte type, byte color, bool resource =  false)
+    {
+        var pendingPopupCount = ReadMemory(0xf552);
+        if (pendingPopupCount < 8)
+        {
+            var ptrPopupQueue = 0xf6fc + pendingPopupCount * 0x20;
+
+            WriteMemory(ptrPopupQueue, [item, 0, type, 128, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, color, 0, 0, 0, 0, 0, 0, 0]);
+            WriteMemory(0xf552, (byte)(pendingPopupCount + 1));
+        }
+    }
+
+    public byte[] ReadMemory(int ptrAddress, int amountOfBytes, IntPtr ptr)
     {
         IntPtr bytesRead = 0;
-        IntPtr ptr = IntPtr.Add(binMemory ? binPtr : basePtr, ptrAddress);
+        IntPtr readPtr = IntPtr.Add(ptr, ptrAddress);
 
         var bytes = new byte[amountOfBytes];
-        ReadProcessMemory((int)handle, (int)ptr, bytes, bytes.Length, out bytesRead);
+        ReadProcessMemory((int)handle, (int)readPtr, bytes, bytes.Length, out bytesRead);
 
         return bytes;
     }
 
-    public byte ReadMemory(int ptrAddress, bool binMemory = false) => ReadMemory(ptrAddress, 1, binMemory)[0];
+    public byte ReadMemory(int ptrAddress, IntPtr ptr) => ReadMemory(ptrAddress, 1, ptr)[0];
+
+    public byte[] ReadMemory(int ptrAddress, int amountOfBytes) => ReadMemory(ptrAddress, amountOfBytes, basePtr);
+
+    public byte ReadMemory(int ptrAddress) => ReadMemory(ptrAddress, 1, basePtr)[0];
 
     public byte ReadInventoryTopBottomAmount(bool top) => ReadMemory(top ? 0xf8a2 : 0xf8a1);
 
@@ -442,21 +429,19 @@ public class MemoryManipulator
 
     private int ReadTimer() => BitConverter.ToInt32(ReadMemory(0xf878, 4));
 
-    public void WriteMemory(int address, byte[] values, IntPtr ptr, bool ignoreRandom = false)
+    public void WriteMemory(int address, byte[] values, IntPtr ptr)
     {
-        if (ignoreRandom) IgnoreChanges = true;
-
         IntPtr bytesWritten = 0;
 
         IntPtr textPtr = IntPtr.Add(ptr, address);
         WriteProcessMemory((int)handle, (int)textPtr, values, values.Count(), out bytesWritten);
     }
 
-    public void WriteMemory(int address, byte value, IntPtr ptr, bool ignoreRandom = false) => WriteMemory(address, [value], ptr, ignoreRandom);
+    public void WriteMemory(int address, byte value, IntPtr ptr, bool ignoreRandom = false) => WriteMemory(address, [value], ptr);
 
-    public void WriteMemory(int address, byte[] values, bool ignoreRandom = false) => WriteMemory(address, values, basePtr, ignoreRandom);
+    public void WriteMemory(int address, byte[] values, bool ignoreRandom = false) => WriteMemory(address, values, basePtr);
 
-    public void WriteMemory(int address, byte value, bool ignoreRandom = false) => WriteMemory(address, [value], basePtr, ignoreRandom);
+    public void WriteMemory(int address, byte value, bool ignoreRandom = false) => WriteMemory(address, [value], basePtr);
 
     public void WriteProgress(byte[] bytes) => WriteMemory(0xf9b4, bytes);
 
@@ -717,32 +702,16 @@ public class MemoryManipulator
         WriteMemory(0xf9c1, bits);
     }
 
-    private Item ModifyChickPickup(int key)
+    private void EnablePigDoor(int id)
     {
-        //If a player picks up 2 of the same chick, the second one needs to give the item corresponding to the other color chick
-        var chickStatus = ReadMemory(0xf9f2);
-
-        if (chickStatus == 136) return randomizer.RandomizedItems.First(i => i.Key.Id == 64).Value; //Player has picked up 2 red chicks
-        if (chickStatus == 204) return randomizer.RandomizedItems.First(i => i.Key.Id == 65).Value; //Player has picked up 2 blue chicks
-
-        return randomizer.RandomizedItems.First(i => i.Key.Id == key).Value;
-    }
-
-    private void PigBagObtained(int id)
-    {
-        var amountOfBags = ReadMemory(0xf883);
-        WriteMemory(0xf883, ++amountOfBags);
-
-        WriteMemory(0xf883 + amountOfBags, (byte)(id + 2));
-
         switch (ReadMemory(0xf870)) //un-hide pig door if player collects pig bag corresponding to current level
         {
             case 0:
-                if (id == 25) WriteMemory(0x4e81d, 2);
+                if (id == 27) WriteMemory(0x4e81d, 2);
                 break;
             case 1:
             case 4:
-                if (id == 21 || id == 24) WriteMemory(0x4e26d, 2);
+                if (id == 23 || id == 26) WriteMemory(0x4e26d, 2);
                 break;
             default:
                 break;
@@ -789,5 +758,39 @@ public class MemoryManipulator
 
             Thread.Sleep(10000);
         }
+    }
+
+    public Inventory ReadInventory()
+    {
+        var itemCounts = ReadMemory(0xfab4, 168);
+        var itemPositions = ReadMemory(0xfbb4, 168);
+
+        if (itemCounts.Length > 0)
+        {
+            var inventory = new Inventory
+            {
+                Counts = new AddressValuePair[168],
+                Positions = new AddressValuePair[168]
+            };
+
+            for (int i = 0; i < itemCounts.Length; i++)
+            {
+                inventory.Counts[i] = new AddressValuePair
+                {
+                    Address = 0xfab4 + i,
+                    Value = itemCounts[i]
+                };
+
+                inventory.Positions[i] = new AddressValuePair
+                {
+                    Address = 0xfbb4 + i,
+                    Value = itemPositions[i]
+                };
+            }
+
+            return inventory;
+        }
+
+        return new Inventory();
     }
 }

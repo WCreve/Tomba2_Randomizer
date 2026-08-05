@@ -19,6 +19,14 @@ public class Item
         }
     }
 
+    public byte InternalId
+    {
+        get
+        {
+            return (byte)(CountAddress - 0xfab4);
+        }
+    }
+
     public ItemColor Color { get; set; }
 
     public bool Important { get; set; }
