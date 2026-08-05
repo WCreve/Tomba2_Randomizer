@@ -12,14 +12,13 @@ public class MemoryManipulator
 {
     const int PROCESS_ALL_ACCESS = 0x1F0FFF;
 
-    const uint STRING_COURAGE_HALF = 0x415;
-    const uint STRING_COURAGE_FULL = 0x430;
-    const uint STRING_STRENGTH_HALF = 0x47B;
-    const uint STRING_STRENGTH_FULL = 0x497;
-    const uint STRING_WISDOM_HALF = 0x4E5;
-    const uint STRING_WISDOM_FULL = 0x4FF;
-    
-
+    const uint STRING_COURAGE_HALF = 0x80160415;
+    const uint STRING_COURAGE_FULL = 0x80160430;
+    const uint STRING_STRENGTH_HALF = 0x8016047B;
+    const uint STRING_STRENGTH_FULL = 0x80160497;
+    const uint STRING_WISDOM_HALF = 0x801604E5;
+    const uint STRING_WISDOM_FULL = 0x801604FF;
+    const uint STRING_HARP = 0x80161144;
 
     private IntPtr baseAddress;
     private Process _process;
@@ -29,10 +28,6 @@ public class MemoryManipulator
 
     private IntPtr globalPtr; //0x40000
     private IntPtr binPtr; //0x110000
-
-    private IntPtr stringPtr; //0x160000
-
-    private byte[] prevItemCounts;
 
     private int igt;
 
@@ -73,12 +68,6 @@ public class MemoryManipulator
         IntPtr ptr3 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x188);
         ReadProcessMemory((int)handle, (int)ptr3, buffer, buffer.Length, out bytesRead);
         binPtr = BitConverter.ToInt32(buffer);
-
-        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
-
-        IntPtr ptr4 = IntPtr.Add(BitConverter.ToInt32(buffer), 0xb0);
-        ReadProcessMemory((int)handle, (int)ptr4, buffer, buffer.Length, out bytesRead);
-        stringPtr = BitConverter.ToInt32(buffer);
     }
 
     public bool ProcessIsActive { get; set; } = true;
@@ -102,7 +91,6 @@ public class MemoryManipulator
     public void SetupRandomizer(Randomizer r)
     {
         randomizer = r;
-        prevItemCounts = new byte[168];
 
         InitializeGame();
 
@@ -127,6 +115,8 @@ public class MemoryManipulator
         WriteMemory(0xa504, new byte[4], globalPtr);
 
         WriteMemory(0xa570, new byte[224], globalPtr); //disable all 1/2 spell item pickup logic
+
+        WriteMemory(0xa6f8, new byte[8], globalPtr); //disable all harp piece pickup logic
 
         WriteMemory(0x28380, new byte[32], globalPtr); //disable attaching crab basket to tomba on area load
 
@@ -166,6 +156,7 @@ public class MemoryManipulator
                 }
                 else
                 {
+                    var custom = false;
                     var newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == itemPickedUp[0]).Value.InternalId;
 
                     switch (itemPickedUp[0])
@@ -285,11 +276,38 @@ public class MemoryManipulator
                             WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6));
                             break;
 
+                        case 160: //harp pieces
+                        case 161:
+                        case 162:
+                        case 163:
+                            var harpPieces = ReadMemory(0xfb54, 4);
+                            if (harpPieces.Count(c => c != 0) == 3)
+                            {
+                                CompleteEvent(44);
+
+                                AddItemWithMessage(newItemId, 1);
+
+                                for (var i = 0; i < harpPieces.Length; i++)
+                                {
+                                    RemoveItemWithoutMessage((byte)(i + 160), 1);
+                                }
+
+                                AddItemWithoutMessage(164, 1);
+                                QueueResourceMessage(STRING_HARP, 65);
+
+                                custom = true;
+                            }
+                            else
+                            {
+                                AddItemWithMessage(newItemId, 1);
+                            }
+                            break;
+
                         default:
                             break;
                     }
 
-                    AddItemWithMessage(newItemId, 1);
+                    if (!custom) AddItemWithMessage(newItemId, 1);
                 }
 
                 WriteMemory(0xf8b0, [0, 0, 0]);
@@ -361,6 +379,12 @@ public class MemoryManipulator
         CompactInventoryAfterRemoval(itemId);
     }
 
+    public void RemoveItemWithoutMessage(byte itemId, byte amount)
+    {
+        WriteMemory(0xfab4 + itemId, (byte)(ReadMemory(0xfab4 + itemId) - amount));
+        CompactInventoryAfterRemoval(itemId);
+    }
+
     private void CompactInventoryAfterRemoval(byte itemId)
     {
         var itemCounts = ReadMemory(0xfab4, 168);
@@ -384,17 +408,57 @@ public class MemoryManipulator
         }
     }
 
-    public void QueuePopupMessage(byte item, byte type, byte color, bool resource =  false)
+    public void QueuePopupMessage(byte item, byte type, byte color)
     {
         var pendingPopupCount = ReadMemory(0xf552);
         if (pendingPopupCount < 8)
         {
             var ptrPopupQueue = 0xf6fc + pendingPopupCount * 0x20;
 
-            WriteMemory(ptrPopupQueue, [item, 0, type, 128, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, color, 0, 0, 0, 0, 0, 0, 0]);
+            WriteMemory(ptrPopupQueue, [item, 0, type, 128, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, color]);
             WriteMemory(0xf552, (byte)(pendingPopupCount + 1));
         }
     }
+
+    public void QueueResourceMessage(uint ptr, byte color)
+    {
+        var pendingPopupCount = ReadMemory(0xf552);
+        if (pendingPopupCount < 8)
+        {
+            var ptrPopupQueue = 0xf6f8 + pendingPopupCount * 0x20;
+
+            WriteMemory(ptrPopupQueue, BitConverter.GetBytes(ptr));
+            WriteMemory(ptrPopupQueue + 4, [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, color]);
+            WriteMemory(0xf552, (byte)(pendingPopupCount + 1));
+        }
+    }
+
+    private void CompleteEvent(byte eventId)
+    {
+        if (ReadMemory(0x37fee) != 0) //check if tomba alive
+        {
+            var ptrEventState = 0xf8b4 + eventId;
+            var eventState = ReadMemory(ptrEventState);
+
+            if (eventState == 0) WriteMemory(0xf8a8, (byte)(ReadMemory(0xf8a8) + 1)); //increase started events by 1
+            if (eventState != 255)
+            {
+                WriteMemory(ptrEventState, 255);
+                WriteMemory(0xf8aa, (byte)(ReadMemory(0xf8aa) + 1)); //increase completed events by 1
+                var eventAPReward = GetEventAPReward(eventId, true);
+
+                var currentAP = BitConverter.ToInt32(ReadMemory(0xf874, 4)); //update AP
+                WriteMemory(0xf874, BitConverter.GetBytes(currentAP + eventAPReward));
+
+                var pendingEventNotificationCount = ReadMemory(0x3d06d);
+                WriteMemory(0x3d06e + pendingEventNotificationCount, eventId); //event popup
+                WriteMemory(0x3d074 + pendingEventNotificationCount, 1);
+                WriteMemory(0x3d06d, (byte)(pendingEventNotificationCount + 1));
+            }
+        }
+    }
+
+    private int GetEventAPReward(byte eventId, bool completed) => ReadMemory(0x63b38 + (completed ? (ReadMemory(0x633c9 + eventId * 12, globalPtr) & 15) : (ReadMemory(0x633c9 + eventId * 12, globalPtr) >> 4)) * 4, globalPtr);
 
     public byte[] ReadMemory(int ptrAddress, int amountOfBytes, IntPtr ptr)
     {
