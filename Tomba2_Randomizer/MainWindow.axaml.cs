@@ -666,7 +666,7 @@ public partial class MainWindow : Window
             await using var stream = await file.OpenWriteAsync();
             using var streamWriter = new StreamWriter(stream);
 
-            randomizer = new Randomizer(itemDtos.Where(i => !i.NotRandom).ToList(), areaDtos, eventDtos);
+            randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
             randomizer.Randomize();
             var output = "";
             foreach (var item in randomizer.RandomizedItems)
@@ -719,7 +719,7 @@ public partial class MainWindow : Window
 
             try
             {
-                randomizer = new Randomizer(itemDtos.Where(i => !i.NotRandom).ToList(), areaDtos, eventDtos);
+                randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
                 randomizer.Randomize(itemString);
                 if (memory != null) memory.SetupRandomizer(randomizer);
             }

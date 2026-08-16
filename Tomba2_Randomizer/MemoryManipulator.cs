@@ -28,6 +28,7 @@ public class MemoryManipulator
 
     private IntPtr globalPtr; //0x40000
     private IntPtr binPtr; //0x110000
+    private IntPtr switchPtr; //0x10000
 
     private int igt;
 
@@ -68,11 +69,19 @@ public class MemoryManipulator
         IntPtr ptr3 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x188);
         ReadProcessMemory((int)handle, (int)ptr3, buffer, buffer.Length, out bytesRead);
         binPtr = BitConverter.ToInt32(buffer);
+
+        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
+
+        IntPtr ptr4 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x8);
+        ReadProcessMemory((int)handle, (int)ptr4, buffer, buffer.Length, out bytesRead);
+        switchPtr = BitConverter.ToInt32(buffer);
     }
 
     public bool ProcessIsActive { get; set; } = true;
 
     public bool IgnoreChanges { get; set; }
+
+    public bool IsActive { get; set; }
 
     [DllImport("kernel32.dll")]
     private static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
@@ -92,11 +101,16 @@ public class MemoryManipulator
     {
         randomizer = r;
 
-        InitializeGame();
+        if (!IsActive)
+        {
+            InitializeGame();
 
-        Task.Run(CheckForUpdates);
-        Task.Run(PerformChecks);
-        Task.Run(ClearQueueHistories);
+            Task.Run(CheckForUpdates);
+            Task.Run(PerformChecks);
+            Task.Run(ClearQueueHistories);
+
+            IsActive = true;
+        }
     }
 
     private void InitializeGame()
@@ -114,9 +128,17 @@ public class MemoryManipulator
         WriteMemory(0xa4d4, new byte[44], globalPtr);
         WriteMemory(0xa504, new byte[4], globalPtr);
 
-        WriteMemory(0xa570, new byte[224], globalPtr); //disable all 1/2 spell item pickup logic
+        WriteMemory(0xa514, new byte[12], globalPtr); //disable magic wings X2 popup
 
-        WriteMemory(0xa6f8, new byte[8], globalPtr); //disable all harp piece pickup logic
+        WriteMemory(0xa534, new byte[12], globalPtr); //disable chick food X2 popup
+
+        WriteMemory(0xa55c, new byte[12], globalPtr); //disable potato X3 popup
+
+        WriteMemory(0x5660, [172, 167, 4, 128], switchPtr); //disable all spell item pickup logic
+        WriteMemory(0x5668, [172, 167, 4, 128], switchPtr);
+        WriteMemory(0x5670, [172, 167, 4, 128], switchPtr);
+
+        WriteMemory(0x5720, [172, 167, 4, 128, 172, 167, 4, 128, 172, 167, 4, 128, 172, 167, 4, 128], switchPtr); //disable all harp piece pickup logic
 
         WriteMemory(0x28380, new byte[32], globalPtr); //disable attaching crab basket to tomba on area load
 
@@ -276,6 +298,73 @@ public class MemoryManipulator
                             WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6));
                             break;
 
+                        case 77: //chick food
+                            AddItemWithoutMessage(77, 2);
+                            QueuePopupMessage(87, 2, 66);
+                            custom = true;
+                            break;
+
+                        case 96: //magic wings
+                            if (itemPickedUp[1] == 2)
+                            {
+                                AddItemWithoutMessage(96, 2);
+                                QueuePopupMessage(137, 2, 66);
+                                custom = true;
+                            }
+                            break;
+
+                        case 112: //spell of courage
+                            if (ReadMemory(0xfb24) == 0)
+                            {
+                                AddItemWithoutMessage(112, 1);
+                                QueueResourceMessage(STRING_COURAGE_HALF, 65);
+                            }
+                            else
+                            {
+                                AddItemWithoutMessage(111, 1);
+                                RemoveItemWithoutMessage(112, 1);
+                                QueueResourceMessage(STRING_COURAGE_FULL, 65);
+                            }
+                            custom = true;
+                            break;
+                        case 114: //spell of strength
+                            if (ReadMemory(0xfb26) == 0)
+                            {
+                                AddItemWithoutMessage(114, 1);
+                                QueueResourceMessage(STRING_STRENGTH_HALF, 65);
+                            }
+                            else
+                            {
+                                AddItemWithoutMessage(113, 1);
+                                RemoveItemWithoutMessage(114, 1);
+                                QueueResourceMessage(STRING_STRENGTH_FULL, 65);
+                            }
+                            custom = true;
+                            break;
+                        case 116: //spell of wisdom
+                            if (ReadMemory(0xfb28) == 0)
+                            {
+                                AddItemWithoutMessage(116, 1);
+                                QueueResourceMessage(STRING_WISDOM_HALF, 65);
+                            }
+                            else
+                            {
+                                AddItemWithoutMessage(115, 1);
+                                RemoveItemWithoutMessage(116, 1);
+                                QueueResourceMessage(STRING_WISDOM_FULL, 65);
+                            }
+                            custom = true;
+                            break;
+
+                        case 124: //potato
+                            if (itemPickedUp[1] == 3)
+                            {
+                                AddItemWithoutMessage(124, 3);
+                                QueuePopupMessage(138, 2, 66);
+                                custom = true;
+                            }
+                            break;
+
                         case 160: //harp pieces
                         case 161:
                         case 162:
@@ -330,6 +419,8 @@ public class MemoryManipulator
             IgnoreChanges = false;
             Thread.Sleep(17);
         }
+
+        IsActive = false;
     }
 
     public void AddItemWithMessage(byte itemId, byte amount)

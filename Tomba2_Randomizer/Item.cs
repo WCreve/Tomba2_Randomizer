@@ -31,5 +31,7 @@ public class Item
 
     public bool Important { get; set; }
 
+    public bool NotRandom { get; set; }
+
     public List<RequirementGroup> RequirementGroups { get; set; } = new();
 }

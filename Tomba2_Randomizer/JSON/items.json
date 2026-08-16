@@ -1542,7 +1542,7 @@
 		]
 	},
 	{
-		"id": 141,
+		"id": 174,
 		"name": "Mudball Surprise 2",
 		"displayname": "Mudball Surprise",
 		"color": "Blue",
@@ -1566,7 +1566,7 @@
 				"events": [ 12 ]
 			},
 			{
-				"items": [ 141 ],
+				"items": [ 174 ],
 				"areas": [ 2, 3 ],
 				"events": [ 12 ]
 			}
@@ -1579,7 +1579,7 @@
 		"address": "0xfb36",
 		"requirements": [
 			{
-				"items": [ 112, 141 ],
+				"items": [ 112, 174 ],
 				"areas": [ 2, 3 ],
 				"events": [ 12 ]
 			}
@@ -2003,150 +2003,157 @@
 		"notrandom": true
 	},
 	{
-		"id": 152,
+		"id": 153,
 		"name": "Steak Sandwich",
 		"color": "Blue",
 		"address": "0xfb1a",
 		"notrandom": true
 	},
 	{
-		"id": 153,
+		"id": 154,
 		"name": "Dried Fish Sandwich",
 		"color": "Blue",
 		"address": "0xfb1b",
 		"notrandom": true
 	},
 	{
-		"id": 154,
+		"id": 155,
 		"name": "Hash Potato Sandwich",
 		"color": "Blue",
 		"address": "0xfb1c",
 		"notrandom": true
 	},
 	{
-		"id": 155,
+		"id": 156,
 		"name": "Spell of Courage",
 		"color": "Blue",
 		"address": "0xfb23",
 		"notrandom": true
 	},
 	{
-		"id": 156,
+		"id": 157,
 		"name": "Spell of Strength",
 		"color": "Blue",
 		"address": "0xfb25",
 		"notrandom": true
 	},
 	{
-		"id": 157,
+		"id": 158,
 		"name": "Spell of Wisdom",
 		"color": "Blue",
 		"address": "0xfb27",
 		"notrandom": true
 	},
 	{
-		"id": 158,
+		"id": 159,
 		"name": "Snow Firefly",
 		"color": "Pink",
 		"address": "0xfb29",
 		"notrandom": true
 	},
 	{
-		"id": 159,
+		"id": 160,
 		"name": "Ice Candy",
 		"color": "Pink",
 		"address": "0xfb2a",
 		"notrandom": true
 	},
 	{
-		"id": 160,
+		"id": 161,
 		"name": "Small Fish",
 		"color": "Blue",
 		"address": "0xfb2b",
 		"notrandom": true
 	},
 	{
-		"id": 161,
+		"id": 162,
 		"name": "Dried Fish",
 		"color": "Blue",
 		"address": "0xfb2c",
 		"notrandom": true
 	},
 	{
-		"id": 162,
+		"id": 163,
 		"name": "Big Piece of Meat",
 		"color": "Blue",
 		"address": "0xfb2d",
 		"notrandom": true
 	},
 	{
-		"id": 163,
+		"id": 164,
 		"name": "Underdone Meat",
 		"color": "Blue",
 		"address": "0xfb2e",
 		"notrandom": true
 	},
 	{
-		"id": 164,
+		"id": 165,
 		"name": "Big Steak",
 		"color": "Blue",
 		"address": "0xfb2f",
 		"notrandom": true
 	},
 	{
-		"id": 165,
+		"id": 166,
 		"name": "Potato",
 		"color": "Blue",
 		"address": "0xfb30",
 		"notrandom": true
 	},
 	{
-		"id": 166,
+		"id": 167,
 		"name": "1/2-Boiled Potato",
 		"color": "Blue",
 		"address": "0xfb31",
 		"notrandom": true
 	},
 	{
-		"id": 167,
+		"id": 168,
 		"name": "Boiled Potato",
 		"color": "Blue",
 		"address": "0xfb32",
 		"notrandom": true
 	},
 	{
-		"id": 168,
+		"id": 169,
 		"name": "Mudball",
 		"color": "Blue",
 		"address": "0xfb33",
 		"notrandom": true
 	},
 	{
-		"id": 169,
+		"id": 170,
 		"name": "Badge of Lying",
 		"color": "Blue",
 		"address": "0xfb3b",
 		"notrandom": true
 	},
 	{
-		"id": 170,
+		"id": 171,
 		"name": "Mermaid's Harp",
 		"color": "Pink",
 		"address": "0xfb58",
 		"notrandom": true
 	},
 	{
-		"id": 171,
+		"id": 172,
 		"name": "Blackjack",
 		"color": "Green",
 		"address": "0xfab4",
 		"notrandom": true
 	},
 	{
-		"id": 172,
+		"id": 173,
 		"name": "Green Pants",
 		"color": "Green",
 		"address": "0xfabe",
+		"notrandom": true
+	},
+	{
+		"id": 175,
+		"name": "Magic Wings X2",
+		"color": "Blue",
+		"address": "0xfb3d",
 		"notrandom": true
 	}
 ]

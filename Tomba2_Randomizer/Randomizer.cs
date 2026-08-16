@@ -6,8 +6,12 @@ namespace Tomba2_Randomizer
 {
     public class Randomizer
     {
+        private Dictionary<int, Item> items;
         private Dictionary<int, Area> areas;
         private Dictionary<int, Event> events;
+
+        private Dictionary<int, Item> allItems;
+        private Dictionary<int, Item> notRandomItems;
 
         private string debugQueue;
         
@@ -15,10 +19,13 @@ namespace Tomba2_Randomizer
 
         public Randomizer(List<ItemDto> itemDtos, List<AreaDto> areaDtos, List<EventDto> eventDtos)
         {
-            Items = itemDtos.ToDictionary(
+            allItems = itemDtos.ToDictionary(
                 dto => dto.Id,
-                dto => new Item { Id = dto.Id, Name = dto.Name, DisplayName = dto.GUIName, CountAddress = Convert.ToInt32(dto.Address, 16), Color = dto.Color == "Green" ? ItemColor.Green : dto.Color == "Blue" ? ItemColor.Blue : ItemColor.Pink}
+                dto => new Item { Id = dto.Id, Name = dto.Name, DisplayName = dto.GUIName, CountAddress = Convert.ToInt32(dto.Address, 16), Color = dto.Color == "Green" ? ItemColor.Green : dto.Color == "Blue" ? ItemColor.Blue : ItemColor.Pink, NotRandom = dto.NotRandom }
             );
+
+            items = allItems.Where(i => !i.Value.NotRandom).ToDictionary();
+            notRandomItems = allItems.Where(i => i.Value.NotRandom).ToDictionary();
 
             areas = areaDtos.ToDictionary(
                 dto => dto.Id,
@@ -30,9 +37,9 @@ namespace Tomba2_Randomizer
                 dto => new Event { Id = dto.Id, Name = dto.Name, AP = dto.AP }
             );
 
-            foreach (var dto in itemDtos)
+            foreach (var dto in itemDtos.Where(i => !i.NotRandom))
             {
-                var item = Items[dto.Id];
+                var item = items[dto.Id];
 
                 foreach (var reqDto in dto.Requirements ?? [])
                 {
@@ -41,8 +48,8 @@ namespace Tomba2_Randomizer
                     if (reqDto.Items != null)
                     {
                         group.Items.AddRange(reqDto.Items
-                            .Where(Items.ContainsKey)
-                            .Select(id => Items[id]));
+                            .Where(items.ContainsKey)
+                            .Select(id => items[id]));
                     }
 
                     if (reqDto.Areas != null)
@@ -76,8 +83,8 @@ namespace Tomba2_Randomizer
                     if (reqDto.Items != null)
                     {
                         group.Items.AddRange(reqDto.Items
-                            .Where(Items.ContainsKey)
-                            .Select(id => Items[id]));
+                            .Where(items.ContainsKey)
+                            .Select(id => items[id]));
                     }
 
                     if (reqDto.Areas != null)
@@ -111,8 +118,8 @@ namespace Tomba2_Randomizer
                     if (reqDto.Items != null)
                     {
                         group.Items.AddRange(reqDto.Items
-                            .Where(Items.ContainsKey)
-                            .Select(id => Items[id]));
+                            .Where(items.ContainsKey)
+                            .Select(id => items[id]));
                     }
 
                     if (reqDto.Areas != null)
@@ -140,7 +147,7 @@ namespace Tomba2_Randomizer
         {
             get
             {
-                return Items.Values.Except(RandomizedItems.Values);
+                return items.Values.Except(RandomizedItems.Values);
             }
         }
 
@@ -148,11 +155,9 @@ namespace Tomba2_Randomizer
         {
             get
             {
-                return Items.Values.Where(i => !i.RequirementGroups.Any() || i.RequirementGroups.Any(rg => !rg.Items.Except(RandomizedItems.Values).Any() && rg.Areas.All(area => area.Unlocked) && rg.Events.All(e => e.Unlocked) && events.Values.Where(e => e.Unlocked).Sum(e => e.AP) > rg.AP));
+                return items.Values.Where(i => !i.RequirementGroups.Any() || i.RequirementGroups.Any(rg => !rg.Items.Except(RandomizedItems.Values).Any() && rg.Areas.All(area => area.Unlocked) && rg.Events.All(e => e.Unlocked) && events.Values.Where(e => e.Unlocked).Sum(e => e.AP) > rg.AP));
             }
         }
-
-        public Dictionary<int, Item> Items { get; private set; }
 
         public string DebugString { get; set; }
 
@@ -169,7 +174,7 @@ namespace Tomba2_Randomizer
 
             while (ItemsToRandomize.Any())
             {
-                var randomItemPool = Items.Values.Except(RandomizedItems.Values);
+                var randomItemPool = items.Values.Except(RandomizedItems.Values);
                 var availableItemPool = AvailableItems.Except(RandomizedItems.Keys);
 
                 if (availableItemPool.Any())
@@ -261,6 +266,11 @@ namespace Tomba2_Randomizer
                 }
             }
 
+            foreach (var item in notRandomItems.Values)
+            {
+                RandomizedItems[item] = item;
+            }
+
             if (!string.IsNullOrEmpty(debugQueue)) DebugString += $"{debugQueue}\n";
         }
 
@@ -270,7 +280,7 @@ namespace Tomba2_Randomizer
             foreach (var line in itemString.Split('|'))
             {
                 var splitLine = line.Split(",");
-                RandomizedItems[Items.Values.First(i => i.Id == Convert.ToInt32(splitLine[0]))] = Items.Values.First(i => i.Id == Convert.ToInt32(splitLine[1]));
+                RandomizedItems[allItems.Values.First(i => i.Id == Convert.ToInt32(splitLine[0]))] = allItems.Values.First(i => i.Id == Convert.ToInt32(splitLine[1]));
             }
         }
 
