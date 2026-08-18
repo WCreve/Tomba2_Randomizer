@@ -1,9 +1,12 @@
+using System;
+
 namespace Tomba2_Randomizer;
 
 public class AddressValuePair
 {
     public int Address { get; set; } = 0;
     public byte Value { get; set; } = 0;
+    public IntPtr Ptr { get; set; }
 
     public override bool Equals(object? obj)
     {

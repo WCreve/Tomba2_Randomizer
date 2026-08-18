@@ -156,7 +156,7 @@ public class MemoryManipulator
     {
         while (ProcessIsActive && randomizer != null)
         {
-            if (ReadMemory(0xfb83) == 0) InitializeGame();
+            if (ReadMemory(0xf8b3) == 0) InitializeGame();
 
             var itemPickedUp = ReadMemory(0xf8b0, 3);
 
@@ -188,6 +188,25 @@ public class MemoryManipulator
                             newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == (ReadMemory(0xf870) == 0 ? 11 : 12)).Value.InternalId; //check which pants you're picking up based on current area
                             break;
 
+                        case 17: //evil ice pig robe
+                            if (ReadMemory(0xf8cd) != 255) //static explosion not completed
+                            {
+                                CompleteEvent(24); //completed static explosion
+                                AddItemWithMessage(randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value.InternalId, 1); //give pham's item
+                                WriteMemory(0xf9c4, 55); //set all kujaras to delivered
+                                WriteMemory(0xf9c6, 22); //pham cutscene completed
+                            }
+                            if (ReadMemory(0xf8ce) != 255) //raise the ladder not completed
+                            {
+                                CompleteEvent(25);
+                                if (ReadMemory(0xfad9) == 1) //if player has hexagon gear, remove
+                                {
+                                    RemoveItemWithMessage(37, 1);
+                                }
+                            }
+
+                            break;
+
                         case 36: //star-shaped cog collected
                             SetFlagStarShapedCog();
                             break;
@@ -195,7 +214,9 @@ public class MemoryManipulator
                         case 40: //pink bucket
                             if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
                             {
-                                continue; //Only randomize the correct pink bucket pickup
+                                AddItemWithoutMessage(40, 1); //Only randomize the correct pink bucket pickup
+                                custom = true;
+                                break;
                             }
                             break;
 
@@ -209,9 +230,7 @@ public class MemoryManipulator
                             WriteMemory(0xc9c0, new byte[4], binPtr);
                             break;
 
-                        case 42:
-                        case 43:
-                        case 44: //golden crab
+                        case 42: //golden crab
                             switch (ReadMemory(0xf9e3) - crabsObtained)
                             {
                                 case 1:
@@ -244,156 +263,165 @@ public class MemoryManipulator
                             break;
 
                         case 97: //blue bucket
-                            if (!(ReadMemory(0xf870) == 1))
+                            if (!(ReadMemory(0xf870) == 1)) //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
                             {
-                                continue; //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
+                                AddItemWithMessage(97, 1);
+                                custom = true;
                             }
+                            break;
+
+                        case 99: //water bucket
+                            AddItemWithoutMessage(99, 1);
+                            custom = true;
                             break;
 
                         default:
                             break;
                     }
 
-                    switch (newItemId)
+                    if (!custom)
                     {
-                        case 1: //weapons
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7:
-                        case 8:
-                        case 9:
-                            WriteMemory(0xf88c, newItemId); //auto-equip weapon
-                            WriteMemory(0x37eec, newItemId);
-                            break;
+                        switch (newItemId)
+                        {
+                            case 1: //weapons
+                            case 2:
+                            case 3:
+                            case 4:
+                            case 5:
+                            case 6:
+                            case 7:
+                            case 8:
+                            case 9:
+                                WriteMemory(0xf88c, newItemId); //auto-equip weapon
+                                WriteMemory(0x37eec, newItemId);
+                                break;
 
-                        case 11: //pants
-                        case 12:
-                            var pantsFound = ReadMemory(0xf9cf);
-                            newItemId = (byte)(pantsFound == 0 ? 11 : 12);
+                            case 11: //pants
+                            case 12:
+                                var pantsFound = ReadMemory(0xf9cf);
+                                newItemId = (byte)(pantsFound == 0 ? 11 : 12);
 
-                            WriteMemory(0xf9cf, ++pantsFound);
-                            break;
+                                WriteMemory(0xf9cf, ++pantsFound);
+                                break;
 
-                        case 40: //random pink bucket received
-                            if (ReadMemory(0xf8b8) == 255) //give blue bucket instead of pink if Save the Crab is completed
-                            {
-                                newItemId = 97;
-                            }
-                            else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
-                            {
-                                var bucketPairs = new List<AddressValuePair>
+                            case 40: //random pink bucket received
+                                if (ReadMemory(0xf8b8) == 255) //give blue bucket instead of pink if Save the Crab is completed
+                                {
+                                    newItemId = 97;
+                                }
+                                else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
+                                {
+                                    var bucketPairs = new List<AddressValuePair>
                                         {
                                             new AddressValuePair { Address = 0xf88e, Value = 40 },
                                             new AddressValuePair { Address = 0xf81c, Value = 1 },
                                             new AddressValuePair { Address = 0x37e85, Value = 17 }
                                         };
-                                Enqueue(writeQueueSafe, bucketPairs);
-                            }
-                            break;
-
-                        case 41: //crab basket
-                            WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6));
-                            break;
-
-                        case 77: //chick food
-                            AddItemWithoutMessage(77, 2);
-                            QueuePopupMessage(87, 2, 66);
-                            custom = true;
-                            break;
-
-                        case 96: //magic wings
-                            if (itemPickedUp[1] == 2)
-                            {
-                                AddItemWithoutMessage(96, 2);
-                                QueuePopupMessage(137, 2, 66);
-                                custom = true;
-                            }
-                            break;
-
-                        case 112: //spell of courage
-                            if (ReadMemory(0xfb24) == 0)
-                            {
-                                AddItemWithoutMessage(112, 1);
-                                QueueResourceMessage(STRING_COURAGE_HALF, 65);
-                            }
-                            else
-                            {
-                                AddItemWithoutMessage(111, 1);
-                                RemoveItemWithoutMessage(112, 1);
-                                QueueResourceMessage(STRING_COURAGE_FULL, 65);
-                            }
-                            custom = true;
-                            break;
-                        case 114: //spell of strength
-                            if (ReadMemory(0xfb26) == 0)
-                            {
-                                AddItemWithoutMessage(114, 1);
-                                QueueResourceMessage(STRING_STRENGTH_HALF, 65);
-                            }
-                            else
-                            {
-                                AddItemWithoutMessage(113, 1);
-                                RemoveItemWithoutMessage(114, 1);
-                                QueueResourceMessage(STRING_STRENGTH_FULL, 65);
-                            }
-                            custom = true;
-                            break;
-                        case 116: //spell of wisdom
-                            if (ReadMemory(0xfb28) == 0)
-                            {
-                                AddItemWithoutMessage(116, 1);
-                                QueueResourceMessage(STRING_WISDOM_HALF, 65);
-                            }
-                            else
-                            {
-                                AddItemWithoutMessage(115, 1);
-                                RemoveItemWithoutMessage(116, 1);
-                                QueueResourceMessage(STRING_WISDOM_FULL, 65);
-                            }
-                            custom = true;
-                            break;
-
-                        case 124: //potato
-                            if (itemPickedUp[1] == 3)
-                            {
-                                AddItemWithoutMessage(124, 3);
-                                QueuePopupMessage(138, 2, 66);
-                                custom = true;
-                            }
-                            break;
-
-                        case 160: //harp pieces
-                        case 161:
-                        case 162:
-                        case 163:
-                            var harpPieces = ReadMemory(0xfb54, 4);
-                            if (harpPieces.Count(c => c != 0) == 3)
-                            {
-                                CompleteEvent(44);
-
-                                AddItemWithMessage(newItemId, 1);
-
-                                for (var i = 0; i < harpPieces.Length; i++)
-                                {
-                                    RemoveItemWithoutMessage((byte)(i + 160), 1);
+                                    Enqueue(writeQueueSafe, bucketPairs);
                                 }
+                                break;
 
-                                AddItemWithoutMessage(164, 1);
-                                QueueResourceMessage(STRING_HARP, 65);
+                            case 41: //crab basket
+                                WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6));
+                                break;
 
+                            case 77: //chick food
+                                AddItemWithoutMessage(77, 2);
+                                QueuePopupMessage(87, 2, 66);
                                 custom = true;
-                            }
-                            else
-                            {
-                                AddItemWithMessage(newItemId, 1);
-                            }
-                            break;
+                                break;
 
-                        default:
-                            break;
+                            case 96: //magic wings
+                                if (itemPickedUp[1] == 2)
+                                {
+                                    AddItemWithoutMessage(96, 2);
+                                    QueuePopupMessage(137, 2, 66);
+                                    custom = true;
+                                }
+                                break;
+
+                            case 112: //spell of courage
+                                if (ReadMemory(0xfb24) == 0)
+                                {
+                                    AddItemWithoutMessage(112, 1);
+                                    QueueResourceMessage(STRING_COURAGE_HALF, 65);
+                                }
+                                else
+                                {
+                                    AddItemWithoutMessage(111, 1);
+                                    RemoveItemWithoutMessage(112, 1);
+                                    QueueResourceMessage(STRING_COURAGE_FULL, 65);
+                                }
+                                custom = true;
+                                break;
+                            case 114: //spell of strength
+                                if (ReadMemory(0xfb26) == 0)
+                                {
+                                    AddItemWithoutMessage(114, 1);
+                                    QueueResourceMessage(STRING_STRENGTH_HALF, 65);
+                                }
+                                else
+                                {
+                                    AddItemWithoutMessage(113, 1);
+                                    RemoveItemWithoutMessage(114, 1);
+                                    QueueResourceMessage(STRING_STRENGTH_FULL, 65);
+                                }
+                                custom = true;
+                                break;
+                            case 116: //spell of wisdom
+                                if (ReadMemory(0xfb28) == 0)
+                                {
+                                    AddItemWithoutMessage(116, 1);
+                                    QueueResourceMessage(STRING_WISDOM_HALF, 65);
+                                }
+                                else
+                                {
+                                    AddItemWithoutMessage(115, 1);
+                                    RemoveItemWithoutMessage(116, 1);
+                                    QueueResourceMessage(STRING_WISDOM_FULL, 65);
+                                }
+                                custom = true;
+                                break;
+
+                            case 124: //potato
+                                if (itemPickedUp[1] == 3)
+                                {
+                                    AddItemWithoutMessage(124, 3);
+                                    QueuePopupMessage(138, 2, 66);
+                                    custom = true;
+                                }
+                                break;
+
+                            case 160: //harp pieces
+                            case 161:
+                            case 162:
+                            case 163:
+                                var harpPieces = ReadMemory(0xfb54, 4);
+                                if (harpPieces.Count(c => c != 0) == 3)
+                                {
+                                    CompleteEvent(44);
+
+                                    AddItemWithMessage(newItemId, 1);
+
+                                    for (var i = 0; i < harpPieces.Length; i++)
+                                    {
+                                        RemoveItemWithoutMessage((byte)(i + 160), 1);
+                                    }
+
+                                    AddItemWithoutMessage(164, 1);
+                                    QueueResourceMessage(STRING_HARP, 65);
+
+                                    custom = true;
+                                }
+                                else
+                                {
+                                    AddItemWithMessage(newItemId, 1);
+                                }
+                                break;
+
+                            default:
+                                break;
+                        }
                     }
 
                     if (!custom) AddItemWithMessage(newItemId, 1);
@@ -408,7 +436,7 @@ public class MemoryManipulator
                 {
                     foreach (var pair in item.AddressValuePairs)
                     {
-                        WriteMemory(pair.Address, pair.Value, true);
+                        WriteMemory(pair.Address, pair.Value, pair.Ptr, true);
                     }
                     item.DequeueTimeStamp = newIgt;
                 }
@@ -592,7 +620,7 @@ public class MemoryManipulator
         WriteProcessMemory((int)handle, (int)textPtr, values, values.Count(), out bytesWritten);
     }
 
-    public void WriteMemory(int address, byte value, IntPtr ptr, bool ignoreRandom = false) => WriteMemory(address, [value], ptr);
+    public void WriteMemory(int address, byte value, IntPtr ptr, bool ignoreRandom = false) => WriteMemory(address, [value], ptr == 0 ? basePtr : ptr);
 
     public void WriteMemory(int address, byte[] values, bool ignoreRandom = false) => WriteMemory(address, values, basePtr);
 
@@ -665,13 +693,36 @@ public class MemoryManipulator
                 {
                     warping = false;
 
-                    Thread.Sleep(100);
+                    Thread.Sleep(500);
 
                     switch (ReadMemory(0xf870)) //current area
                     {
                         case 0:
-                            WriteMemory(0x7c30, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], binPtr); //disable pink bucket auto-equip
+                            WriteMemory(0x7c18, new byte[12], binPtr); //disable pink bucket queue resource message on pickup
+                            WriteMemory(0x7c30, new byte[28], binPtr); //disable pink bucket auto-equip
                             WriteMemory(0x6f34, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 36, 1, 0, 2, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr); //disable attaching crab basket to tomba
+                            WriteMemory(0xc0bc, new byte[44] , binPtr); //disable crab pickup message
+                            break;
+                        case 1:
+                            if (ReadMemory(0xf8bc) != 255) WriteMemory(-0x3ce8, [73, 0], binPtr); //disable travel to starting beach if win's windmill not completed
+                            break;
+                        case 2:
+                            if (ReadMemory(0xf8bf) != 255) WriteMemory(0x25b8, new byte[128], binPtr); //disable travel to pipe area if pull and open not completed
+                            break;
+                        case 4:
+                            if (ReadMemory(0xf8c6) != 255) WriteMemory(0xf3ec, 3, binPtr); //disable trolley to CMT if deliver to gran not completed
+                            break;
+                        case 5:
+                            if (ReadMemory(0xf8ca) != 255) WriteMemory(0x19e8c, 3, binPtr); //disable lift to ranch if let's take the lift not completed
+                            break;
+                        case 6:
+                            if (ReadMemory(0xf8cd) != 255) WriteMemory(0x14074, 3, binPtr); //disable lift to summit if static explosion not completed
+                            break;
+                        case 7:
+                            if (ReadMemory(0xf8d5) != 255) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
+                            break;
+                        case 8:
+                            if (ReadMemory(0xf8dc) != 255) WriteMemory(-0x5354, new byte[28], binPtr); //disable travel to circus village if a pig tribe clown statue not completed
                             break;
                         default:
                             break;
@@ -681,7 +732,7 @@ public class MemoryManipulator
                     {
                         foreach (var pair in item.AddressValuePairs)
                         {
-                            WriteMemory(pair.Address, pair.Value, true);
+                            WriteMemory(pair.Address, pair.Value, pair.Ptr, true);
                         }
                         item.DequeueTimeStamp = ReadTimer();
                     }
@@ -702,94 +753,129 @@ public class MemoryManipulator
 
         var warpDestination = ReadMemory(0xf83a, 2);
 
-        if (warpDestination[1] == 0)
+        switch (warpDestination[1])
         {
-            var rareFishGrabbed = ((ReadMemory(0xf9c1) >> 1) & 1) == 1;
-            var rareFishInInventory = ReadMemory(0xfaee);
-            var rareFishDelivered = ReadMemory(0xf9c0);
+            case 0:
+                var rareFishGrabbed = ((ReadMemory(0xf9c1) >> 1) & 1) == 1;
+                var rareFishInInventory = ReadMemory(0xfaee);
+                var rareFishDelivered = ReadMemory(0xf9c0);
 
-            if (!rareFishGrabbed) // rare fish hasn't been grabbed
-            {
-                if (rareFishInInventory > 0) // rare fish in inventory -> temporarily remove until area loaded
+                if (!rareFishGrabbed) // rare fish hasn't been grabbed
                 {
-                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfaee, Value = rareFishInInventory });
-                    WriteMemory(0xfaee, 0, true);
+                    if (rareFishInInventory > 0) // rare fish in inventory -> temporarily remove until area loaded
+                    {
+                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfaee, Value = rareFishInInventory });
+                        WriteMemory(0xfaee, 0, true);
+                    }
+                    if (((rareFishDelivered >> 0) & 1) == 1) // rare fish delivered -> temporarily set flag to false, then change back after loading in
+                    {
+                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf9c0, Value = rareFishDelivered });
+                        WriteMemory(0xf9c0, 0);
+                    }
                 }
-                if (((rareFishDelivered >> 0) & 1) == 1) // rare fish delivered -> temporarily set flag to false, then change back after loading in
+                else if (rareFishInInventory == 0) // stop rare fish from appearing if grabbed and no fish in inventory
                 {
-                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf9c0, Value = rareFishDelivered });
-                    WriteMemory(0xf9c0, 0);
+                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfaee, Value = 0 });
+                    WriteMemory(0xfaee, 1, true);
                 }
-            }
-            else if (rareFishInInventory == 0) // stop rare fish from appearing if grabbed and no fish in inventory
-            {
-                Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfaee, Value = 0 });
-                WriteMemory(0xfaee, 1, true);
-            }
 
-            var cogGrabbed = ((ReadMemory(0xf9c1) >> 2) & 1) == 1;
-            var cogInInventory = ReadMemory(0xfad8);
-            var windItUpCompleted = ReadMemory(0xf8b9);
+                var cogGrabbed = ((ReadMemory(0xf9c1) >> 2) & 1) == 1;
+                var cogInInventory = ReadMemory(0xfad8);
+                var windItUpCompleted = ReadMemory(0xf8b9);
 
-            if (!cogGrabbed) // star-shaped cog hasn't been grabbed
-            {
-                if (cogInInventory > 0) // star-shaped cog in inventory -> temporarily remove until area loaded
+                if (!cogGrabbed) // star-shaped cog hasn't been grabbed
                 {
-                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = cogInInventory });
-                    WriteMemory(0xfad8, 0, true);
+                    if (cogInInventory > 0) // star-shaped cog in inventory -> temporarily remove until area loaded
+                    {
+                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = cogInInventory });
+                        WriteMemory(0xfad8, 0, true);
+                    }
+                    if (windItUpCompleted == 255) // wind it up event completed -> temporarily set to not started, then change back after loading in
+                    {
+                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf8b9, Value = windItUpCompleted });
+                        WriteMemory(0xf8b9, 0);
+                    }
                 }
-                if (windItUpCompleted == 255) // wind it up event completed -> temporarily set to not started, then change back after loading in
+                else if (cogInInventory == 0 && windItUpCompleted != 255) // stop star-shaped cog from appearing if grabbed and no cog in inventory and event not completed
                 {
-                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf8b9, Value = windItUpCompleted });
-                    WriteMemory(0xf8b9, 0);
+                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = 0 });
+                    WriteMemory(0xfad8, 1, true);
                 }
-            }
-            else if (cogInInventory == 0 && windItUpCompleted != 255) // stop star-shaped cog from appearing if grabbed and no cog in inventory and event not completed
-            {
-                Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = 0 });
-                WriteMemory(0xfad8, 1, true);
-            }
 
-            if (warpDestination[0] != 0 && warpDestination[0] != 9) //Entering waterfall area of starting beach
-            {
-                if (ReadMemory(0xf9dd) < 11)
+                if (warpDestination[0] != 0 && warpDestination[0] != 9) //Entering waterfall area of starting beach
                 {
-                    WriteMemory(0xf9dd, 11); //Can now jump over unraised net bridge
-                    WriteMemory(0xf9e5, 2); //Spawn pig holding crab basket and crabs
+                    if (ReadMemory(0xf9dd) < 11)
+                    {
+                        WriteMemory(0xf9dd, 11); //Can now jump over unraised net bridge
+                        WriteMemory(0xf9e5, 2); //Spawn pig holding crab basket and crabs
+                    }
                 }
-            }
 
-            crabsObtained = ReadMemory(0xf9e3);
+                crabsObtained = ReadMemory(0xf9e3);
 
-            if (ReadMemory(0xfadd) > 0) //player has crab basket in inventory
-            {
-                if (ReadMemory(0xf8ba) != 255) //The Crab Basket event not completed
+                if (ReadMemory(0xfadd) > 0) //player has crab basket in inventory
                 {
-                    WriteMemory(0xf9e5, 2); //spawn basket-holding pig
+                    if (ReadMemory(0xf8ba) != 255) //The Crab Basket event not completed
+                    {
+                        WriteMemory(0xf9e5, 2); //spawn basket-holding pig
+                    }
+                    else if (ReadMemory(0xf8bb) != 255) // Collect the Golden Crabs event not completed
+                    {
+                        WriteMemory(0xf9e5, 6); //enable crab catching
+                    }
+                    else
+                    {
+                        WriteMemory(0xf9e5, 7); //disable crab catching
+                    }
                 }
-                else if (ReadMemory(0xf8bb) != 255) // Collect the Golden Crabs event not completed
+
+                if (ReadMemory(0xf9e5) > 0) //disable spawning basket pig when raising bridge if pig has already been spawned/basket has been collected.
                 {
-                    WriteMemory(0xf9e5, 6); //enable crab catching
+
+                    WriteMemory(0xc954, new byte[96], binPtr);
+                    WriteMemory(0xc9c0, new byte[4], binPtr);
                 }
-                else
+
+                var tempCrabInfo = ReadMemory(0xf9e2, 2);
+
+                if (tempCrabInfo[0] != 0)
                 {
-                    WriteMemory(0xf9e5, 7); //disable crab catching
+                    WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
                 }
-            }
+                break;
 
-            if (ReadMemory(0xf9e5) > 0) //disable spawning basket pig when raising bridge if pig has already been spawned/basket has been collected.
-            {
+            case 5:
+                if (warpDestination[0] == 6) //travelling backwards from donglin
+                {
+                    if (ReadMemory(0xf8cd) != 255) //static explosion event not completed
+                    {
+                        var kujaraPurified = (ReadMemory(0xfe56) & 32) == 32;
+                        var hasSquirrelClothes = ReadMemory(0xfac3) == 1;
 
-                WriteMemory(0xc954, new byte[96], binPtr); 
-                WriteMemory(0xc9c0, new byte[4], binPtr);
-            }
+                        if (kujaraPurified || hasSquirrelClothes)
+                        {
+                            WriteMemory(0x65210, [250, 56, 52, 208, 104, 57, 10, 1], globalPtr); //overwrite warp destination coordinates to put player outside of Pham's hut
+                            Enqueue(writeQueueWarp, 0x65210, [0, 43, 192, 208, 0, 78, 10, 43], globalPtr); //revert changes after warp
 
-            var tempCrabInfo = ReadMemory(0xf9e2, 2);
+                            if (!kujaraPurified)
+                            {
+                                if (ReadMemory(0x37eef) != 15) //auto-equip squirrel clothes if not equipped (maybe add invisibility checks etc)
+                                {
+                                    Enqueue(writeQueueWarp, 0xf88f, [15]); 
+                                    Enqueue(writeQueueWarp, 0x37eef, [15]);
+                                    Enqueue(writeQueueWarp, 0xf81d, [1]);
+                                    Enqueue(writeQueueWarp, 0x37e84, [4, 17, 0]);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            WriteMemory(0xf83a, 5); //just warp to start of summit if you can't do anything there
+                        }
+                    }
+                }
 
-            if (tempCrabInfo[0] != 0)
-            {
-                WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
-            }
+                break;
         }
 
         var pigDoorsOpened = ReadMemory(0xfa17);
@@ -816,8 +902,8 @@ public class MemoryManipulator
                         new AddressValuePair { Address = warpDestination[1] == 0 ? 0x4e81d : 0x4e26d, Value = 4 },
                     };
 
-                Enqueue(writeQueueWarp, pairs);
                 WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
+                Enqueue(writeQueueWarp, pairs);
             }
         }
 
@@ -903,6 +989,19 @@ public class MemoryManipulator
 
     public void Enqueue(List<QueuedChange> queue, List<AddressValuePair> pairs) => queue.Add(new QueuedChange(ReadTimer(), pairs));
     public void Enqueue(List<QueuedChange> queue, AddressValuePair pair) => Enqueue(queue, new List<AddressValuePair> { pair });
+
+    public void Enqueue(List<QueuedChange> queue, int address, byte[] values, IntPtr ptr)
+    {
+        var pairs = new List<AddressValuePair>();
+        for (int i = 0; i < values.Length; i++)
+        {
+            pairs.Add(new AddressValuePair { Address = address + i, Value = values[i], Ptr = ptr });
+        }
+
+        Enqueue(queue, pairs);
+    }
+
+    public void Enqueue(List<QueuedChange> queue, int address, byte[] values) => Enqueue(queue, address, values, basePtr);
 
     private void ClearQueueHistories()
     {

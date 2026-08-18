@@ -11,7 +11,13 @@
 				"events": [ 8 ]
 			},
 			{
-				"areas": [ 3 ]
+				"events": [ 19, 27 ],
+				"areas": [ 5 ]
+			},
+			{
+				"items": [ 13 ],
+				"events": [ 19 ],
+				"areas": [ 5 ]
 			}
 		]
 	},
@@ -24,9 +30,6 @@
 			},
 			{
 				"events": [ 11 ]
-			},
-			{
-				"areas": [ 4 ]
 			}
 		]
 	},
@@ -36,9 +39,6 @@
 		"requirements": [
 			{
 				"events": [ 18 ]
-			},
-			{
-				"areas": [ 5 ]
 			}
 		]
 	},
@@ -48,9 +48,6 @@
 		"requirements": [
 			{
 				"events": [ 22 ]
-			},
-			{
-				"areas": [ 6 ]
 			}
 		]
 	},
@@ -78,6 +75,9 @@
 		"requirements": [
 			{
 				"events": [ 29 ]
+			},
+			{
+				"areas": [ 8 ]
 			}
 		]
 	},
@@ -96,9 +96,6 @@
 			{
 				"items": [ 8 ],
 				"areas": [ 7 ]
-			},
-			{
-				"areas": [ 9 ]
 			}
 		]
 	},
@@ -108,9 +105,6 @@
 		"requirements": [
 			{
 				"events": [ 33 ]
-			},
-			{
-				"areas": [ 10 ]
 			}
 		]
 	},
