@@ -253,6 +253,10 @@ public class MemoryManipulator
 
                             break;
 
+                        case 48: //blue fruit collected
+                            SetFlagBlueFruit();
+                            break;
+
                         case 56:
                         case 57: //red/blue chick pickup checks
                             var chickStatus = ReadMemory(0xf9f2);
@@ -414,12 +418,6 @@ public class MemoryManipulator
 
                                     AddItemWithoutMessage(164, 1);
                                     QueueResourceMessage(STRING_HARP, 65);
-
-                                    custom = true;
-                                }
-                                else
-                                {
-                                    AddItemWithMessage(newItemId, 1);
                                 }
                                 break;
 
@@ -882,6 +880,32 @@ public class MemoryManipulator
 
                 break;
 
+            case 6:
+                var blueFruitGrabbed = ((ReadMemory(0xf9c1) >> 4) & 1) == 1;
+                var blueFruitInInventory = ReadMemory(0xfae4);
+                var blueFruitDelivered = ReadMemory(0xf8d3);
+
+                if (!blueFruitGrabbed) // blue fruit hasn't been grabbed
+                {
+                    if (blueFruitInInventory > 0) // blue fruit in inventory -> temporarily remove until area loaded
+                    {
+                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfae4, Value = blueFruitInInventory });
+                        WriteMemory(0xfae4, 0, true);
+                    }
+                    if (blueFruitDelivered == 255) // blue fruit delivered -> temporarily set flag to false, then change back after loading in
+                    {
+                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf8d3, Value = blueFruitDelivered });
+                        WriteMemory(0xf8d3, 0);
+                    }
+                }
+                else if (blueFruitInInventory == 0) // stop blue fruit from appearing if grabbed and blue fruit in inventory
+                {
+                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfae4, Value = 0 });
+                    WriteMemory(0xfae4, 1, true);
+                }
+
+                break;
+
             case 8:
                 var roundCogGrabbed = ((ReadMemory(0xf9c1) >> 3) & 1) == 1;
                 var roundCogInInventory = ReadMemory(0xfadb);
@@ -994,6 +1018,7 @@ public class MemoryManipulator
     private void SetFlagRareFish() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0010));
     private void SetFlagStarShapedCog() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0100));
     private void SetFlagRoundCog() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_1000));
+    private void SetFlagBlueFruit() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0001_0000));
 
     private void HandleRewind(int time)
     {
