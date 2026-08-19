@@ -211,6 +211,10 @@ public class MemoryManipulator
                             SetFlagStarShapedCog();
                             break;
 
+                        case 39: //round cog collected
+                            SetFlagRoundCog();
+                            break;
+
                         case 40: //pink bucket
                             if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
                             {
@@ -779,15 +783,15 @@ public class MemoryManipulator
                     WriteMemory(0xfaee, 1, true);
                 }
 
-                var cogGrabbed = ((ReadMemory(0xf9c1) >> 2) & 1) == 1;
-                var cogInInventory = ReadMemory(0xfad8);
+                var starCogGrabbed = ((ReadMemory(0xf9c1) >> 2) & 1) == 1;
+                var starCogInInventory = ReadMemory(0xfad8);
                 var windItUpCompleted = ReadMemory(0xf8b9);
 
-                if (!cogGrabbed) // star-shaped cog hasn't been grabbed
+                if (!starCogGrabbed) // star-shaped cog hasn't been grabbed
                 {
-                    if (cogInInventory > 0) // star-shaped cog in inventory -> temporarily remove until area loaded
+                    if (starCogInInventory > 0) // star-shaped cog in inventory -> temporarily remove until area loaded
                     {
-                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = cogInInventory });
+                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = starCogInInventory });
                         WriteMemory(0xfad8, 0, true);
                     }
                     if (windItUpCompleted == 255) // wind it up event completed -> temporarily set to not started, then change back after loading in
@@ -796,7 +800,7 @@ public class MemoryManipulator
                         WriteMemory(0xf8b9, 0);
                     }
                 }
-                else if (cogInInventory == 0 && windItUpCompleted != 255) // stop star-shaped cog from appearing if grabbed and no cog in inventory and event not completed
+                else if (starCogInInventory == 0 && windItUpCompleted != 255) // stop star-shaped cog from appearing if grabbed and no cog in inventory and event not completed
                 {
                     Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = 0 });
                     WriteMemory(0xfad8, 1, true);
@@ -842,6 +846,7 @@ public class MemoryManipulator
                 {
                     WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
                 }
+
                 break;
 
             case 5:
@@ -873,6 +878,32 @@ public class MemoryManipulator
                             WriteMemory(0xf83a, 5); //just warp to start of summit if you can't do anything there
                         }
                     }
+                }
+
+                break;
+
+            case 8:
+                var roundCogGrabbed = ((ReadMemory(0xf9c1) >> 3) & 1) == 1;
+                var roundCogInInventory = ReadMemory(0xfadb);
+                var waterGateCompleted = ReadMemory(0xf8df);
+
+                if (!roundCogGrabbed) // round cog hasn't been grabbed
+                {
+                    if (roundCogInInventory > 0) // round cog in inventory -> temporarily remove until area loaded
+                    {
+                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfadb, Value = roundCogInInventory });
+                        WriteMemory(0xfadb, 0, true);
+                    }
+                    if (waterGateCompleted == 255) // open the water gate completed -> temporarily set to not started, then change back after loading in
+                    {
+                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf8df, Value = waterGateCompleted });
+                        WriteMemory(0xf8df, 0);
+                    }
+                }
+                else if (roundCogInInventory == 0 && waterGateCompleted != 255) // stop round cog from appearing if grabbed and no cog in inventory and event not completed
+                {
+                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfadb, Value = 0 });
+                    WriteMemory(0xfadb, 1, true);
                 }
 
                 break;
@@ -962,6 +993,7 @@ public class MemoryManipulator
 
     private void SetFlagRareFish() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0010));
     private void SetFlagStarShapedCog() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0100));
+    private void SetFlagRoundCog() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_1000));
 
     private void HandleRewind(int time)
     {

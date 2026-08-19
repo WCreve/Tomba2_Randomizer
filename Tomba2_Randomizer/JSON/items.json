@@ -52,7 +52,7 @@
 		"address": "0xfab9",
 		"requirements": [
 			{
-				"items": [ 28, 101, 104],
+				"items": [ 28, 101, 104 ],
 				"areas": [ 2 ],
 				"events": [ 98 ]
 			}
@@ -155,7 +155,7 @@
 		"address": "0xfac2",
 		"requirements": [
 			{
-				"events": [ 65 ]
+				"events": [ 66 ]
 			}
 		]
 	},
@@ -485,7 +485,7 @@
 				"events": [ 5 ]
 			},
 			{
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			}
 		]
 	},
@@ -514,7 +514,7 @@
 			},
 			{
 				"items": [ 39 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			}
 		]
 	},
@@ -531,7 +531,7 @@
 			},
 			{
 				"items": [ 39 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			}
 		]
 	},
@@ -666,11 +666,11 @@
 		"requirements": [
 			{
 				"events": [ 5 ],
-				"AP": 50000
+				"AP": 30000
 			},
 			{
-				"areas": [ 2 ],
-				"AP": 50000
+				"events": [ 48 ],
+				"AP": 30000
 			}
 		]
 	},
@@ -1048,7 +1048,7 @@
 				"events": [ 5 ]
 			},
 			{
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			}
 		]
 	},
@@ -1263,11 +1263,11 @@
 			},
 			{
 				"items": [ 1 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			},
 			{
 				"items": [ 2 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			}
 		]
 	},

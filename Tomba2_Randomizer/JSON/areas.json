@@ -60,12 +60,6 @@
 			},
 			{
 				"items": [ 140 ]
-			},
-			{
-				"areas": [ 7 ]
-			},
-			{
-				"areas": [ 8 ]
 			}
 		]
 	},
@@ -75,9 +69,6 @@
 		"requirements": [
 			{
 				"events": [ 29 ]
-			},
-			{
-				"areas": [ 8 ]
 			}
 		]
 	},
@@ -87,15 +78,15 @@
 		"requirements": [
 			{
 				"items": [ 6 ],
-				"areas": [ 7 ]
+				"events": [ 29 ]
 			},
 			{
 				"items": [ 7 ],
-				"areas": [ 7 ]
+				"events": [ 29 ]
 			},
 			{
 				"items": [ 8 ],
-				"areas": [ 7 ]
+				"events": [ 29 ]
 			}
 		]
 	},

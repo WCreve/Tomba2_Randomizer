@@ -19,7 +19,7 @@
 		"AP": 2000,
 		"primary": true,
 		"requirements": [
-			{				
+			{
 				"items": [ 38 ],
 				"events": [ 2 ]
 			}
@@ -58,9 +58,6 @@
 		"requirements": [
 			{
 				"events": [ 5 ]
-			}, 
-			{
-				"areas": [ 2 ]
 			}
 		]
 	},
@@ -74,11 +71,10 @@
 			{
 				"items": [ 39 ],
 				"events": [ 4, 5 ]
-			}, 
+			},
 			{
 				"items": [ 39 ],
-				"areas": [ 2 ],
-				"events": [ 4 ]
+				"events": [ 4, 48 ]
 			}
 		]
 	},
@@ -92,10 +88,10 @@
 			{
 				"items": [ 40, 41, 42 ],
 				"events": [ 5 ]
-			}, 
+			},
 			{
 				"items": [ 40, 41, 42 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			}
 		]
 	},
@@ -109,7 +105,7 @@
 			{
 				"items": [ 4 ],
 				"areas": [ 2 ]
-			}, 
+			},
 			{
 				"items": [ 5 ],
 				"areas": [ 2 ]
@@ -126,7 +122,7 @@
 			{
 				"items": [ 4 ],
 				"areas": [ 2 ]
-			}, 
+			},
 			{
 				"items": [ 5 ],
 				"areas": [ 2 ]
@@ -143,7 +139,7 @@
 			{
 				"items": [ 4 ],
 				"areas": [ 2 ]
-			}, 
+			},
 			{
 				"items": [ 5 ],
 				"areas": [ 2 ]
@@ -768,31 +764,31 @@
 			},
 			{
 				"items": [ 1, 25 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			},
 			{
 				"items": [ 2, 25 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			},
 			{
 				"items": [ 10, 25 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			},
 			{
 				"items": [ 13, 25 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			},
 			{
 				"items": [ 14, 25 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			},
 			{
 				"items": [ 15, 25 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			},
 			{
 				"items": [ 25, 105 ],
-				"areas": [ 2 ]
+				"events": [ 48 ]
 			}
 		]
 	},
@@ -828,7 +824,7 @@
 		"AP": 0,
 		"primary": true,
 		"requirements": [
-			{	
+			{
 				"events": [ 50 ]
 			}
 		]
@@ -903,11 +899,11 @@
 		"requirements": [
 			{
 				"events": [ 5 ],
-				"AP": 50000
+				"AP": 30000
 			},
 			{
-				"areas": [ 2 ],
-				"AP": 50000
+				"events": [ 48 ],
+				"AP": 30000
 			},
 			{
 				"areas": [ 2 ],
@@ -1046,9 +1042,6 @@
 		"requirements": [
 			{
 				"events": [ 5 ]
-			},
-			{
-				"areas": [ 2 ]
 			}
 		]
 	},
@@ -1060,10 +1053,12 @@
 		"primary": false,
 		"requirements": [
 			{
+				"items": [ 79 ],
 				"events": [ 5 ]
 			},
 			{
-				"areas": [ 2 ]
+				"items": [ 79 ],
+				"events": [ 48 ]
 			}
 		]
 	},
