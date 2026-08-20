@@ -187,78 +187,18 @@ namespace Tomba2_Randomizer
 
                     UpdateEventsAndAreas(true);
 
-                    foreach (var reqGroup in randomAvailableItem.RequirementGroups)
-                    {
-                        if (reqGroup.Areas.All(a => a.Unlocked) && reqGroup.Events.All(e => e.Unlocked) && !reqGroup.Items.Except(RandomizedItems.Values).Any())
-                        {
-                            randomAvailableItem.ImportantGroups.Add(reqGroup);
-                        }
-                    }
-
-                    //if (AvailableItems.Except(RandomizedItems.Keys).Count() > availableItemPool.Count() + 1)
-                    //{
-                    //    RandomizedItems[randomAvailableItem].Important = true;
-                    //    DebugString += $"{randomAvailableItem.Name} gives {RandomizedItems[randomAvailableItem].Name} [IMPORTANT]\n";
-                    //}
-                    //else
-                    //{
-                    //    DebugString += $"{randomAvailableItem.Name} gives {RandomizedItems[randomAvailableItem].Name}\n";
-                    //}
-
-                    //DebugString += $"{randomAvailableItem.Name} gives {RandomizedItems[randomAvailableItem].Name}\n";
-
-                    //if (!string.IsNullOrEmpty(debugQueue)) DebugString += $"{debugQueue}\n";
                     debugQueue = "";
                 }
                 else
                 {
-                    var currentAvailableItems = AvailableItems.ToList();
-                    var currentAvailableEvents = events.Values.Where(e => e.Unlocked);
-                    var currentAvailableAreas = areas.Values.Where(a => a.Unlocked);
+                    var keyPool = RandomizedItems.Keys.Where(k => !RandomizedItems.Keys.Any(i => i.RequirementGroups.Any(g => g.Items.Contains(RandomizedItems[k]))) && !events.Values.Any(e => e.Unlocked && e.RequirementGroups.Any(g => g.Items.Contains(RandomizedItems[k])) && !areas.Values.Any(a => a.Unlocked && a.RequirementGroups.Any(g => g.Items.Contains(RandomizedItems[k]))))).ToList();
 
-                    bool validKeyFound = false;
-
-                    var keyPool = RandomizedItems.Keys.Where(k => !k.Important).ToList();
-
-                    while (!validKeyFound)
-                    {
-                        var randomKey = keyPool.ElementAt(r.Next(keyPool.Count()));
-                        var oldItem = RandomizedItems[randomKey];
+                    var randomKey = keyPool.ElementAt(r.Next(keyPool.Count()));
                         
-                        RandomizedItems[randomKey] = randomItemPool.ElementAt(r.Next(randomItemPool.Count()));
+                    RandomizedItems[randomKey] = randomItemPool.ElementAt(r.Next(randomItemPool.Count()));
                             
-                        UpdateEventsAndAreas(false);
-                        UpdateEventsAndAreas(true);
-
-                        if (RandomizedItems.Keys.Any(k => k.ImportantGroups.Any() && k.ImportantGroups.Any(g => g.Items.Except(RandomizedItems.Values).Any() || g.Events.Any(e => !e.Unlocked) || g.Areas.Any(a => !a.Unlocked))))
-                        {
-                            RandomizedItems[randomKey] = oldItem;
-
-                            UpdateEventsAndAreas(false);
-                            UpdateEventsAndAreas(true);
-
-                            randomKey.ImportantGroups = [];
-
-                            foreach (var reqGroup in randomKey.RequirementGroups)
-                            {
-                                if (reqGroup.Areas.All(a => a.Unlocked) && reqGroup.Events.All(e => e.Unlocked) && !reqGroup.Items.Except(RandomizedItems.Values).Any())
-                                {
-                                    randomKey.ImportantGroups.Add(reqGroup);
-                                }
-                            }
-
-                            keyPool.Remove(randomKey);
-
-                            debugQueue = "";
-                        }
-                        else
-                        {
-                            validKeyFound = true;
-
-                            //DebugString += $"{randomKey.Name} now gives {RandomizedItems[randomKey].Name} instead of {oldItem.Name}\n";
-                            //if (!string.IsNullOrEmpty(debugQueue)) DebugString += $"{debugQueue}\n";
-                        }
-                    }
+                    UpdateEventsAndAreas(false);
+                    UpdateEventsAndAreas(true);
                 }
             }
 
@@ -271,8 +211,6 @@ namespace Tomba2_Randomizer
             {
                 DebugString += $"{pair.Key.Name} gives {pair.Value.Name}\n";
             }
-
-            //if (!string.IsNullOrEmpty(debugQueue)) DebugString += $"{debugQueue}\n";
         }
 
         public void Randomize(string itemString)
@@ -287,13 +225,16 @@ namespace Tomba2_Randomizer
 
         private void UpdateEventsAndAreas(bool unlock)
         {
-            var eventCount = events.Values.Count(e => e.Unlocked != unlock);
-            var areaCount = areas.Values.Count(a => a.Unlocked != unlock);
+            var changed = false;
 
             foreach (var ev in events.Values.Where(e => e.Unlocked != unlock))
             {
                 var isUnlocked = !ev.RequirementGroups.Any() || ev.RequirementGroups.Any(rg => !rg.Items.Except(RandomizedItems.Values).Any() && rg.Events.All(e => e.Unlocked) && rg.Areas.All(a => a.Unlocked) && events.Values.Where(e => e.Unlocked).Sum(e => e.AP) >= rg.AP);
-                ev.Unlocked = isUnlocked;
+                if (ev.Unlocked != isUnlocked)
+                {
+                    ev.Unlocked = isUnlocked;
+                    changed = true;
+                }
 
                 if (unlock && isUnlocked) debugQueue += $"EVENT {ev.Name} Unlocked\n";
                 else if (!unlock && !isUnlocked) debugQueue += $"EVENT {ev.Name} Relocked\n";
@@ -302,13 +243,17 @@ namespace Tomba2_Randomizer
             foreach (var area in areas.Values.Where(a => a.Unlocked != unlock))
             {
                 var isUnlocked = !area.RequirementGroups.Any() || area.RequirementGroups.Any(rg => !rg.Items.Except(RandomizedItems.Values).Any() && rg.Events.All(e => e.Unlocked) && rg.Areas.All(a => a.Unlocked));
-                area.Unlocked = isUnlocked;
+                if (area.Unlocked != isUnlocked)
+                {
+                    area.Unlocked = isUnlocked;
+                    changed = true;
+                }
 
                 if (unlock && isUnlocked) debugQueue += $"AREA {area.Name} Unlocked\n";
                 else if (!unlock && !isUnlocked) debugQueue += $"AREA {area.Name} Relocked\n";
             }
 
-            if (eventCount != events.Values.Count(e => e.Unlocked != unlock) || areaCount != areas.Values.Count(a => a.Unlocked != unlock)) UpdateEventsAndAreas(unlock);
+            if (changed) UpdateEventsAndAreas(unlock);
         }
     }
 }

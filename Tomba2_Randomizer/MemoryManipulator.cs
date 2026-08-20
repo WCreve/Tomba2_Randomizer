@@ -755,6 +755,10 @@ public class MemoryManipulator
                         WriteMemory(0xf9e5, 7); //disable crab catching
                     }
                 }
+                else if (ReadMemory(0xf8ba) == 255)
+                {
+                    WriteMemory(0xf9e5, 7); //prevent crab basket from spawning and disable catching if it has already been picked up
+                }
 
                 var tempCrabInfo = ReadMemory(0xf9e2, 2);
 
