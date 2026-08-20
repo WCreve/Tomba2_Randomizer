@@ -40,6 +40,7 @@ public class MemoryManipulator
 
     private Randomizer randomizer;
 
+    private byte loadedBin;
     private byte crabsObtained;
 
     public MemoryManipulator(Process process)
@@ -140,7 +141,7 @@ public class MemoryManipulator
 
         WriteMemory(0x5720, [172, 167, 4, 128, 172, 167, 4, 128, 172, 167, 4, 128, 172, 167, 4, 128], switchPtr); //disable all harp piece pickup logic
 
-        WriteMemory(0x28380, new byte[32], globalPtr); //disable attaching crab basket to tomba on area load
+        WriteMemory(0x2838c, 73, globalPtr); //disable attaching crab basket to tomba on area load
 
         WriteMemory(0xd338, [12, 128, 2, 60, 176, 248, 68, 160, 12, 128, 2, 60, 177, 248, 69, 160], globalPtr); //override AddInventoryQuantity function
         WriteMemory(0xd348, new byte[372], globalPtr);
@@ -156,6 +157,13 @@ public class MemoryManipulator
     {
         while (ProcessIsActive && randomizer != null)
         {
+            var currentBin = ReadMemory(-0x7064, binPtr);
+            if (currentBin != loadedBin)
+            {
+                loadedBin = currentBin;
+                EditBinMemory();
+            }
+
             if (ReadMemory(0xf8b3) == 0) InitializeGame();
 
             var itemPickedUp = ReadMemory(0xf8b0, 3);
@@ -222,16 +230,6 @@ public class MemoryManipulator
                                 custom = true;
                                 break;
                             }
-                            break;
-
-                        case 41: //crab basket
-                            if ((ReadMemory(0xfadd) <= 1 || ReadMemory(0xf8bb) == 255) && newItemId != 41) //if no crab basket in inventory, or all crabs have been caught, re-disable crab catching
-                            {
-                                WriteMemory(0xf9e5, 7);
-                            }
-
-                            WriteMemory(0xc954, new byte[96], binPtr); //disable spawning basket pig when raising bridge
-                            WriteMemory(0xc9c0, new byte[4], binPtr);
                             break;
 
                         case 42: //golden crab
@@ -330,7 +328,7 @@ public class MemoryManipulator
                                 break;
 
                             case 41: //crab basket
-                                WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6));
+                                WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6)); //enable crab catching unless all crabs have already been caught
                                 break;
 
                             case 77: //chick food
@@ -432,7 +430,7 @@ public class MemoryManipulator
                 WriteMemory(0xf8b0, [0, 0, 0]);
             }
 
-            if (ReadMemory(0x37e85) == 0)
+            if (ReadMemory(0x37e85) == 0 && ReadMemory(0x37ff7) == 1)
             {
                 foreach (var item in writeQueueSafe.Where(i => i.DequeueTimeStamp == 0))
                 {
@@ -691,44 +689,11 @@ public class MemoryManipulator
             }
             else
             {
-                if (!isWarping)
+                if (!isWarping && ReadTimer() > 0)
                 {
                     warping = false;
 
                     Thread.Sleep(500);
-
-                    switch (ReadMemory(0xf870)) //current area
-                    {
-                        case 0:
-                            WriteMemory(0x7c18, new byte[12], binPtr); //disable pink bucket queue resource message on pickup
-                            WriteMemory(0x7c30, new byte[28], binPtr); //disable pink bucket auto-equip
-                            WriteMemory(0x6f34, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 36, 1, 0, 2, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr); //disable attaching crab basket to tomba
-                            WriteMemory(0xc0bc, new byte[44] , binPtr); //disable crab pickup message
-                            break;
-                        case 1:
-                            if (ReadMemory(0xf8bc) != 255) WriteMemory(-0x3ce8, [73, 0], binPtr); //disable travel to starting beach if win's windmill not completed
-                            break;
-                        case 2:
-                            if (ReadMemory(0xf8bf) != 255) WriteMemory(0x25b8, new byte[128], binPtr); //disable travel to pipe area if pull and open not completed
-                            break;
-                        case 4:
-                            if (ReadMemory(0xf8c6) != 255) WriteMemory(0xf3ec, 3, binPtr); //disable trolley to CMT if deliver to gran not completed
-                            break;
-                        case 5:
-                            if (ReadMemory(0xf8ca) != 255) WriteMemory(0x19e8c, 3, binPtr); //disable lift to ranch if let's take the lift not completed
-                            break;
-                        case 6:
-                            if (ReadMemory(0xf8cd) != 255) WriteMemory(0x14074, 3, binPtr); //disable lift to summit if static explosion not completed
-                            break;
-                        case 7:
-                            if (ReadMemory(0xf8d5) != 255) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
-                            break;
-                        case 8:
-                            if (ReadMemory(0xf8dc) != 255) WriteMemory(-0x5354, new byte[28], binPtr); //disable travel to circus village if a pig tribe clown statue not completed
-                            break;
-                        default:
-                            break;
-                    }
 
                     foreach (var item in writeQueueWarp.Where(i => i.DequeueTimeStamp == 0))
                     {
@@ -758,52 +723,6 @@ public class MemoryManipulator
         switch (warpDestination[1])
         {
             case 0:
-                var rareFishGrabbed = ((ReadMemory(0xf9c1) >> 1) & 1) == 1;
-                var rareFishInInventory = ReadMemory(0xfaee);
-                var rareFishDelivered = ReadMemory(0xf9c0);
-
-                if (!rareFishGrabbed) // rare fish hasn't been grabbed
-                {
-                    if (rareFishInInventory > 0) // rare fish in inventory -> temporarily remove until area loaded
-                    {
-                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfaee, Value = rareFishInInventory });
-                        WriteMemory(0xfaee, 0, true);
-                    }
-                    if (((rareFishDelivered >> 0) & 1) == 1) // rare fish delivered -> temporarily set flag to false, then change back after loading in
-                    {
-                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf9c0, Value = rareFishDelivered });
-                        WriteMemory(0xf9c0, 0);
-                    }
-                }
-                else if (rareFishInInventory == 0) // stop rare fish from appearing if grabbed and no fish in inventory
-                {
-                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfaee, Value = 0 });
-                    WriteMemory(0xfaee, 1, true);
-                }
-
-                var starCogGrabbed = ((ReadMemory(0xf9c1) >> 2) & 1) == 1;
-                var starCogInInventory = ReadMemory(0xfad8);
-                var windItUpCompleted = ReadMemory(0xf8b9);
-
-                if (!starCogGrabbed) // star-shaped cog hasn't been grabbed
-                {
-                    if (starCogInInventory > 0) // star-shaped cog in inventory -> temporarily remove until area loaded
-                    {
-                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = starCogInInventory });
-                        WriteMemory(0xfad8, 0, true);
-                    }
-                    if (windItUpCompleted == 255) // wind it up event completed -> temporarily set to not started, then change back after loading in
-                    {
-                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf8b9, Value = windItUpCompleted });
-                        WriteMemory(0xf8b9, 0);
-                    }
-                }
-                else if (starCogInInventory == 0 && windItUpCompleted != 255) // stop star-shaped cog from appearing if grabbed and no cog in inventory and event not completed
-                {
-                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfad8, Value = 0 });
-                    WriteMemory(0xfad8, 1, true);
-                }
-
                 if (warpDestination[0] != 0 && warpDestination[0] != 9) //Entering waterfall area of starting beach
                 {
                     if (ReadMemory(0xf9dd) < 11)
@@ -817,9 +736,15 @@ public class MemoryManipulator
 
                 if (ReadMemory(0xfadd) > 0) //player has crab basket in inventory
                 {
-                    if (ReadMemory(0xf8ba) != 255) //The Crab Basket event not completed
+                    if (ReadMemory(0xf8ba) != 255) //the crab basket event is not completed
                     {
-                        WriteMemory(0xf9e5, 2); //spawn basket-holding pig
+                        WriteMemory(0xf9e5, 2); //spawn basket-holding pig - this also disables crab catching
+
+                        if (ReadMemory(0xf8bb) != 255)
+                        {
+                            Enqueue(writeQueueWarp, 0xf9e5, [6]); //re-enable crab catching after loading
+                            Enqueue(writeQueueWarp, 0x69bc, new byte[4], binPtr); //disable crab catching flag being changed when you hit the basket pig
+                        }
                     }
                     else if (ReadMemory(0xf8bb) != 255) // Collect the Golden Crabs event not completed
                     {
@@ -829,13 +754,6 @@ public class MemoryManipulator
                     {
                         WriteMemory(0xf9e5, 7); //disable crab catching
                     }
-                }
-
-                if (ReadMemory(0xf9e5) > 0) //disable spawning basket pig when raising bridge if pig has already been spawned/basket has been collected.
-                {
-
-                    WriteMemory(0xc954, new byte[96], binPtr);
-                    WriteMemory(0xc9c0, new byte[4], binPtr);
                 }
 
                 var tempCrabInfo = ReadMemory(0xf9e2, 2);
@@ -876,58 +794,6 @@ public class MemoryManipulator
                             WriteMemory(0xf83a, 5); //just warp to start of summit if you can't do anything there
                         }
                     }
-                }
-
-                break;
-
-            case 6:
-                var blueFruitGrabbed = ((ReadMemory(0xf9c1) >> 4) & 1) == 1;
-                var blueFruitInInventory = ReadMemory(0xfae4);
-                var blueFruitDelivered = ReadMemory(0xf8d3);
-
-                if (!blueFruitGrabbed) // blue fruit hasn't been grabbed
-                {
-                    if (blueFruitInInventory > 0) // blue fruit in inventory -> temporarily remove until area loaded
-                    {
-                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfae4, Value = blueFruitInInventory });
-                        WriteMemory(0xfae4, 0, true);
-                    }
-                    if (blueFruitDelivered == 255) // blue fruit delivered -> temporarily set flag to false, then change back after loading in
-                    {
-                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf8d3, Value = blueFruitDelivered });
-                        WriteMemory(0xf8d3, 0);
-                    }
-                }
-                else if (blueFruitInInventory == 0) // stop blue fruit from appearing if grabbed and blue fruit in inventory
-                {
-                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfae4, Value = 0 });
-                    WriteMemory(0xfae4, 1, true);
-                }
-
-                break;
-
-            case 8:
-                var roundCogGrabbed = ((ReadMemory(0xf9c1) >> 3) & 1) == 1;
-                var roundCogInInventory = ReadMemory(0xfadb);
-                var waterGateCompleted = ReadMemory(0xf8df);
-
-                if (!roundCogGrabbed) // round cog hasn't been grabbed
-                {
-                    if (roundCogInInventory > 0) // round cog in inventory -> temporarily remove until area loaded
-                    {
-                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfadb, Value = roundCogInInventory });
-                        WriteMemory(0xfadb, 0, true);
-                    }
-                    if (waterGateCompleted == 255) // open the water gate completed -> temporarily set to not started, then change back after loading in
-                    {
-                        Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xf8df, Value = waterGateCompleted });
-                        WriteMemory(0xf8df, 0);
-                    }
-                }
-                else if (roundCogInInventory == 0 && waterGateCompleted != 255) // stop round cog from appearing if grabbed and no cog in inventory and event not completed
-                {
-                    Enqueue(writeQueueWarp, new AddressValuePair { Address = 0xfadb, Value = 0 });
-                    WriteMemory(0xfadb, 1, true);
                 }
 
                 break;
@@ -978,6 +844,59 @@ public class MemoryManipulator
                 }
             }
             
+        }
+    }
+
+    private void EditBinMemory()
+    {
+        Thread.Sleep(1000);
+
+        switch (ReadMemory(0xf870)) //current area
+        {
+            case 0:
+                WriteMemory(0x7c18, new byte[12], binPtr); //disable pink bucket queue resource message on pickup
+                WriteMemory(0x7c30, new byte[28], binPtr); //disable pink bucket auto-equip
+                WriteMemory(0x6f34, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 36, 1, 0, 2, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr); //disable attaching crab basket to tomba
+                WriteMemory(0xc0bc, new byte[44], binPtr); //disable crab pickup message
+                WriteMemory(0x73e4, new byte[4], binPtr); //disable crab catching flag being set on crab basket pickup
+                WriteMemory(0x7d0c, [81, 1, 98, 144, 0, 0, 0, 0, 2, 0, 66, 48, 20, 0, 64, 20, 33, 128, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], binPtr); //custom rare fish spawn code
+                WriteMemory(0x2a410, [81, 1, 98, 144, 0, 0, 0, 0, 4, 0, 66, 48, 3, 0, 64, 20, 208, 0, 68, 142, 93, 98, 4, 12, 0, 0, 0, 0,
+                                                  97, 232, 4, 12, 33, 32, 64, 2, 39, 230, 4, 12, 33, 32, 64, 2, 33, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], binPtr); //custom star-shaped cog spawn code
+
+                if (ReadMemory(0xf9e5) > 0) //disable spawning basket pig when raising bridge if pig has already been spawned/basket has been collected.
+                {
+
+                    WriteMemory(0xc954, new byte[96], binPtr);
+                    WriteMemory(0xc9c0, new byte[4], binPtr);
+                }
+                break;
+            case 1:
+                if (ReadMemory(0xf8bc) != 255) WriteMemory(-0x3ce8, [73, 0], binPtr); //disable travel to starting beach if win's windmill not completed
+                break;
+            case 2:
+                if (ReadMemory(0xf8bf) != 255) WriteMemory(0x25b8, new byte[128], binPtr); //disable travel to pipe area if pull and open not completed
+                break;
+            case 4:
+                if (ReadMemory(0xf8c6) != 255) WriteMemory(0xf3ec, 3, binPtr); //disable trolley to CMT if deliver to gran not completed
+                break;
+            case 5:
+                if (ReadMemory(0xf8ca) != 255) WriteMemory(0x19e8c, 3, binPtr); //disable lift to ranch if let's take the lift not completed
+                break;
+            case 6:
+                WriteMemory(0xd600, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 1, 130, 144, 0, 0, 0, 0, 16, 0, 66, 48], binPtr); //custom blue fruit spawn code
+
+                if (ReadMemory(0xf8cd) != 255) WriteMemory(0x14074, 3, binPtr); //disable lift to summit if static explosion not completed
+                break;
+            case 7:
+                if (ReadMemory(0xf8d5) != 255) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
+                break;
+            case 8:
+                WriteMemory(0x4f28, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 1, 2, 146, 0, 0, 0, 0, 8, 0, 66, 48, 181, 0, 64, 16, 0, 0, 0, 0], binPtr);
+
+                if (ReadMemory(0xf8dc) != 255) WriteMemory(-0x5354, new byte[28], binPtr); //disable travel to circus village if a pig tribe clown statue not completed
+                break;
+            default:
+                break;
         }
     }
 
