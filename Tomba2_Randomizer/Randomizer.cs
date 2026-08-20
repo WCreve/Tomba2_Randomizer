@@ -185,16 +185,33 @@ namespace Tomba2_Randomizer
 
                     RandomizedItems[randomAvailableItem] = randomItem;
 
+                    foreach (var group in randomAvailableItem.RequirementGroups)
+                    {
+                        if (!group.Items.Except(RandomizedItems.Values).Any() && group.Areas.All(a => a.Unlocked) && group.Events.All(e => e.Unlocked))
+                        {
+                            randomAvailableItem.ImportantGroups.Add(group);
+                        }
+                    }
+
                     UpdateEventsAndAreas(true);
 
                     debugQueue = "";
                 }
                 else
                 {
-                    var keyPool = RandomizedItems.Keys.Where(k => !RandomizedItems.Keys.Any(i => i.RequirementGroups.Any(g => g.Items.Contains(RandomizedItems[k]))) && !events.Values.Any(e => e.Unlocked && e.RequirementGroups.Any(g => g.Items.Contains(RandomizedItems[k])) && !areas.Values.Any(a => a.Unlocked && a.RequirementGroups.Any(g => g.Items.Contains(RandomizedItems[k]))))).ToList();
+                    var keyPool = RandomizedItems.Keys.Where(k => !RandomizedItems.Keys.Any(i => i.ImportantGroups.Any(g => g.Items.Contains(RandomizedItems[k]))) && !events.Values.Any(e => e.Unlocked && e.ImportantGroups.Any(g => g.Items.Contains(RandomizedItems[k])) && !areas.Values.Any(a => a.Unlocked && a.ImportantGroups.Any(g => g.Items.Contains(RandomizedItems[k]))))).ToList();
 
                     var randomKey = keyPool.ElementAt(r.Next(keyPool.Count()));
-                        
+                    randomKey.ImportantGroups = [];
+
+                    foreach (var group in randomKey.RequirementGroups)
+                    {
+                        if (!group.Items.Except(RandomizedItems.Values).Any() && group.Areas.All(a => a.Unlocked) && group.Events.All(e => e.Unlocked))
+                        {
+                            randomKey.ImportantGroups.Add(group);
+                        }
+                    }
+
                     RandomizedItems[randomKey] = randomItemPool.ElementAt(r.Next(randomItemPool.Count()));
                             
                     UpdateEventsAndAreas(false);
@@ -235,6 +252,17 @@ namespace Tomba2_Randomizer
                     ev.Unlocked = isUnlocked;
                     changed = true;
                 }
+                if (ev.Unlocked)
+                {
+                    ev.ImportantGroups = [];
+                    foreach (var group in ev.RequirementGroups)
+                    {
+                        if (!group.Items.Except(RandomizedItems.Values).Any() && group.Areas.All(a => a.Unlocked) && group.Events.All(e => e.Unlocked))
+                        {
+                            ev.ImportantGroups.Add(group);
+                        }
+                    }
+                }
 
                 if (unlock && isUnlocked) debugQueue += $"EVENT {ev.Name} Unlocked\n";
                 else if (!unlock && !isUnlocked) debugQueue += $"EVENT {ev.Name} Relocked\n";
@@ -247,6 +275,17 @@ namespace Tomba2_Randomizer
                 {
                     area.Unlocked = isUnlocked;
                     changed = true;
+                }
+                if (area.Unlocked)
+                {
+                    area.ImportantGroups = [];
+                    foreach (var group in area.RequirementGroups)
+                    {
+                        if (!group.Items.Except(RandomizedItems.Values).Any() && group.Areas.All(a => a.Unlocked) && group.Events.All(e => e.Unlocked))
+                        {
+                            area.ImportantGroups.Add(group);
+                        }
+                    }
                 }
 
                 if (unlock && isUnlocked) debugQueue += $"AREA {area.Name} Unlocked\n";
