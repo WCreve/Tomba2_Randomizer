@@ -150,6 +150,8 @@ public class MemoryManipulator
 
         WriteMemory(0xd4d8, [12, 128, 2, 60, 2, 0, 3, 36, 178, 248, 67, 160], globalPtr); //override AddItemWithMessage function
 
+        WriteMemory(0xf8ad, [1, 1, 1]); //enables 3/4 Tomba 1 events
+
         WriteMemory(0xf8b3, 1); //initialized
     }
 
@@ -191,6 +193,10 @@ public class MemoryManipulator
 
                     switch (itemPickedUp[0])
                     {
+                        case 7:
+                            WriteMemory(0xf8ac, 1); //enable Tomba 1 dwarf event
+                            break;
+
                         case 11: //pants
                         case 12:
                             newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == (ReadMemory(0xf870) == 0 ? 11 : 12)).Value.InternalId; //check which pants you're picking up based on current area
@@ -685,6 +691,25 @@ public class MemoryManipulator
                         }
                         else if (enteringInterior[1] == 2 || enteringInterior[1] == 4) interiorTransition = false;
                     break;
+
+                    case 8:
+                        var enteringInterior2 = ReadMemory(0xf817, 2);
+                        if (enteringInterior2[0] == 2 && enteringInterior2[1] == 1)
+                        {
+                            if (ReadMemory(0xfac4) == 0)
+                            {
+                                WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 243, 48, 73, 71, 251, 51, 85, 73, 84, 240, 1, 255], binPtr); //"You need a Pig Suit!" string
+                                WriteMemory(0x21428, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36], binPtr);
+                                WriteMemory(0x21434, new byte[28], binPtr);
+                                WriteMemory(0x21454, [0, 0, 2, 36], binPtr);
+                            }
+                            else
+                            {
+                                WriteMemory(0x21428, [1, 0, 4, 36, 213, 8, 1, 12, 2, 0, 5, 36, 33, 32, 0, 2, 10, 128, 5, 60, 90, 3, 1, 12, 112, 61, 165, 36, 2, 0, 2, 36, 112, 0, 2, 162, 7, 0, 2, 36, 111, 197, 4, 8, 6, 0, 0, 162], binPtr);
+                            }
+                        }
+
+                        break;
                 }
             }
             else
