@@ -202,24 +202,33 @@ public class MemoryManipulator
                             newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == (ReadMemory(0xf870) == 0 ? 11 : 12)).Value.InternalId; //check which pants you're picking up based on current area
                             break;
 
-                        case 17: //evil ice pig robe
-                            if (ReadMemory(0xf8cd) != 255) //static explosion not completed
+                        case 17: //swimming pig suit
+                            if (newItemId != 17 && ReadMemory(0xfac5) != 1)
                             {
-                                CompleteEvent(24); //completed static explosion
-                                AddItemWithMessage(randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value.InternalId, 1); //give pham's item
-                                WriteMemory(0xf9c4, 55); //set all kujaras to delivered
-                                WriteMemory(0xf9c6, 22); //pham cutscene completed
+                                WriteMemory(0xf9e2, 1); //temporary flag to destroy platform when leaving room
+                                var dialogueScriptOffset = BitConverter.ToUInt16(ReadMemory(0x4240c, 2)) + 0x4006C;
+                                WriteMemory(dialogueScriptOffset, [12, 106]); //skip to end of mermaid dialogue script
                             }
-                            if (ReadMemory(0xf8ce) != 255) //raise the ladder not completed
-                            {
-                                CompleteEvent(25);
-                                if (ReadMemory(0xfad9) == 1) //if player has hexagon gear, remove
-                                {
-                                    RemoveItemWithMessage(37, 1);
-                                }
-                            }
-
                             break;
+
+                        case 19: //evil ice pig robe
+                                if (ReadMemory(0xf8cd) != 255) //static explosion not completed
+                                {
+                                    CompleteEvent(24); //completed static explosion
+                                    AddItemWithMessage(randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value.InternalId, 1); //give pham's item
+                                    WriteMemory(0xf9c4, 55); //set all kujaras to delivered
+                                    WriteMemory(0xf9c6, 22); //pham cutscene completed
+                                }
+                                if (ReadMemory(0xf8ce) != 255) //raise the ladder not completed
+                                {
+                                    CompleteEvent(25);
+                                    if (ReadMemory(0xfad9) == 1) //if player has hexagon gear, remove
+                                    {
+                                        RemoveItemWithMessage(37, 1);
+                                    }
+                                }
+
+                                break;
 
                         case 36: //star-shaped cog collected
                             SetFlagStarShapedCog();
@@ -230,7 +239,13 @@ public class MemoryManipulator
                             break;
 
                         case 40: //pink bucket
-                            if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
+                            var usingItemPinkBucket = ReadMemory(0xf80a, 2);
+                            if (usingItemPinkBucket[0] == 1 && usingItemPinkBucket[1] == 99) //no popup message if bucket received from using a full bucket
+                            {
+                                AddItemWithoutMessage(40, 1);
+                                custom = true;
+                            }
+                            else if (!(ReadMemory(0xf870) == 0 && ReadMemory(0x37eaa) == 1 && BitConverter.ToInt16(ReadMemory(0x37eae, 2)) > 9000))
                             {
                                 AddItemWithoutMessage(40, 1); //Only randomize the correct pink bucket pickup
                                 custom = true;
@@ -261,6 +276,10 @@ public class MemoryManipulator
                             SetFlagBlueFruit();
                             break;
 
+                        case 49: //rock crab collected
+                            SetFlagRockCrab();
+                            break;
+
                         case 56:
                         case 57: //red/blue chick pickup checks
                             var chickStatus = ReadMemory(0xf9f2);
@@ -275,21 +294,34 @@ public class MemoryManipulator
                             break;
 
                         case 97: //blue bucket
-                            if (!(ReadMemory(0xf870) == 1)) //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
+                            var usingItemBlueBucket = ReadMemory(0xf80a, 2);
+                            if (usingItemBlueBucket[0] == 1 && usingItemBlueBucket[1] >= 99 && usingItemBlueBucket[1] <= 101) //no popup message if bucket received from using a full bucket
+                            {
+                                AddItemWithoutMessage(97, 1);
+                                custom = true;
+                            }
+                            else if (!(ReadMemory(0xf870) == 1)) //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
                             {
                                 AddItemWithMessage(97, 1);
                                 custom = true;
                             }
                             break;
 
-                        case 99: //water bucket
-                            AddItemWithoutMessage(99, 1);
+                        case 99: //water buckets
+                        case 100:
+                        case 101:
+                            AddItemWithoutMessage(itemPickedUp[0], 1);
                             custom = true;
+                            break;
+
+                        case 108:
+                            SetFlagClearFuit();
+                            WriteMemory(0x11e3c, 2, binPtr); //disable clear fruit pickup
                             break;
 
                         default:
                             break;
-                    }
+                        }
 
                     if (!custom)
                     {
@@ -652,11 +684,11 @@ public class MemoryManipulator
                 switch (ReadMemory(0xf870)) //current area
                 {
                     case 0:
-                        var enteringInterior = ReadMemory(0xf817, 2);
+                        var enteringInteriorArea0 = ReadMemory(0xf817, 2);
 
                         if (!interiorTransition)
                         {
-                            if (enteringInterior[0] == 2 && enteringInterior[1] == 1 && ReadMemory(0xf8bc) != 255) //entering windmill while windmill event incomplete
+                            if (enteringInteriorArea0[0] == 2 && enteringInteriorArea0[1] == 1 && ReadMemory(0xf8bc) != 255) //entering windmill while windmill event incomplete
                             {
                                 interiorTransition = true;
                                 var obtainedCrabs = ReadMemory(0xf9e3);
@@ -677,7 +709,7 @@ public class MemoryManipulator
                                 WriteMemory(0xf9e3, obtainedCrabs);
 
                             }
-                            else if (enteringInterior[0] == 2 && enteringInterior[1] == 3 && ReadMemory(0xf8bc) != 255) //leaving windmill
+                            else if (enteringInteriorArea0[0] == 2 && enteringInteriorArea0[1] == 3 && ReadMemory(0xf8bc) != 255) //leaving windmill
                             {
                                 interiorTransition = true;
 
@@ -689,23 +721,30 @@ public class MemoryManipulator
                                 }
                             }
                         }
-                        else if (enteringInterior[1] == 2 || enteringInterior[1] == 4) interiorTransition = false;
+                        else if (enteringInteriorArea0[1] == 2 || enteringInteriorArea0[1] == 4) interiorTransition = false;
                     break;
 
                     case 8:
-                        var enteringInterior2 = ReadMemory(0xf817, 2);
-                        if (enteringInterior2[0] == 2 && enteringInterior2[1] == 1)
+                        var enteringInteriorArea8 = ReadMemory(0xf817, 2);
+                        if (enteringInteriorArea8[0] == 2)
                         {
-                            if (ReadMemory(0xfac4) == 0)
+                            if (enteringInteriorArea8[1] == 1)
                             {
-                                WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 243, 48, 73, 71, 251, 51, 85, 73, 84, 240, 1, 255], binPtr); //"You need a Pig Suit!" string
-                                WriteMemory(0x21428, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36], binPtr);
-                                WriteMemory(0x21434, new byte[28], binPtr);
-                                WriteMemory(0x21454, [0, 0, 2, 36], binPtr);
+                                if (ReadMemory(0xfac4) == 0)
+                                {
+                                    WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 243, 48, 73, 71, 251, 51, 85, 73, 84, 240, 1, 255], binPtr); //"You need a Pig Suit!" string
+                                    WriteMemory(0x21428, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36], binPtr);
+                                    WriteMemory(0x21434, new byte[28], binPtr);
+                                    WriteMemory(0x21454, [0, 0, 2, 36], binPtr);
+                                }
+                                else
+                                {
+                                    WriteMemory(0x21428, [1, 0, 4, 36, 213, 8, 1, 12, 2, 0, 5, 36, 33, 32, 0, 2, 10, 128, 5, 60, 90, 3, 1, 12, 112, 61, 165, 36, 2, 0, 2, 36, 112, 0, 2, 162, 7, 0, 2, 36, 111, 197, 4, 8, 6, 0, 0, 162], binPtr);
+                                }
                             }
-                            else
+                            else if (enteringInteriorArea8[1] == 3 && ReadMemory(0xf9e2) == 1)
                             {
-                                WriteMemory(0x21428, [1, 0, 4, 36, 213, 8, 1, 12, 2, 0, 5, 36, 33, 32, 0, 2, 10, 128, 5, 60, 90, 3, 1, 12, 112, 61, 165, 36, 2, 0, 2, 36, 112, 0, 2, 162, 7, 0, 2, 36, 111, 197, 4, 8, 6, 0, 0, 162], binPtr);
+                                WriteMemory(0xfa3f, (byte)(ReadMemory(0xfa3f) | 32));
                             }
                         }
 
@@ -913,7 +952,9 @@ public class MemoryManipulator
                 break;
             case 6:
                 WriteMemory(0xd600, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 1, 130, 144, 0, 0, 0, 0, 16, 0, 66, 48], binPtr); //custom blue fruit spawn code
+                WriteMemory(0x58a0, [81, 1, 34, 146, 0, 0, 0, 0, 64, 0, 66, 48, 68, 0, 64, 20], binPtr); //custom rock crab spawn code
 
+                if ((ReadMemory(0xf9c1) & 32) == 32) WriteMemory(0x11e3c, 2); //disable clear fruit pickup
                 if (ReadMemory(0xf8cd) != 255) WriteMemory(0x14074, 3, binPtr); //disable lift to summit if static explosion not completed
                 break;
             case 7:
@@ -967,6 +1008,8 @@ public class MemoryManipulator
     private void SetFlagStarShapedCog() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0100));
     private void SetFlagRoundCog() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_1000));
     private void SetFlagBlueFruit() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0001_0000));
+    private void SetFlagClearFuit() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0010_0000));
+    private void SetFlagRockCrab() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0100_0000));
 
     private void HandleRewind(int time)
     {
