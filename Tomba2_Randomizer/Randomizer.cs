@@ -22,7 +22,7 @@ namespace Tomba2_Randomizer
         {
             allItems = itemDtos.ToDictionary(
                 dto => dto.Id,
-                dto => new Item { Id = dto.Id, Name = dto.Name, DisplayName = dto.GUIName, CountAddress = Convert.ToInt32(dto.Address, 16), Color = dto.Color == "Green" ? ItemColor.Green : dto.Color == "Blue" ? ItemColor.Blue : ItemColor.Pink, NotRandom = dto.NotRandom }
+                dto => new Item { Id = (byte)dto.Id, Name = dto.Name, DisplayName = dto.GUIName, CountAddress = Convert.ToInt32(dto.Address, 16), Color = dto.Color == "Green" ? ItemColor.Green : dto.Color == "Blue" ? ItemColor.Blue : ItemColor.Pink, NotRandom = dto.NotRandom }
             );
 
             items = allItems.Where(i => !i.Value.NotRandom).ToDictionary();
@@ -35,7 +35,7 @@ namespace Tomba2_Randomizer
 
             events = eventDtos.ToDictionary(
                 dto => dto.Id,
-                dto => new Event { Id = dto.Id, Name = dto.Name, AP = dto.AP }
+                dto => new Event { Address = Convert.ToInt32(dto.Address, 16), Name = dto.Name, AP = dto.AP }
             );
 
             foreach (var dto in itemDtos.Where(i => !i.NotRandom))
@@ -163,6 +163,28 @@ namespace Tomba2_Randomizer
         public string DebugString { get; set; }
 
         public Dictionary<Item, Item> RandomizedItems { get; set; }
+
+        public Dictionary<byte, Item> Items
+        {
+            get
+            {
+                return items.Values.ToDictionary(
+                    i => i.InternalId,
+                    i => i
+                );
+            }
+        }
+
+        public Dictionary<byte, Event> Events
+        {
+            get
+            {
+                return events.Values.ToDictionary(
+                    e => e.Id,
+                    e => e
+                );
+            }
+        }
 
         public void Randomize()
         {

@@ -18,9 +18,17 @@ namespace Tomba2_Randomizer
             AddressValuePairs = new List<AddressValuePair> { pair };
         }
 
+        public QueuedChange(int timeStamp, string text)
+        {
+            EnqueueTimeStamp = timeStamp;
+            Text = text;
+        }
+
         public int EnqueueTimeStamp { get; private set; }
 
         public int DequeueTimeStamp { get; set; }
+
+        public string Text { get; set; }
 
         public List<AddressValuePair> AddressValuePairs { get; private set; }
     }

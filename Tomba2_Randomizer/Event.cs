@@ -4,7 +4,15 @@ namespace Tomba2_Randomizer;
 
 public class Event
 {
-    public int Id { get; set; }
+    public byte Id
+    {
+        get
+        {
+            return (byte)(Address - 0xf8b4);
+        }
+    }
+
+    public int Address { get; set; }
 
     public string Name { get; set; }
 

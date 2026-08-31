@@ -1,6 +1,9 @@
+using Microsoft.Extensions.Logging;
+using MsBox.Avalonia.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -19,6 +22,7 @@ public class MemoryManipulator
     const uint STRING_WISDOM_HALF = 0x801604E5;
     const uint STRING_WISDOM_FULL = 0x801604FF;
     const uint STRING_HARP = 0x80161144;
+    const uint STRING_CUSTOM = 0x80160E08;
 
     private IntPtr baseAddress;
     private Process _process;
@@ -37,6 +41,7 @@ public class MemoryManipulator
 
     private List<QueuedChange> writeQueueWarp;
     private List<QueuedChange> writeQueueSafe;
+    private List<QueuedChange> writeQueuePopup;
 
     private Randomizer randomizer;
 
@@ -118,6 +123,7 @@ public class MemoryManipulator
     {
         writeQueueWarp = new List<QueuedChange>();
         writeQueueSafe = new List<QueuedChange>();
+        writeQueuePopup = new List<QueuedChange>();
 
         WriteMemory(0xa468, new byte[12], globalPtr); //disable auto-equipping weapons on pickup
         WriteMemory(0xa478, new byte[4], globalPtr);
@@ -212,23 +218,31 @@ public class MemoryManipulator
                             break;
 
                         case 19: //evil ice pig robe
-                                if (ReadMemory(0xf8cd) != 255) //static explosion not completed
-                                {
-                                    CompleteEvent(24); //completed static explosion
-                                    AddItemWithMessage(randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value.InternalId, 1); //give pham's item
-                                    WriteMemory(0xf9c4, 55); //set all kujaras to delivered
-                                    WriteMemory(0xf9c6, 22); //pham cutscene completed
-                                }
-                                if (ReadMemory(0xf8ce) != 255) //raise the ladder not completed
-                                {
-                                    CompleteEvent(25);
-                                    if (ReadMemory(0xfad9) == 1) //if player has hexagon gear, remove
-                                    {
-                                        RemoveItemWithMessage(37, 1);
-                                    }
-                                }
+                            if (ReadMemory(0xf8c9) != 255) //melt the giant ice not completed
+                            {
+                                CompleteEvent(20, false);
+                                WriteMemory(0xfa07, (byte)(ReadMemory(0xfa07) | 128)); //get rid of big ice pigs
+                                WriteMemory(0xfa0a, 34); //get rid of big ice pigs
+                            }
 
-                                break;
+                            if (ReadMemory(0xf8cd) != 255) //static explosion not completed
+                            {
+                                CompleteEvent(24, false);
+                                QueueCustomPopupItem(randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value); //give pham's item
+                                WriteMemory(0xf9c4, 55); //set all kujaras to delivered
+                                WriteMemory(0xf9c6, 22); //pham cutscene completed
+                            }
+
+                            if (ReadMemory(0xf8ce) != 255) //raise the ladder not completed
+                            {
+                                CompleteEvent(25, false);
+                                if (ReadMemory(0xfad9) == 1) //if player has hexagon gear, remove
+                                {
+                                    RemoveItemWithMessage(37, 1);
+                                }
+                            }
+
+                            break;
 
                         case 36: //star-shaped cog collected
                             SetFlagStarShapedCog();
@@ -505,6 +519,16 @@ public class MemoryManipulator
                 }
             }
 
+            var queuedPopups = writeQueuePopup.Where(p => p.DequeueTimeStamp == 0);
+
+            if (queuedPopups.Count() > 0 && writeQueuePopup.Max(p => p.DequeueTimeStamp) < newIgt - 60)
+            {
+                var popup = queuedPopups.First();
+                SetCustomPopupString(popup.Text);
+                QueueResourceMessage(STRING_CUSTOM, 41);
+
+                popup.DequeueTimeStamp = newIgt;
+            }
 
             igt = newIgt;
             IgnoreChanges = false;
@@ -514,10 +538,12 @@ public class MemoryManipulator
         IsActive = false;
     }
 
-    public void AddItemWithMessage(byte itemId, byte amount)
+    public void AddItemWithMessage(byte itemId, byte amount, bool manual = false)
     {
         AddInventoryQuantity(itemId, amount);
-        QueuePopupMessage(itemId, 2, 66);
+
+        if (!manual) QueuePopupMessage(itemId, 2, 66);
+        else QueueCustomPopupItem(randomizer.Items[itemId]);
     }
 
     private void AddItemWithoutMessage(byte itemId, byte amount) => AddInventoryQuantity(itemId, amount);
@@ -612,31 +638,6 @@ public class MemoryManipulator
             WriteMemory(ptrPopupQueue, BitConverter.GetBytes(ptr));
             WriteMemory(ptrPopupQueue + 4, [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, color]);
             WriteMemory(0xf552, (byte)(pendingPopupCount + 1));
-        }
-    }
-
-    private void CompleteEvent(byte eventId)
-    {
-        if (ReadMemory(0x37fee) != 0) //check if tomba alive
-        {
-            var ptrEventState = 0xf8b4 + eventId;
-            var eventState = ReadMemory(ptrEventState);
-
-            if (eventState == 0) WriteMemory(0xf8a8, (byte)(ReadMemory(0xf8a8) + 1)); //increase started events by 1
-            if (eventState != 255)
-            {
-                WriteMemory(ptrEventState, 255);
-                WriteMemory(0xf8aa, (byte)(ReadMemory(0xf8aa) + 1)); //increase completed events by 1
-                var eventAPReward = GetEventAPReward(eventId, true);
-
-                var currentAP = BitConverter.ToInt32(ReadMemory(0xf874, 4)); //update AP
-                WriteMemory(0xf874, BitConverter.GetBytes(currentAP + eventAPReward));
-
-                var pendingEventNotificationCount = ReadMemory(0x3d06d);
-                WriteMemory(0x3d06e + pendingEventNotificationCount, eventId); //event popup
-                WriteMemory(0x3d074 + pendingEventNotificationCount, 1);
-                WriteMemory(0x3d06d, (byte)(pendingEventNotificationCount + 1));
-            }
         }
     }
 
@@ -803,7 +804,7 @@ public class MemoryManipulator
 
                                     if (ReadMemory(0xfac4) == 0)
                                     {
-                                        WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 243, 48, 73, 71, 251, 51, 85, 73, 84, 240, 1, 255], binPtr); //"You need a Pig Suit!" string
+                                        WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 244, 48, 73, 71, 251, 51, 85, 73, 84, 240, 1, 255], binPtr); //"You need a Pig Suit!" string
                                         WriteMemory(0x21428, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36], binPtr);
                                         WriteMemory(0x21434, new byte[28], binPtr);
                                         WriteMemory(0x21454, [0, 0, 2, 36], binPtr);
@@ -1082,6 +1083,89 @@ public class MemoryManipulator
         }
     }
 
+    private void CompleteEvent(byte id, bool loud = true)
+    {
+        if (ReadMemory(0x37fee) != 0) //check if tomba alive
+        {
+            var ptrEventState = 0xf8b4 + id;
+            var eventState = ReadMemory(ptrEventState);
+
+            if (eventState == 0) WriteMemory(0xf8a8, (byte)(ReadMemory(0xf8a8) + 1)); //increase started events by 1
+            if (eventState != 255)
+            {
+                WriteMemory(ptrEventState, 255);
+                WriteMemory(0xf8aa, (byte)(ReadMemory(0xf8aa) + 1)); //increase completed events by 1
+                var eventAPReward = GetEventAPReward(id, true);
+
+                var currentAP = BitConverter.ToInt32(ReadMemory(0xf874, 4)); //update AP
+                WriteMemory(0xf874, BitConverter.GetBytes(currentAP + eventAPReward));
+
+                if (loud)
+                {
+                    var pendingEventNotificationCount = ReadMemory(0x3d06d);
+                    WriteMemory(0x3d06e + pendingEventNotificationCount, id); //event popup
+                    WriteMemory(0x3d074 + pendingEventNotificationCount, 1);
+                    WriteMemory(0x3d06d, (byte)(pendingEventNotificationCount + 1));
+                }
+                else
+                {
+                    QueueCustomPopupEvent(id);
+                }
+            }
+        }
+    }
+
+    private void QueueCustomPopupEvent(byte id) => QueueCustomPopup("{O}" + randomizer.Events[id].Name + "{W} Completed!");
+    private void QueueCustomPopupItem(Item i) => QueueCustomPopup((i.Color == ItemColor.Green ? "{G}" : i.Color == ItemColor.Blue ? "{B}" : "{P}") + i.DisplayName + "{W} given!");
+
+    private void QueueCustomPopup(string input) => writeQueuePopup.Add(new QueuedChange(igt, input));
+
+    private void SetCustomPopupString(string input)
+    {
+        var popupText = new byte[input.Length - input.Count('{') * 2 + 1];
+        int inputIndex = 0, outputIndex = 0;
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            if (input[i] >= '!' && input[i] <= 'z')
+            {
+                popupText[outputIndex] = (byte)(input[i] - 32);
+            }
+            else if (input[i] == ' ') popupText[outputIndex] = 251;
+            else if (input[i] == '{')
+            {
+                switch (input[inputIndex])
+                {
+                    case 'n':
+                        popupText[outputIndex] = 250; //newline
+                        break;
+                    case 'O':
+                        popupText[outputIndex] = 241; //orange
+                        break;
+                    case 'B':
+                        popupText[outputIndex] = 242; //blue
+                        break;
+                    case 'P':
+                        popupText[outputIndex] = 243; //pink
+                        break;
+                    case 'G':
+                        popupText[outputIndex] = 244; //green
+                        break;
+                    case 'W':
+                        popupText[outputIndex] = 240; //end colour
+                        break;
+                }
+                i += 2;
+            }
+            outputIndex++;
+        }
+
+        popupText[outputIndex] = 255;
+
+        WriteMemory(0x50e08, popupText, binPtr);
+
+    }
+
     private int AllocateActorPool1()
     {
         var poolHead = GetAddressPointer(0x380a0);
@@ -1164,6 +1248,7 @@ public class MemoryManipulator
     {
         writeQueueSafe.RemoveAll(i => i.EnqueueTimeStamp > time);
         writeQueueWarp.RemoveAll(i => i.EnqueueTimeStamp > time);
+        writeQueuePopup.RemoveAll(i => i.EnqueueTimeStamp > time);
 
         foreach (var item in writeQueueSafe.Where(i => i.DequeueTimeStamp != 0))
         {
@@ -1174,6 +1259,14 @@ public class MemoryManipulator
         }
 
         foreach (var item in writeQueueWarp.Where(i => i.DequeueTimeStamp != 0))
+        {
+            if (time < item.DequeueTimeStamp)
+            {
+                item.DequeueTimeStamp = 0;
+            }
+        }
+
+        foreach (var item in writeQueuePopup.Where(i => i.DequeueTimeStamp != 0))
         {
             if (time < item.DequeueTimeStamp)
             {
@@ -1206,6 +1299,7 @@ public class MemoryManipulator
         {
             writeQueueSafe.RemoveAll(i => i.DequeueTimeStamp != 0 && igt - i.DequeueTimeStamp > 50000);
             writeQueueWarp.RemoveAll(i => i.DequeueTimeStamp != 0 && igt - i.DequeueTimeStamp > 50000);
+            writeQueuePopup.RemoveAll(i => i.DequeueTimeStamp != 0 && igt - i.DequeueTimeStamp > 50000);
 
             Thread.Sleep(10000);
         }
