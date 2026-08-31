@@ -280,6 +280,13 @@ public class MemoryManipulator
                             SetFlagRockCrab();
                             break;
 
+                        case 50: //paon grass collected
+                            if (ReadMemory(0xfae6) == 0 /*&& newItemId != 50*/) //skip rest of dialogue if player does not have paon grass to prevent visually equipping the paon grass
+                            {
+                                WriteMemory(ReadDialogueOffsetPtr(), [44, 87]);
+                            }
+                            break;
+
                         case 56:
                         case 57: //red/blue chick pickup checks
                             var chickStatus = ReadMemory(0xf9f2);
@@ -367,6 +374,24 @@ public class MemoryManipulator
 
                             case 41: //crab basket
                                 WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6)); //enable crab catching unless all crabs have already been caught
+                                break;
+
+                            case 50: //paon grass
+                                if (ReadMemory(0xf870) == 7) //in circus village
+                                {
+                                    var paonGrassActor = AllocateActorPool1(); //make paon grass appear on back
+                                    WriteMemory(paonGrassActor + 2, 0x12);
+                                    WriteMemory(paonGrassActor + 3, 0);
+                                    WriteMemory(paonGrassActor + 0x1c, BitConverter.GetBytes(0x80117680));
+                                    WriteMemory(paonGrassActor + 0x28, (byte)(ReadMemory(paonGrassActor + 0x28) | 0x80));
+                                }
+                                break;
+
+                            case 52: //carpenter book
+                                if (ReadMemory(0xf870) == 7) //in circus village
+                                {
+                                    WriteMemory(0x19638, [16, 88], binPtr); //enable statue explosion cutscene
+                                }
                                 break;
 
                             case 77: //chick food
@@ -681,75 +706,126 @@ public class MemoryManipulator
             {
                 if (isWarping) WarpChecks();
 
-                switch (ReadMemory(0xf870)) //current area
+                var enteringInterior = ReadMemory(0xf817, 2);
+
+                if (!interiorTransition)
                 {
-                    case 0:
-                        var enteringInteriorArea0 = ReadMemory(0xf817, 2);
-
-                        if (!interiorTransition)
-                        {
-                            if (enteringInteriorArea0[0] == 2 && enteringInteriorArea0[1] == 1 && ReadMemory(0xf8bc) != 255) //entering windmill while windmill event incomplete
-                            {
-                                interiorTransition = true;
-                                var obtainedCrabs = ReadMemory(0xf9e3);
-                                WriteMemory(0xf9e2, obtainedCrabs); //temporarily store information about obtained crabs
-                                var crabsInInventory = ReadMemory(0xfade);
-
-                                obtainedCrabs = (byte)(obtainedCrabs >> 4 << 4);
-
-                                for (int i = 0; i < 3; i++)
+                    switch (ReadMemory(0xf870)) //current area
+                    {
+                        case 0:
+                            if (enteringInterior[0] == 2 && enteringInterior[1] == 1 && ReadMemory(0xf8bc) != 255) //entering windmill while windmill event incomplete
                                 {
-                                    if (crabsInInventory > 0 && ((obtainedCrabs >> i + 4) & 1) != 1)
+                                    interiorTransition = true;
+
+                                    var obtainedCrabs = ReadMemory(0xf9e3);
+                                    WriteMemory(0xf9e2, obtainedCrabs); //temporarily store information about obtained crabs
+                                    var crabsInInventory = ReadMemory(0xfade);
+
+                                    obtainedCrabs = (byte)(obtainedCrabs >> 4 << 4);
+
+                                    for (int i = 0; i < 3; i++)
                                     {
-                                        obtainedCrabs |= (byte)Math.Pow(2, i);
-                                        crabsInInventory--;
+                                        if (crabsInInventory > 0 && ((obtainedCrabs >> i + 4) & 1) != 1)
+                                        {
+                                            obtainedCrabs |= (byte)Math.Pow(2, i);
+                                            crabsInInventory--;
+                                        }
+                                    }
+
+                                    WriteMemory(0xf9e3, obtainedCrabs);
+
+                                }
+                                else if (enteringInterior[0] == 2 && enteringInterior[1] == 3 && ReadMemory(0xf8bc) != 255) //leaving windmill
+                                {
+                                    interiorTransition = true;
+
+                                    var tempCrabInfo = ReadMemory(0xf9e2, 2);
+
+                                    if (ReadMemory(0xf8bc) != 255 || tempCrabInfo[0] != 0) //store the correct crab data in 0xbf9e3
+                                    {
+                                        WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
                                     }
                                 }
+                            break;
 
-                                WriteMemory(0xf9e3, obtainedCrabs);
-
-                            }
-                            else if (enteringInteriorArea0[0] == 2 && enteringInteriorArea0[1] == 3 && ReadMemory(0xf8bc) != 255) //leaving windmill
+                        case 7:
+                            if (enteringInterior[0] == 7) //triangle gear interior
                             {
-                                interiorTransition = true;
-
-                                var tempCrabInfo = ReadMemory(0xf9e2, 2);
-
-                                if (ReadMemory(0xf8bc) != 255 || tempCrabInfo[0] != 0) //store the correct crab data in 0xbf9e3
+                                if (enteringInterior[1] == 1) //entering
                                 {
-                                    WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
+                                    interiorTransition = true;
+
+                                    if (ReadMemory(0xf8d8) == 1 && ReadMemory(0xfada) == 1) //player has triangle gear but hasn't picked up the object
+                                    {
+                                        WriteMemory(0xf8d8, 255); //temporarly set gear pickup event to completed 
+                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 1)); //to revert the event flag when leaving
+                                    }
+                                    else if (ReadMemory(0xf8d8) == 255 && ReadMemory(0xfada) == 0) //player has picked up object but does not have triangle gear
+                                    {
+                                        WriteMemory(0xf8d8, 1); 
+                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 1));
+                                    }
+                                }
+                                else if (enteringInterior[1] == 3) //leaving
+                                {
+                                    interiorTransition = true;
+
+                                    if ((ReadMemory(0xf9e2) & 1) == 1) WriteMemory(0xf8d8, (byte)(ReadMemory(0xf8d8) == 255 ? 1 : 255)); //flip gear pickup event state
                                 }
                             }
-                        }
-                        else if (enteringInteriorArea0[1] == 2 || enteringInteriorArea0[1] == 4) interiorTransition = false;
-                    break;
-
-                    case 8:
-                        var enteringInteriorArea8 = ReadMemory(0xf817, 2);
-                        if (enteringInteriorArea8[0] == 2)
-                        {
-                            if (enteringInteriorArea8[1] == 1)
+                            else if (enteringInterior[0] == 6) //paon interior
                             {
-                                if (ReadMemory(0xfac4) == 0)
+                                if (enteringInterior[1] == 1) //entering
                                 {
-                                    WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 243, 48, 73, 71, 251, 51, 85, 73, 84, 240, 1, 255], binPtr); //"You need a Pig Suit!" string
-                                    WriteMemory(0x21428, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36], binPtr);
-                                    WriteMemory(0x21434, new byte[28], binPtr);
-                                    WriteMemory(0x21454, [0, 0, 2, 36], binPtr);
+                                    interiorTransition = true;
+
+                                    if (ReadMemory(0xf8db) == 1 && ReadMemory(0xfae6) != 1) //player has talked to pig elder about the well, lid is not lifted and player does not have paon grass
+                                    {
+                                        WriteMemory(0x4bca0, 3); //remove pig NPC that starts paon sequence
+                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 2)); //to revert the event flag when leaving
+                                    }
                                 }
-                                else
+                                else if (enteringInterior[1] == 3) //leaving
                                 {
-                                    WriteMemory(0x21428, [1, 0, 4, 36, 213, 8, 1, 12, 2, 0, 5, 36, 33, 32, 0, 2, 10, 128, 5, 60, 90, 3, 1, 12, 112, 61, 165, 36, 2, 0, 2, 36, 112, 0, 2, 162, 7, 0, 2, 36, 111, 197, 4, 8, 6, 0, 0, 162], binPtr);
+                                    interiorTransition = true;
+
+                                    if ((ReadMemory(0xf9e2) & 2) == 2) WriteMemory(0x4bca0, 131);
                                 }
                             }
-                            else if (enteringInteriorArea8[1] == 3 && ReadMemory(0xf9e2) == 1)
-                            {
-                                WriteMemory(0xfa3f, (byte)(ReadMemory(0xfa3f) | 32));
-                            }
-                        }
+                            break;
 
-                        break;
+                        case 8:
+                            if (enteringInterior[0] == 2)
+                            {
+                                if (enteringInterior[1] == 1)
+                                {
+                                    interiorTransition = true;
+
+                                    if (ReadMemory(0xfac4) == 0)
+                                    {
+                                        WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 243, 48, 73, 71, 251, 51, 85, 73, 84, 240, 1, 255], binPtr); //"You need a Pig Suit!" string
+                                        WriteMemory(0x21428, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36], binPtr);
+                                        WriteMemory(0x21434, new byte[28], binPtr);
+                                        WriteMemory(0x21454, [0, 0, 2, 36], binPtr);
+                                    }
+                                    else
+                                    {
+                                        WriteMemory(0x21428, [1, 0, 4, 36, 213, 8, 1, 12, 2, 0, 5, 36, 33, 32, 0, 2, 10, 128, 5, 60, 90, 3, 1, 12, 112, 61, 165, 36, 2, 0, 2, 36, 112, 0, 2, 162, 7, 0, 2, 36, 111, 197, 4, 8, 6, 0, 0, 162], binPtr);
+                                    }
+                                }
+                                else if (enteringInterior[1] == 3 && ReadMemory(0xf9e2) == 1)
+                                {
+                                    interiorTransition = true;
+
+                                    WriteMemory(0xfa3f, (byte)(ReadMemory(0xfa3f) | 32));
+                                    WriteMemory(0xf9e2, 0);
+                                }
+                            }
+
+                            break;
+                    }
                 }
+                else if (enteringInterior[1] == 2 || enteringInterior[1] == 4) interiorTransition = false;
             }
             else
             {
@@ -781,6 +857,32 @@ public class MemoryManipulator
     private void WarpChecks()
     {
         warping = true;
+
+        var temporaryFlags = ReadMemory(0xf9e2);
+
+        if (temporaryFlags != 0)
+        {
+            switch (ReadMemory(0xf870)) //current area
+            {
+                case 0:
+                    var tempCrabInfo = ReadMemory(0xf9e3);
+
+                    if (tempCrabInfo != 0)
+                    {
+                        WriteMemory(0xf9e3, (byte)((tempCrabInfo & 0xF0) | (temporaryFlags & 0x0F)));
+                    }
+                    break;
+                case 7:
+                    if ((temporaryFlags & 1) == 1) WriteMemory(0xf8d8, 1);
+                    if ((temporaryFlags & 2) == 2) WriteMemory(0x4bca0, 131);
+                    break;
+                case 8:
+                    WriteMemory(0xfa3f, (byte)(ReadMemory(0xfa3f) | 32));
+                    break;
+            }
+
+            WriteMemory(0xf9e2, 0);
+        }
 
         var warpDestination = ReadMemory(0xf83a, 2);
 
@@ -824,12 +926,7 @@ public class MemoryManipulator
                     WriteMemory(0xf9e5, 7); //prevent crab basket from spawning and disable catching if it has already been picked up
                 }
 
-                var tempCrabInfo = ReadMemory(0xf9e2, 2);
-
-                if (tempCrabInfo[0] != 0)
-                {
-                    WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
-                }
+                
 
                 break;
 
@@ -959,6 +1056,21 @@ public class MemoryManipulator
                 break;
             case 7:
                 if (ReadMemory(0xf8d5) != 255) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
+                WriteMemory(0x1687c, new byte[4], binPtr); //disable losing paon grass on failure
+                WriteMemory(0x1689c, new byte[36], binPtr); //disable losing paon grass on failure
+                WriteMemory(0x192f4, 100, binPtr); //prevent gaining duplicate items from elder pig (paon grass)
+
+                if (ReadMemory(0xfae8) == 0 && ReadMemory(0xf8dc) != 255) //prevent statue explosion cutscene if player doesn't have the carpenter book
+                {
+                    WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 243, 35, 65, 82, 80, 69, 78, 84, 69, 82, 251, 34, 79, 79, 75, 240, 1, 255], binPtr); //"You need a Carpenter Book!" string
+                    WriteMemory(0x19544, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36, 165, 165, 4, 8], binPtr);
+                }
+
+                if (ReadMemory(0xf8d8) != 255 & (ReadMemory(0xfe56) & 128) == 128) //allow moveable ball to spawn if circus has been purified
+                {
+                    WriteMemory(0x12da4, new byte[8], binPtr);
+                    WriteMemory(0x12dac, 2, binPtr);
+                }
                 break;
             case 8:
                 WriteMemory(0x4f28, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 1, 2, 146, 0, 0, 0, 0, 8, 0, 66, 48, 181, 0, 64, 16, 0, 0, 0, 0], binPtr);
@@ -968,6 +1080,38 @@ public class MemoryManipulator
             default:
                 break;
         }
+    }
+
+    private int AllocateActorPool1()
+    {
+        var poolHead = GetAddressPointer(0x380a0);
+        var uVar5 = GetAddressPointer((int)(poolHead - 0x800b0000 + 0x24));
+        WriteMemory(0x37e7d, (byte)(ReadMemory(0x37e7d) - 1));
+
+        var piVar4 = 0x4239c;
+        var piVar6 = 0x42624;
+
+        var iVar2 = GetAddressPointer(piVar4);
+        var puVar1 = poolHead - 0x800b0000 + 0x24;
+        WriteMemory(0x380a0, BitConverter.GetBytes(uVar5));
+        WriteMemory((int)puVar1, [0, 0, 0, 0]);
+        WriteMemory((int)(poolHead - 0x800b0000 + 0x20), BitConverter.GetBytes(iVar2));
+        if (ReadMemory((int)(GetAddressPointer(piVar4) - 0x800b0000)) == 0)
+        {
+            WriteMemory((int)(GetAddressPointer(piVar6) - 0x800b0000), BitConverter.GetBytes(poolHead));
+        }
+        else
+        {
+            WriteMemory((int)(GetAddressPointer(piVar4) - 0x800b0000 + 0x24), BitConverter.GetBytes(poolHead));
+        }
+
+        WriteMemory(piVar4, BitConverter.GetBytes(poolHead));
+
+        WriteMemory((int)(poolHead - 0x800b0000 + 0xa), 1);
+        WriteMemory((int)(poolHead - 0x800b0000), 2);
+        WriteMemory((int)(poolHead - 0x800b0000 + 0xc), 3);
+
+        return (int)(poolHead - 0x800b0000);
     }
 
     private void GiveStarterWings(byte bits)
@@ -1003,6 +1147,11 @@ public class MemoryManipulator
 
         }
     }
+
+    private uint GetAddressPointer(int address) => BitConverter.ToUInt32(ReadMemory(address, 4));
+
+    private int ReadDialogueOffsetPtr() => BitConverter.ToUInt16(ReadMemory(0x4240c, 2)) + 0x4006C;
+
 
     private void SetFlagRareFish() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0010));
     private void SetFlagStarShapedCog() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0000_0100));
