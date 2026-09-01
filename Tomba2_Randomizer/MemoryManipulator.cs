@@ -203,12 +203,12 @@ public class MemoryManipulator
                             WriteMemory(0xf8ac, 1); //enable Tomba 1 dwarf event
                             break;
 
-                        case 11: //pants
+                        case 11: //pants collected
                         case 12:
                             newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == (ReadMemory(0xf870) == 0 ? 11 : 12)).Value.InternalId; //check which pants you're picking up based on current area
                             break;
 
-                        case 17: //swimming pig suit
+                        case 17: //swimming pig suit collected
                             if (newItemId != 17 && ReadMemory(0xfac5) != 1)
                             {
                                 WriteMemory(0xf9e2, 1); //temporary flag to destroy platform when leaving room
@@ -217,7 +217,7 @@ public class MemoryManipulator
                             }
                             break;
 
-                        case 19: //evil ice pig robe
+                        case 19: //evil ice pig robe collected
                             if (ReadMemory(0xf8c9) != 255) //melt the giant ice not completed
                             {
                                 CompleteEvent(21, false);
@@ -228,8 +228,7 @@ public class MemoryManipulator
                             if (ReadMemory(0xf8cd) != 255) //static explosion not completed
                             {
                                 CompleteEvent(25, false);
-                                AddItemWithoutMessage(24, 1);
-                                QueueCustomPopupItem(randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value); //give pham's item
+                                AddItemWithMessage(24, 1, true); //give pham's item
                                 WriteMemory(0xf9c4, 55); //set all kujaras to delivered
                                 WriteMemory(0xf9c6, 22); //pham cutscene completed
                             }
@@ -252,6 +251,26 @@ public class MemoryManipulator
                                 WriteMemory(0xf9c5, 1); //move ice block into sculpturer's hut
                             }
 
+                            break;
+
+                        case 20: //evil ghost pig robe collected
+                            if (ReadMemory(0xf8d0) != 255) //put in the spirit's eye not completed
+                            {
+                                CompleteEvent(28, false);
+                            }
+
+                            if (ReadMemory(0xf8d1) != 255) //kill the guards not completed
+                            {
+                                CompleteEvent(29, false);
+                                AddItemWithMessage(167, 1, true);
+                            }
+
+                            if (ReadMemory(0xf8d5) != 255) //use rock crabs for balance not completed
+                            {
+                                CompleteEvent(33, false);
+                                WriteMemory(0xfa22, 50);
+                                WriteMemory(0xfa5a, 1);
+                            }
                             break;
 
                         case 36: //star-shaped cog collected
@@ -605,12 +624,20 @@ public class MemoryManipulator
         IsActive = false;
     }
 
-    public void AddItemWithMessage(byte itemId, byte amount, bool manual = false)
+    public void AddItemWithMessage(byte itemId, byte amount, bool custom = false)
     {
-        AddInventoryQuantity(itemId, amount);
+        if (!custom)
+        {
+            AddInventoryQuantity(itemId, amount);
+            QueuePopupMessage(itemId, 2, 66);
+        }
 
-        if (!manual) QueuePopupMessage(itemId, 2, 66);
-        else QueueCustomPopupItem(randomizer.Items[itemId]);
+        else
+        {
+            var item = randomizer.RandomizedItems.First(r => r.Key.InternalId == itemId).Value;
+            AddInventoryQuantity(item.InternalId, amount);
+            QueueCustomPopupItem(item);
+        }
     }
 
     private void AddItemWithoutMessage(byte itemId, byte amount) => AddInventoryQuantity(itemId, amount);
@@ -837,6 +864,32 @@ public class MemoryManipulator
 
                                     if ((ReadMemory(0xf9e2) & 1) == 1) WriteMemory(0xf8cd, 1);
                                     if ((ReadMemory(0xf9e2) & 2) == 2) WriteMemory(0xf8cd, 255);
+                                }
+                            }
+                            break;
+
+                        case 6:
+                            if (enteringInterior[0] == 4) //rock crab room
+                            {
+                                if (enteringInterior[1] == 2 && ReadMemory(0xfa22) == 50 && ReadMemory(0xf9e2) == 0 && ReadMemory(0xf839) == 0)
+                                {
+                                    WriteMemory(0xf9e2, 1);
+
+                                    if (ReadMemory(0xfae5) == 1)
+                                    {
+                                        WriteMemory(0xfa22, 51);
+                                        RemoveItemWithMessage(49, 1);
+                                        AddItemWithMessage(25, 1, true);
+                                    }
+                                    else
+                                    {
+                                        QueueCustomPopup("Bring a {P}Rock Crab{W} here!");
+                                    }
+                                }
+                                else if (enteringInterior[1] == 3)
+                                {
+                                    interiorTransition = true;
+                                    WriteMemory(0xf9e2, 0);
                                 }
                             }
                             break;
@@ -1228,7 +1281,8 @@ public class MemoryManipulator
     }
 
     private void QueueCustomPopupEvent(byte id) => QueueCustomPopup("{O}" + randomizer.Events[id].Name + "{W} Completed!");
-    private void QueueCustomPopupItem(Item i) => QueueCustomPopup((i.Color == ItemColor.Green ? "{G}" : i.Color == ItemColor.Blue ? "{B}" : "{P}") + i.DisplayName + "{W} given!");
+
+    private void QueueCustomPopupItem(Item item) => QueueCustomPopup(item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}" + item.DisplayName + "{W} acquired!");
 
     private void QueueCustomPopup(string input) => writeQueuePopup.Add(new QueuedChange(igt, input));
 
