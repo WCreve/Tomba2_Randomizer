@@ -255,13 +255,29 @@ public class MemoryManipulator
                             break;
 
                         case 36: //star-shaped cog collected
-                            SetFlagStarShapedCog();
+                            if (ReadMemory(0x37eaa) == 16) //standing near net bridge
+                            {
+                                AddItemWithMessage(36, 1);
+                                custom = true;
+                            }
+                            else
+                            {
+                                SetFlagStarShapedCog();
+                            }
                             break;
 
                         case 37: //hexagon gear collected
                             if (ReadMemory(0x37eaa) == 4) //standing near ladder
                             {
                                 AddItemWithMessage(37, 1);
+                                custom = true;
+                            }
+                            break;
+
+                        case 38: //triangle gear collected
+                            if (ReadMemory(0xf817) == 7 && ReadMemory(0xf818) == 2) //in gear interior
+                            {
+                                AddItemWithMessage(38, 1);
                                 custom = true;
                             }
                             break;
