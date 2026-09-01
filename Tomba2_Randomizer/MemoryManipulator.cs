@@ -220,14 +220,15 @@ public class MemoryManipulator
                         case 19: //evil ice pig robe
                             if (ReadMemory(0xf8c9) != 255) //melt the giant ice not completed
                             {
-                                CompleteEvent(20, false);
+                                CompleteEvent(21, false);
                                 WriteMemory(0xfa07, (byte)(ReadMemory(0xfa07) | 128)); //get rid of big ice pigs
                                 WriteMemory(0xfa0a, 34); //get rid of big ice pigs
                             }
 
                             if (ReadMemory(0xf8cd) != 255) //static explosion not completed
                             {
-                                CompleteEvent(24, false);
+                                CompleteEvent(25, false);
+                                AddItemWithoutMessage(24, 1);
                                 QueueCustomPopupItem(randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value); //give pham's item
                                 WriteMemory(0xf9c4, 55); //set all kujaras to delivered
                                 WriteMemory(0xf9c6, 22); //pham cutscene completed
@@ -235,7 +236,7 @@ public class MemoryManipulator
 
                             if (ReadMemory(0xf8ce) != 255) //raise the ladder not completed
                             {
-                                CompleteEvent(25, false);
+                                CompleteEvent(26, false);
                                 if (ReadMemory(0xfad9) == 1) //if player has hexagon gear, remove
                                 {
                                     RemoveItemWithMessage(37, 1);
@@ -284,6 +285,10 @@ public class MemoryManipulator
                                     break;
                             }
 
+                            break;
+
+                        case 45: //big sack collected
+                            SetFlagBigSack();
                             break;
 
                         case 48: //blue fruit collected
@@ -388,6 +393,17 @@ public class MemoryManipulator
 
                             case 41: //crab basket
                                 WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6)); //enable crab catching unless all crabs have already been caught
+                                break;
+
+                            case 45: //big sack
+                                if (ReadMemory(0xf870) == 4) //kujara ranch
+                                {
+                                    var bigSackActor = AllocateActorPool1(); //make big sack appear on back
+                                    WriteMemory(bigSackActor + 2, 0x12);
+                                    WriteMemory(bigSackActor + 3, 0);
+                                    WriteMemory(bigSackActor + 0x1c, BitConverter.GetBytes(0x8011b674));
+                                    WriteMemory(bigSackActor + 0x28, (byte)(ReadMemory(bigSackActor + 0x28) | 0x80));
+                                }
                                 break;
 
                             case 50: //paon grass
@@ -749,6 +765,31 @@ public class MemoryManipulator
                                 }
                             break;
 
+                        case 4:
+                            if (enteringInterior[0] == 1) //lift interior
+                            {
+                                if (enteringInterior[1] == 1) //entering
+                                {
+                                    interiorTransition = true;
+
+                                    var staticExplosionStatus = ReadMemory(0xf8cd);
+
+                                    if (ReadMemory(0xf8cb) != 255 && staticExplosionStatus != 0) //player has not fed the kujara and has started static explosion
+                                    {
+                                        WriteMemory(0xf8cd, 0); //temporarly set static explosion to not started to spawn pham
+                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | (staticExplosionStatus == 1 ? 1 : 2))); //to revert the event flag when leaving
+                                    }
+                                }
+                                else if (enteringInterior[1] == 3) //leaving
+                                {
+                                    interiorTransition = true;
+
+                                    if ((ReadMemory(0xf9e2) & 1) == 1) WriteMemory(0xf8cd, 1);
+                                    if ((ReadMemory(0xf9e2) & 2) == 2) WriteMemory(0xf8cd, 255);
+                                }
+                            }
+                            break;
+
                         case 7:
                             if (enteringInterior[0] == 7) //triangle gear interior
                             {
@@ -872,6 +913,10 @@ public class MemoryManipulator
                     {
                         WriteMemory(0xf9e3, (byte)((tempCrabInfo & 0xF0) | (temporaryFlags & 0x0F)));
                     }
+                    break;
+                case 4:
+                    if ((temporaryFlags & 1) == 1) WriteMemory(0xf8cd, 1);
+                    if ((temporaryFlags & 2) == 2) WriteMemory(0xf8cd, 255);
                     break;
                 case 7:
                     if ((temporaryFlags & 1) == 1) WriteMemory(0xf8d8, 1);
@@ -1044,6 +1089,11 @@ public class MemoryManipulator
                 break;
             case 4:
                 if (ReadMemory(0xf8c6) != 255) WriteMemory(0xf3ec, 3, binPtr); //disable trolley to CMT if deliver to gran not completed
+
+                WriteMemory(0xf8c0, new byte[16], binPtr);
+                WriteMemory(0xf8d0, [193, 249, 66, 144, 0, 0, 0, 0, 128, 0, 66, 48], binPtr); //custom big sack spawn code
+
+                WriteMemory(0x21f20, new byte[4], binPtr); //disable auto-equipping big sack
                 break;
             case 5:
                 if (ReadMemory(0xf8ca) != 255) WriteMemory(0x19e8c, 3, binPtr); //disable lift to ranch if let's take the lift not completed
@@ -1123,7 +1173,7 @@ public class MemoryManipulator
     private void SetCustomPopupString(string input)
     {
         var popupText = new byte[input.Length - input.Count('{') * 2 + 1];
-        int inputIndex = 0, outputIndex = 0;
+        int outputIndex = 0;
 
         for (int i = 0; i < input.Length; i++)
         {
@@ -1134,7 +1184,7 @@ public class MemoryManipulator
             else if (input[i] == ' ') popupText[outputIndex] = 251;
             else if (input[i] == '{')
             {
-                switch (input[inputIndex])
+                switch (input[i + 1])
                 {
                     case 'n':
                         popupText[outputIndex] = 250; //newline
@@ -1243,6 +1293,7 @@ public class MemoryManipulator
     private void SetFlagBlueFruit() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0001_0000));
     private void SetFlagClearFuit() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0010_0000));
     private void SetFlagRockCrab() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0100_0000));
+    private void SetFlagBigSack() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_1000_0000));
 
     private void HandleRewind(int time)
     {
