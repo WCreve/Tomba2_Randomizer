@@ -241,12 +241,29 @@ public class MemoryManipulator
                                 {
                                     RemoveItemWithMessage(37, 1);
                                 }
+                                else
+                                {
+                                    SetFlagRemoveHexagonGear();
+                                }
+                            }
+
+                            if (ReadMemory(0xf9c5) == 0) //summit ice block not pushed
+                            {
+                                WriteMemory(0xf9c5, 1); //move ice block into sculpturer's hut
                             }
 
                             break;
 
                         case 36: //star-shaped cog collected
                             SetFlagStarShapedCog();
+                            break;
+
+                        case 37: //hexagon gear collected
+                            if (ReadMemory(0x37eaa) == 4) //standing near ladder
+                            {
+                                AddItemWithMessage(37, 1);
+                                custom = true;
+                            }
                             break;
 
                         case 39: //round cog collected
@@ -372,6 +389,24 @@ public class MemoryManipulator
                                 newItemId = (byte)(pantsFound == 0 ? 11 : 12);
 
                                 WriteMemory(0xf9cf, ++pantsFound);
+                                break;
+
+                            case 37: //hexagon gear
+                                if ((ReadMemory(0xf9c2) & 1) == 1)
+                                {
+                                    QueueCustomPopup("{P}Hexagon Gear{W} obtained and used!");
+                                    WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) & ~(1 << 0)));
+                                    custom = true;
+                                }
+
+                                if (ReadMemory(0xf870) == 5) //in summit
+                                {
+                                    if (ReadMemory(0xf937) != 0 && (ReadMemory(0xfa4b) & 2) == 0) //allowed to recollect gears and hexagon gear has not been recollected
+                                    {
+                                        WriteMemory(0x4e268, 1); //enable recollecting hexagon gear
+                                        WriteMemory(0x182be, [80, 162], binPtr);
+                                    }
+                                }
                                 break;
 
                             case 40: //random pink bucket received
@@ -1097,6 +1132,17 @@ public class MemoryManipulator
                 break;
             case 5:
                 if (ReadMemory(0xf8ca) != 255) WriteMemory(0x19e8c, 3, binPtr); //disable lift to ranch if let's take the lift not completed
+                if ((ReadMemory(0xfe56) & 32) == 32) //purified
+                {
+                    WriteMemory(0x30eb0, 38, binPtr); //change hexagon gear pickup sprite 
+                    if (ReadMemory(0xf937) != 0 && (ReadMemory(0xfa4b) & 2) == 0) //allowed to recollect gears and hexagon gear has not been recollected
+                    {
+                        if ((ReadMemory(0xf9c2) & 1) == 1) //hexagon gear has not been obtained yet
+                        {
+                            WriteMemory(0x182be, [0, 0], binPtr); //disable recollecting hexagon gear
+                        }
+                    }
+                }
                 break;
             case 6:
                 WriteMemory(0xd600, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 1, 130, 144, 0, 0, 0, 0, 16, 0, 66, 48], binPtr); //custom blue fruit spawn code
@@ -1294,6 +1340,8 @@ public class MemoryManipulator
     private void SetFlagClearFuit() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0010_0000));
     private void SetFlagRockCrab() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_0100_0000));
     private void SetFlagBigSack() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_1000_0000));
+
+    private void SetFlagRemoveHexagonGear() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0001));
 
     private void HandleRewind(int time)
     {
