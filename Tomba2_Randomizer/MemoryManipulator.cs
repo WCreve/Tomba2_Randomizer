@@ -465,8 +465,15 @@ public class MemoryManipulator
                                 WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6)); //enable crab catching unless all crabs have already been caught
                                 break;
 
+                            case 44: //trolley rail
+                                if (ReadMemory(0xf870) == 2) //in CMT
+                                {
+                                    WriteMemory(0x10fd8, [10, 128, 5, 60, 90, 3, 1, 12, 192, 60, 165, 36, 2, 0, 2, 36, 112, 0, 98, 162, 254, 131, 4, 8, 1, 0, 2, 36], binPtr); //re-enable trolley cutscene
+                                }
+                                break;
+
                             case 45: //big sack
-                                if (ReadMemory(0xf870) == 4) //kujara ranch
+                                if (ReadMemory(0xf870) == 4) //in kujara ranch
                                 {
                                     var bigSackActor = AllocateActorPool1(); //make big sack appear on back
                                     WriteMemory(bigSackActor + 2, 0x12);
@@ -1209,6 +1216,13 @@ public class MemoryManipulator
                 break;
             case 2:
                 if (ReadMemory(0xf8bf) != 255) WriteMemory(0x25b8, new byte[128], binPtr); //disable travel to pipe area if pull and open not completed
+
+                if (ReadMemory(0xfae0) == 0) //prevent statue explosion cutscene if player doesn't have the carpenter book
+                {
+                    SetCustomPopupString("You need a {P}Trolley Rail{W}!");
+                    WriteMemory(0x10fd8, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36, 0, 0, 2, 36, 5, 0, 98, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr);
+                }
+
                 break;
             case 4:
                 if (ReadMemory(0xf8c6) != 255) WriteMemory(0xf3ec, 3, binPtr); //disable trolley to CMT if deliver to gran not completed
@@ -1299,7 +1313,7 @@ public class MemoryManipulator
         }
     }
 
-    private void QueueCustomPopupEvent(byte id) => QueueCustomPopup("{O}" + randomizer.Events[id].Name + "{W} Completed!");
+    private void QueueCustomPopupEvent(byte id) => QueueCustomPopup("{O}" + randomizer.Events[id].Name + "{W} completed!");
 
     private void QueueCustomPopupItem(Item item) => QueueCustomPopup(item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}" + item.DisplayName + "{W} acquired!");
 
