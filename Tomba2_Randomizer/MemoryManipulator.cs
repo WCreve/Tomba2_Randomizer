@@ -228,9 +228,8 @@ public class MemoryManipulator
                             if (ReadMemory(0xf8cd) != 255) //static explosion not completed
                             {
                                 CompleteEvent(25, false);
-                                AddItemWithMessage(24, 1, true); //give pham's item
                                 WriteMemory(0xf9c4, 55); //set all kujaras to delivered
-                                WriteMemory(0xf9c6, 22); //pham cutscene completed
+                                WriteMemory(0xf9c6, 21); //pham cutscene completed
                             }
 
                             if (ReadMemory(0xf8ce) != 255) //raise the ladder not completed
@@ -262,7 +261,8 @@ public class MemoryManipulator
                             if (ReadMemory(0xf8d1) != 255) //kill the guards not completed
                             {
                                 CompleteEvent(29, false);
-                                AddItemWithMessage(167, 1, true);
+                                //AddItemWithMessage(167, 1, true);
+                                //look into adding a donglin bell item pickup
                             }
 
                             if (ReadMemory(0xf8d5) != 255) //use rock crabs for balance not completed
@@ -587,7 +587,11 @@ public class MemoryManipulator
                         }
                     }
 
-                    if (!custom) AddItemWithMessage(newItemId, 1);
+                    if (!custom)
+                    {
+                        if (itemPickedUp[2] == 1) AddItemWithoutMessage(newItemId, 1);
+                        else AddItemWithMessage(newItemId, 1);
+                    }
                 }
 
                 WriteMemory(0xf8b0, [0, 0, 0]);
@@ -868,6 +872,18 @@ public class MemoryManipulator
                             }
                             break;
 
+                        case 5:
+                            if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 21) //pham room
+                            {
+                                WriteMemory(0xf9c6, 22);
+                                WriteMemory(0xf8b0, [24, 1, 1]);
+
+                                var item = randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value;
+                                QueueCustomPopup("{O}Pham{W} gives you " + (item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}") + item.DisplayName + "{W}!");
+                                
+                            }
+                            break;
+
                         case 6:
                             if (enteringInterior[0] == 4) //rock crab room
                             {
@@ -879,7 +895,10 @@ public class MemoryManipulator
                                     {
                                         WriteMemory(0xfa22, 51);
                                         RemoveItemWithMessage(49, 1);
-                                        AddItemWithMessage(25, 1, true);
+                                        WriteMemory(0xf8b0, [25, 1, 1]);
+
+                                        var item = randomizer.RandomizedItems.First(r => r.Key.InternalId == 25).Value;
+                                        QueueCustomPopup("You're given " + (item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}") + item.DisplayName + "{W}!");
                                     }
                                     else
                                     {
