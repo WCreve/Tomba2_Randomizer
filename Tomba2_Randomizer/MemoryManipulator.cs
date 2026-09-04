@@ -586,6 +586,8 @@ public class MemoryManipulator
 
                                     AddItemWithoutMessage(164, 1);
                                     QueueResourceMessage(STRING_HARP, 65);
+
+                                    custom = true;
                                 }
                                 break;
 
@@ -1275,6 +1277,13 @@ public class MemoryManipulator
                 WriteMemory(0x4f28, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 1, 2, 146, 0, 0, 0, 0, 8, 0, 66, 48, 181, 0, 64, 16, 0, 0, 0, 0], binPtr);
 
                 if (ReadMemory(0xf8dc) != 255) WriteMemory(-0x5354, new byte[28], binPtr); //disable travel to circus village if a pig tribe clown statue not completed
+
+                if ((ReadMemory(0xfa44) & 2) == 0 && ReadMemory(0xf8e4) == 255) //spawn water pig bag pickup if hasn't been collected yet but water pig has been defeated
+                {
+                    WriteMemory(0x51cb, 20, binPtr);
+                    WriteMemory(0x1309B, 20, binPtr);
+                }
+                
                 break;
             default:
                 break;
