@@ -427,7 +427,7 @@
 	},
 	{
 		"id": 34,
-		"name": "Star-Shaped Cog",
+		"name": "Star-shaped Cog",
 		"color": "Pink",
 		"address": "0xfad8"
 	},
@@ -1916,6 +1916,9 @@
 		"requirements": [
 			{
 				"events": [ 29 ]
+			},
+			{
+				"events": [ 34 ]
 			}
 		]
 	},

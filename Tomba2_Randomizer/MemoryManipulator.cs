@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using MsBox.Avalonia.Base;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -261,14 +262,14 @@ public class MemoryManipulator
                             if (ReadMemory(0xf8d1) != 255) //kill the guards not completed
                             {
                                 CompleteEvent(29, false);
-                                //AddItemWithMessage(167, 1, true);
+                                AddItemWithMessage(167, 1, true);
                                 //look into adding a donglin bell item pickup
                             }
 
                             if (ReadMemory(0xf8d5) != 255) //use rock crabs for balance not completed
                             {
                                 CompleteEvent(33, false);
-                                WriteMemory(0xfa22, 50);
+                                WriteMemory(0xfa22, 48);
                                 WriteMemory(0xfa5a, 1);
                             }
                             break;
@@ -298,6 +299,15 @@ public class MemoryManipulator
                             {
                                 AddItemWithMessage(38, 1);
                                 custom = true;
+                            }
+                            else if ((ReadMemory(0xf9e2) & 4) == 4)
+                            {
+                                WriteMemory(0x3a14, 8, binPtr);
+                                WriteMemory(0x1ad2c, 8, binPtr);
+                                WriteMemory(0x1ba80, 7, binPtr);
+                                WriteMemory(0xf9d6, 14);
+                                WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(4 << 0)));
+                                WriteMemory(0xfa45, (byte)(ReadMemory(0xfa45) | 1));
                             }
                             break;
 
@@ -381,6 +391,14 @@ public class MemoryManipulator
                             else if (!(ReadMemory(0xf870) == 1)) //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
                             {
                                 AddItemWithMessage(97, 1);
+                                custom = true;
+                            }
+                            break;
+
+                        case 98: //mermaid bucket
+                            if (!(ReadMemory(0xf870) == 8 && ReadMemory(0xfe60) == 40)) //not in the trapped mermaid section of the water temple
+                            {
+                                AddItemWithoutMessage(itemPickedUp[0], 1);
                                 custom = true;
                             }
                             break;
@@ -497,7 +515,7 @@ public class MemoryManipulator
                             case 52: //carpenter book
                                 if (ReadMemory(0xf870) == 7) //in circus village
                                 {
-                                    WriteMemory(0x19638, [16, 88], binPtr); //enable statue explosion cutscene
+                                    WriteMemory(0x19544, [64, 0, 0, 166, 118, 195, 4, 12, 4, 0, 4, 36, 81, 195, 4, 12], binPtr); //enable statue explosion cutscene
                                 }
                                 break;
 
@@ -896,7 +914,7 @@ public class MemoryManipulator
                         case 6:
                             if (enteringInterior[0] == 4) //rock crab room
                             {
-                                if (enteringInterior[1] == 2 && ReadMemory(0xfa22) == 50 && ReadMemory(0xf9e2) == 0 && ReadMemory(0xf839) == 0)
+                                if (enteringInterior[1] == 2 && ReadMemory(0xfa22) == 48 && ReadMemory(0xf9e2) == 0 && ReadMemory(0xf839) == 0)
                                 {
                                     WriteMemory(0xf9e2, 1);
 
@@ -1000,6 +1018,42 @@ public class MemoryManipulator
                     }
                 }
                 else if (enteringInterior[1] == 2 || enteringInterior[1] == 4) interiorTransition = false;
+
+                var popups = ReadMemory(0xf9f1);
+
+                if (popups != 0)
+                {
+                    switch (ReadMemory(0xf870)) //current area
+                    {
+                        case 7:
+                            QueueCustomPopup("You need a {P}Carpenter Book{W}!");
+                            break;
+
+                        case 8:
+                            if (ReadMemory(0xf550) == 0) //no active popups
+                            {
+                                var cogs = ReadMemory(0xfad8, 3);
+                                var removedCogs = ReadMemory(0xfa4b);
+                                var missingItems = new List<string>();
+                                var blockedItems = new List<string>();
+
+                                if (cogs[0] == 0 && (removedCogs & 1) == 0) missingItems.Add("Star-shaped Cog");
+                                if (cogs[1] == 0 && (removedCogs & 2) == 0) missingItems.Add("Hexagon Gear");
+                                if (cogs[2] == 0 && (removedCogs & 4) == 0) missingItems.Add("Triangle Gear");
+
+                                if (missingItems.Any()) QueueCustomPopup("You are missing {P}" + string.Join("{W},{n}{P}", missingItems));
+
+                                if (cogs[0] == 1 && (removedCogs & 1) == 0) blockedItems.Add("Star-shaped Cog");
+                                if (cogs[1] == 1 && (removedCogs & 2) == 0) blockedItems.Add("Hexagon Gear");
+                                if (cogs[2] == 1 && (removedCogs & 4) == 0) blockedItems.Add("Triangle Gear");
+
+                                if (blockedItems.Any()) QueueCustomPopup("You cannot hand in {P}" + string.Join("{W},{n}{P}", blockedItems));
+                            }
+                            break;   
+                    }
+
+                    WriteMemory(0xf9f1, 0);
+                }
             }
             else
             {
@@ -1261,10 +1315,20 @@ public class MemoryManipulator
                 WriteMemory(0x1689c, new byte[36], binPtr); //disable losing paon grass on failure
                 WriteMemory(0x192f4, 100, binPtr); //prevent gaining duplicate items from elder pig (paon grass)
 
+                if (ReadMemory(0xf8d8) != 255 && (ReadMemory(0xf9d6) == 14)) //allow ball to spawn even if bridge has been raised
+                {
+                    WriteMemory(0x3a14, 30, binPtr);
+                    WriteMemory(0x1ad2c, 30, binPtr);
+                    WriteMemory(0x1ba80, 14, binPtr);
+                    WriteMemory(0xfa45, (byte)(ReadMemory(0xfa45) & ~(1 << 0)));
+                    WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 4));
+                }
+
+                WriteMemory(0x3a2C, 255, binPtr); //spawn circus ball if triangle gear pickup not grabbed but bridge has been raised
+
                 if (ReadMemory(0xfae8) == 0 && ReadMemory(0xf8dc) != 255) //prevent statue explosion cutscene if player doesn't have the carpenter book
                 {
-                    WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 243, 35, 65, 82, 80, 69, 78, 84, 69, 82, 251, 34, 79, 79, 75, 240, 1, 255], binPtr); //"You need a Carpenter Book!" string
-                    WriteMemory(0x19544, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36, 165, 165, 4, 8], binPtr);
+                    WriteMemory(0x19544, [12, 128, 3, 60, 1, 0, 2, 36, 165, 165, 4, 8, 241, 249, 98, 160], binPtr);
                 }
 
                 if (ReadMemory(0xf8d8) != 255 & (ReadMemory(0xfe56) & 128) == 128) //allow moveable ball to spawn if circus has been purified
@@ -1283,6 +1347,13 @@ public class MemoryManipulator
                     WriteMemory(0x51cb, 20, binPtr);
                     WriteMemory(0x1309B, 20, binPtr);
                 }
+
+                var removedCogs = ReadMemory(0xfa4b);
+
+                if (removedCogs != 7 && (ReadMemory(0xfa46) & 15) != 15)
+                {
+                    WriteMemory(0x294b8, [12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160, 8, 0, 224, 3, 43, 0, 0, 162], binPtr);
+                }                
                 
                 break;
             default:
