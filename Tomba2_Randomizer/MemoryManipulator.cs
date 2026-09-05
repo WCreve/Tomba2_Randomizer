@@ -488,6 +488,7 @@ public class MemoryManipulator
                                 {
                                     WriteMemory(0x10fd8, [10, 128, 5, 60, 90, 3, 1, 12, 192, 60, 165, 36, 2, 0, 2, 36, 112, 0, 98, 162, 254, 131, 4, 8, 1, 0, 2, 36], binPtr); //re-enable trolley cutscene
                                 }
+
                                 break;
 
                             case 45: //big sack
@@ -1025,6 +1026,10 @@ public class MemoryManipulator
                 {
                     switch (ReadMemory(0xf870)) //current area
                     {
+                        case 2:
+                            QueueCustomPopup("You need a {P}Trolley Rail{W}!");
+                            break;
+
                         case 7:
                             QueueCustomPopup("You need a {P}Carpenter Book{W}!");
                             break;
@@ -1273,10 +1278,9 @@ public class MemoryManipulator
             case 2:
                 if (ReadMemory(0xf8bf) != 255) WriteMemory(0x25b8, new byte[128], binPtr); //disable travel to pipe area if pull and open not completed
 
-                if (ReadMemory(0xfae0) == 0) //prevent statue explosion cutscene if player doesn't have the carpenter book
+                if (ReadMemory(0xfae0) == 0) //prevent trolley rail cutscene if you don't have the trolley rail
                 {
-                    SetCustomPopupString("You need a {P}Trolley Rail{W}!");
-                    WriteMemory(0x10fd8, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36, 0, 0, 2, 36, 5, 0, 98, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr);
+                    WriteMemory(0x10fd8, [12, 128, 3, 60, 1, 0, 2, 36, 241, 249, 98, 160, 0, 0, 2, 36, 5, 0, 98, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr);
                 }
 
                 break;
