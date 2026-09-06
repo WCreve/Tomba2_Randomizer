@@ -818,7 +818,6 @@
 		"primary": true,
 		"requirements": [
 			{
-				"items": [ 16, 17, 18, 19, 20 ],
 				"events": [ 19, 27, 34, 41, 49 ]
 			}
 		]
@@ -831,6 +830,7 @@
 		"primary": true,
 		"requirements": [
 			{
+				"items": [ 16, 17, 18, 19, 20 ],
 				"events": [ 50 ]
 			}
 		]
@@ -843,6 +843,7 @@
 		"primary": true,
 		"requirements": [
 			{
+				"items": [ 16, 17, 18, 19, 20 ],
 				"events": [ 50 ]
 			}
 		]
@@ -855,6 +856,7 @@
 		"primary": true,
 		"requirements": [
 			{
+				"items": [ 16, 17, 18, 19, 20 ],
 				"events": [ 50 ]
 			}
 		]
@@ -867,6 +869,7 @@
 		"primary": true,
 		"requirements": [
 			{
+				"items": [ 16, 17, 18, 19, 20 ],
 				"events": [ 50 ]
 			}
 		]
@@ -879,6 +882,7 @@
 		"primary": true,
 		"requirements": [
 			{
+				"items": [ 16, 17, 18, 19, 20 ],
 				"events": [ 50 ]
 			}
 		]

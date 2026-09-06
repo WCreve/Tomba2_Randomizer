@@ -276,6 +276,15 @@ public class MemoryManipulator
                             }
                             break;
 
+                        case 28: //last evil pig bag collected
+                            WriteMemory(0xa8b8, [43, 0, 32, 162, 12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160], binPtr);
+
+                            var newItem = randomizer.RandomizedItems.First(r => r.Key.InternalId == itemPickedUp[0]).Value;
+                            QueueCustomPopup((newItem.Color == ItemColor.Green ? "{G}" : newItem.Color == ItemColor.Pink ? "{P}" : "{B}") + newItem.DisplayName + "{W} acquired!{n}All magic power has been restored!{n}Magic power is infinite!");
+                            AddItemWithoutMessage(newItem.InternalId, 1);
+                            custom = true;
+                            break;
+
                         case 36: //star-shaped cog collected
                             if (ReadMemory(0x37eaa) == 16) //standing near net bridge
                             {
@@ -494,6 +503,17 @@ public class MemoryManipulator
                                 newItemId = (byte)(pantsFound == 0 ? 11 : 12);
 
                                 WriteMemory(0xf9cf, ++pantsFound);
+                                break;
+
+                            case 18: //evil pig robes
+                            case 19:
+                            case 20:
+                            case 21:
+                            case 22:
+                                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 4) //allow unlocking door to ??? if this is your final evil pig robe
+                                {
+                                    WriteMemory(0xa8b8, [6, 0, 37, 162, 1, 0, 4, 36, 213, 8, 1, 12, 33, 40, 128, 0], binPtr);
+                                }
                                 break;
 
                             case 37: //hexagon gear
@@ -1086,6 +1106,11 @@ public class MemoryManipulator
                     {
                         switch (ReadMemory(0xf870)) //current area
                         {
+                            case 1:
+                                var missingRobeCount = ReadMemory(0xfac6, 5).Count(r => r == 0);
+                                QueueCustomPopup("You are missing {P}" + missingRobeCount + " {G}Evil Pig Robes{W}!");
+                                break;
+
                             case 2:
                                 QueueCustomPopup("You need a {P}Trolley Rail{W}!");
                                 break;
@@ -1339,6 +1364,13 @@ public class MemoryManipulator
                 break;
             case 1:
                 if (ReadMemory(0xf8bc) != 255) WriteMemory(-0x3ce8, [73, 0], binPtr); //disable travel to starting beach if win's windmill not completed
+
+                if (ReadMemory(0xfac6, 5).Any(r => r == 0) && ReadMemory(0xf8e5) == 255) //disable unlocking door to ??? if missing an evil pig robe
+                {
+                    WriteMemory(0xa8b8, [43, 0, 32, 162, 12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160], binPtr);
+                }
+
+                WriteMemory(0x5ac0, new byte[12], binPtr); //remove last evil pig bag resource popup
                 break;
             case 2:
                 if (ReadMemory(0xf8bf) != 255) WriteMemory(0x25b8, new byte[128], binPtr); //disable travel to pipe area if pull and open not completed
@@ -1377,6 +1409,7 @@ public class MemoryManipulator
             case 6:
                 WriteMemory(0xd600, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 1, 130, 144, 0, 0, 0, 0, 16, 0, 66, 48], binPtr); //custom blue fruit spawn code
                 WriteMemory(0x58a0, [81, 1, 34, 146, 0, 0, 0, 0, 64, 0, 66, 48, 68, 0, 64, 20], binPtr); //custom rock crab spawn code
+                WriteMemory(0x50e54, [255, 52, 72, 69, 251, 243, 44, 73, 71, 72, 84, 13, 35, 85, 84, 84, 73], binPtr); //repair potential damage to a resource string
 
                 if ((ReadMemory(0xf9c1) & 32) == 32) WriteMemory(0x11e3c, 2); //disable clear fruit pickup
                 if (ReadMemory(0xf8cd) != 255) WriteMemory(0x14074, 3, binPtr); //disable lift to summit if static explosion not completed
