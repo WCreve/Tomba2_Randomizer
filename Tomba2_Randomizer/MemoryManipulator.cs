@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Logging;
 using MsBox.Avalonia.Base;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -368,6 +370,44 @@ public class MemoryManipulator
                             }
                             break;
 
+                        case 53: //pig nose panel collected
+                            var currentArea = ReadMemory(0xf870);
+                            var pigNoseAreas = new byte[] { 0, 1, 4, 6, 20 };
+
+                            newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 53 + pigNoseAreas.IndexOf(currentArea)).Value.InternalId;
+
+                            break;
+
+                        case 54: //seeds of strength collected
+                            var sessionSeedsCollected = ReadMemory(0x37eab);
+
+                            if (itemPickedUp[2] == 2) //seed grabbed. item isn't given yet
+                            {
+                                var tempSeeds = 0;
+
+                                if (BitOperations.PopCount(sessionSeedsCollected) == 1) tempSeeds = 0;
+                                else tempSeeds = ReadMemory(0xf9e2);
+
+                                QueueCustomPopupItem(randomizer.RandomizedItems.First(r => r.Key.Id == 58 + BitOperations.TrailingZeroCount(sessionSeedsCollected - tempSeeds)).Value, 1);
+
+                                WriteMemory(0xf9e2, sessionSeedsCollected);
+                            }
+                            else //trolley reaches goal, give items
+                            {
+                                while (sessionSeedsCollected != 0)
+                                {
+                                    int seedNumber = BitOperations.TrailingZeroCount(sessionSeedsCollected);
+                                    AddItemWithoutMessage(randomizer.RandomizedItems.First(r => r.Key.Id == 58 + seedNumber).Value.InternalId, 1);
+
+                                    sessionSeedsCollected &= (byte)(sessionSeedsCollected - 1);
+                                }
+
+                                WriteMemory(0xf9e2, 0);
+                            }
+
+                            custom = true;
+                            break;
+
                         case 56:
                         case 57: //red/blue chick pickup checks
                             var chickStatus = ReadMemory(0xf9f2);
@@ -410,9 +450,21 @@ public class MemoryManipulator
                             custom = true;
                             break;
 
-                        case 108:
+                        case 108: //clear fruit
                             SetFlagClearFuit();
                             WriteMemory(0x11e3c, 2, binPtr); //disable clear fruit pickup
+                            break;
+
+                        case 112: //1/2 spell of courage
+                            newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == (ReadMemory(0xf817) == 1 ? 106: 107)).Value.InternalId;
+                            break;
+
+                        case 114: //1/2 spell of strength
+                            newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == (ReadMemory(0xf870) == 4 ? 108 : 109)).Value.InternalId;
+                            break;
+
+                        case 116: //1/2 spell of wisdom
+                            newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == (ReadMemory(0xf870) == 5 ? 110 : 111)).Value.InternalId;
                             break;
 
                         default:
@@ -1022,39 +1074,48 @@ public class MemoryManipulator
 
                 var popups = ReadMemory(0xf9f1);
 
+                
                 if (popups != 0)
                 {
-                    switch (ReadMemory(0xf870)) //current area
+                    if (popups == 255)
                     {
-                        case 2:
-                            QueueCustomPopup("You need a {P}Trolley Rail{W}!");
-                            break;
+                        var flowersWatered = BitOperations.PopCount(ReadMemory(0xfa13));
+                        QueueCustomPopup("Watered " + (flowersWatered == 5 ? "{G}all" : ("{B}" + flowersWatered)) + " {O}Magic Flower" + (flowersWatered > 1 ? "s" : "") + "{W}!");
+                    }
+                    else
+                    {
+                        switch (ReadMemory(0xf870)) //current area
+                        {
+                            case 2:
+                                QueueCustomPopup("You need a {P}Trolley Rail{W}!");
+                                break;
 
-                        case 7:
-                            QueueCustomPopup("You need a {P}Carpenter Book{W}!");
-                            break;
+                            case 7:
+                                QueueCustomPopup("You need a {P}Carpenter Book{W}!");
+                                break;
 
-                        case 8:
-                            if (ReadMemory(0xf550) == 0) //no active popups
-                            {
-                                var cogs = ReadMemory(0xfad8, 3);
-                                var removedCogs = ReadMemory(0xfa4b);
-                                var missingItems = new List<string>();
-                                var blockedItems = new List<string>();
+                            case 8:
+                                if (ReadMemory(0xf550) == 0) //no active popups
+                                {
+                                    var cogs = ReadMemory(0xfad8, 3);
+                                    var removedCogs = ReadMemory(0xfa4b);
+                                    var missingItems = new List<string>();
+                                    var blockedItems = new List<string>();
 
-                                if (cogs[0] == 0 && (removedCogs & 1) == 0) missingItems.Add("Star-shaped Cog");
-                                if (cogs[1] == 0 && (removedCogs & 2) == 0) missingItems.Add("Hexagon Gear");
-                                if (cogs[2] == 0 && (removedCogs & 4) == 0) missingItems.Add("Triangle Gear");
+                                    if (cogs[0] == 0 && (removedCogs & 1) == 0) missingItems.Add("Star-shaped Cog");
+                                    if (cogs[1] == 0 && (removedCogs & 2) == 0) missingItems.Add("Hexagon Gear");
+                                    if (cogs[2] == 0 && (removedCogs & 4) == 0) missingItems.Add("Triangle Gear");
 
-                                if (missingItems.Any()) QueueCustomPopup("You are missing {P}" + string.Join("{W},{n}{P}", missingItems));
+                                    if (missingItems.Any()) QueueCustomPopup("You are missing {P}" + string.Join("{W},{n}{P}", missingItems));
 
-                                if (cogs[0] == 1 && (removedCogs & 1) == 0) blockedItems.Add("Star-shaped Cog");
-                                if (cogs[1] == 1 && (removedCogs & 2) == 0) blockedItems.Add("Hexagon Gear");
-                                if (cogs[2] == 1 && (removedCogs & 4) == 0) blockedItems.Add("Triangle Gear");
+                                    if (cogs[0] == 1 && (removedCogs & 1) == 0) blockedItems.Add("Star-shaped Cog");
+                                    if (cogs[1] == 1 && (removedCogs & 2) == 0) blockedItems.Add("Hexagon Gear");
+                                    if (cogs[2] == 1 && (removedCogs & 4) == 0) blockedItems.Add("Triangle Gear");
 
-                                if (blockedItems.Any()) QueueCustomPopup("You cannot hand in {P}" + string.Join("{W},{n}{P}", blockedItems));
-                            }
-                            break;   
+                                    if (blockedItems.Any()) QueueCustomPopup("You cannot hand in {P}" + string.Join("{W},{n}{P}", blockedItems));
+                                }
+                                break;
+                        }
                     }
 
                     WriteMemory(0xf9f1, 0);
@@ -1253,7 +1314,11 @@ public class MemoryManipulator
     {
         Thread.Sleep(1000);
 
-        switch (ReadMemory(0xf870)) //current area
+        var area = ReadMemory(0xf870);
+
+        SetMagicFlowerPopupLogic(area);
+
+        switch (area)
         {
             case 0:
                 WriteMemory(0x7c18, new byte[12], binPtr); //disable pink bucket queue resource message on pickup
@@ -1283,6 +1348,9 @@ public class MemoryManipulator
                     WriteMemory(0x10fd8, [12, 128, 3, 60, 1, 0, 2, 36, 241, 249, 98, 160, 0, 0, 2, 36, 5, 0, 98, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr);
                 }
 
+                break;
+            case 3:
+                WriteMemory(-0x44c4, [49, 53], binPtr); //custom seeds of strength pickup logic
                 break;
             case 4:
                 if (ReadMemory(0xf8c6) != 255) WriteMemory(0xf3ec, 3, binPtr); //disable trolley to CMT if deliver to gran not completed
@@ -1354,7 +1422,7 @@ public class MemoryManipulator
 
                 var removedCogs = ReadMemory(0xfa4b);
 
-                if (removedCogs != 7 && (ReadMemory(0xfa46) & 15) != 15)
+                if (ReadMemory(0xf937) == 1 && removedCogs != 7 && (ReadMemory(0xfa46) & 15) != 15) //custom minitta tunnel gear giving logic
                 {
                     WriteMemory(0x294b8, [12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160, 8, 0, 224, 3, 43, 0, 0, 162], binPtr);
                 }                
@@ -1363,6 +1431,22 @@ public class MemoryManipulator
             default:
                 break;
         }
+    }
+
+    private void SetMagicFlowerPopupLogic(byte area)
+    {
+        var address = 0;
+        switch (area)
+        {
+            case 0: address = 0x2b0a4; break;
+            case 1: address = 0x1c680; break;
+            case 5: address = 0x1bd68; break;
+            case 7: address = 0xbdec; break;
+            case 8: address = 0x103b8; break;
+            default: return;
+        }
+
+        WriteMemory(address, [12, 128, 6, 60, 112, 248, 198, 36, 3, 0, 2, 146, 163, 1, 195, 144, 4, 16, 81, 0, 37, 24, 98, 0, 163, 1, 195, 160, 12, 128, 3, 60, 255, 0, 2, 36, 241, 249, 98, 160], binPtr);
     }
 
     private void CompleteEvent(byte id, bool loud = true)
@@ -1399,7 +1483,14 @@ public class MemoryManipulator
 
     private void QueueCustomPopupEvent(byte id) => QueueCustomPopup("{O}" + randomizer.Events[id].Name + "{W} completed!");
 
-    private void QueueCustomPopupItem(Item item) => QueueCustomPopup(item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}" + item.DisplayName + "{W} acquired!");
+    private void QueueCustomPopupItem(Item item, byte type = 0)
+    {
+        var end = "";
+        if (type == 0) end = "acquired!";
+        else if (type == 1) end = "found!";
+
+        QueueCustomPopup((item.Color == ItemColor.Green ? "{G}" : (item.Color == ItemColor.Blue ? "{B}" : "{P}")) + item.DisplayName + "{W} " + end);
+    }
 
     private void QueueCustomPopup(string input) => writeQueuePopup.Add(new QueuedChange(igt, input));
 

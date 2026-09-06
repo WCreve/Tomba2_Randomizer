@@ -268,7 +268,8 @@
 		"address": "0xfacc",
 		"requirements": [
 			{
-				"events": [ 25 ]
+				"events": [ 25 ],
+				"areas": [ 5 ]
 			}
 		]
 	},
@@ -279,7 +280,8 @@
 		"address": "0xfacd",
 		"requirements": [
 			{
-				"events": [ 33 ]
+				"events": [ 33 ],
+				"areas": [ 8 ]
 			}
 		]
 	},
