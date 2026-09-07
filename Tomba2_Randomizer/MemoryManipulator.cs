@@ -49,7 +49,8 @@ public class MemoryManipulator
     private Randomizer randomizer;
 
     private byte loadedBin;
-    private byte crabsObtained;
+
+    private bool conversationScriptPaused;
 
     public MemoryManipulator(Process process)
     {
@@ -112,7 +113,9 @@ public class MemoryManipulator
 
         if (!IsActive)
         {
-            InitializeGame();
+            writeQueueWarp = new List<QueuedChange>();
+            writeQueueSafe = new List<QueuedChange>();
+            writeQueuePopup = new List<QueuedChange>();
 
             Task.Run(CheckForUpdates);
             Task.Run(PerformChecks);
@@ -159,8 +162,6 @@ public class MemoryManipulator
 
         WriteMemory(0xd4d8, [12, 128, 2, 60, 2, 0, 3, 36, 178, 248, 67, 160], globalPtr); //override AddItemWithMessage function
 
-        WriteMemory(0xf8ad, [1, 1, 1]); //enables 3/4 Tomba 1 events
-
         WriteMemory(0xf8b3, 1); //initialized
     }
 
@@ -171,11 +172,11 @@ public class MemoryManipulator
             var currentBin = ReadMemory(-0x7064, binPtr);
             if (currentBin != loadedBin)
             {
+                if (ReadMemory(0xf8b3) == 0) InitializeGame();
+                WriteMemory(0xf8ad, [1, 1, 1]); //re-enable T1 events because LRG's fix for these events is weird
                 loadedBin = currentBin;
                 EditBinMemory();
             }
-
-            if (ReadMemory(0xf8b3) == 0) InitializeGame();
 
             var itemPickedUp = ReadMemory(0xf8b0, 3);
 
@@ -212,11 +213,17 @@ public class MemoryManipulator
                             break;
 
                         case 17: //swimming pig suit collected
-                            if (newItemId != 17 && ReadMemory(0xfac5) != 1)
+                            if (newItemId != 17 && ReadMemory(0xfac5) == 0)
                             {
                                 WriteMemory(0xf9e2, 1); //temporary flag to destroy platform when leaving room
                                 var dialogueScriptOffset = BitConverter.ToUInt16(ReadMemory(0x4240c, 2)) + 0x4006C;
                                 WriteMemory(dialogueScriptOffset, [12, 106]); //skip to end of mermaid dialogue script
+
+                                if (ReadMemory(0xfac4) == 0)
+                                {
+                                    AddItemWithoutMessage(16, 1);
+                                    QueueCustomPopup("Another {P}Pig Suit{W} magically{n}appears in your inventory.{n}Lucky you!");
+                                }
                             }
                             break;
 
@@ -240,7 +247,7 @@ public class MemoryManipulator
                                 CompleteEvent(26, false);
                                 if (ReadMemory(0xfad9) == 1) //if player has hexagon gear, remove
                                 {
-                                    RemoveItemWithMessage(37, 1);
+                                    QueueCustomPopup("Your {P}Hexagon Gear{W} was{n}used automatically!");
                                 }
                                 else
                                 {
@@ -341,23 +348,12 @@ public class MemoryManipulator
                             }
                             break;
 
-                        case 42: //golden crab
-                            switch (ReadMemory(0xf9e3) - crabsObtained)
-                            {
-                                case 1:
-                                    newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 42).Value.InternalId;
-                                    crabsObtained++;
-                                    break;
-                                case 2:
-                                    newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 41).Value.InternalId;
-                                    crabsObtained += 2;
-                                    break;
-                                case 4:
-                                    newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 40).Value.InternalId;
-                                    crabsObtained += 4;
-                                    break;
-                            }
+                        case 42: //golden crab collected
+                            var crabCaught = (ReadMemory(0xf9e3) - ReadMemory(0xf9e6)) & 7;
 
+                            newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 42 - BitOperations.TrailingZeroCount(crabCaught)).Value.InternalId;
+
+                            WriteMemory(0xf9e6, (byte)(ReadMemory(0xf9e6) + crabCaught));
                             break;
 
                         case 45: //big sack collected
@@ -430,14 +426,30 @@ public class MemoryManipulator
                             SetFlagRareFish();
                             break;
 
-                        case 97: //blue bucket
+                        case 62: //hot dregs collected
+                            if (BitConverter.ToInt16(ReadMemory(0x37eb6, 2)) < 10000) //check tomba coordinates to see which dregs are collected.
+                            {
+                                newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 71).Value.InternalId;
+                            }
+                            else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 70).Value.InternalId;
+                            break;
+
+                        case 63: //icy dregs collected
+                            if (ReadMemory(0x37eaa) < 10) //check tomba approx pos to see which dregs are collected.
+                            {
+                                newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 73).Value.InternalId;
+                            }
+                            else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 72).Value.InternalId;
+                            break;
+
+                        case 97: //blue bucket collected
                             var usingItemBlueBucket = ReadMemory(0xf80a, 2);
                             if (usingItemBlueBucket[0] == 1 && usingItemBlueBucket[1] >= 99 && usingItemBlueBucket[1] <= 101) //no popup message if bucket received from using a full bucket
                             {
                                 AddItemWithoutMessage(97, 1);
                                 custom = true;
                             }
-                            else if (!(ReadMemory(0xf870) == 1)) //Only randomize the correct blue bucket pickup (expand later when working on pipe area)
+                            else if (!(ReadMemory(0xf870) == 1)) //blue bucket reward from trolley does get randomized
                             {
                                 AddItemWithMessage(97, 1);
                                 custom = true;
@@ -465,15 +477,15 @@ public class MemoryManipulator
                             break;
 
                         case 112: //1/2 spell of courage
-                            newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == (ReadMemory(0xf817) == 1 ? 106: 107)).Value.InternalId;
+                            newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf817) == 1 ? 106: 107)).Value.InternalId;
                             break;
 
                         case 114: //1/2 spell of strength
-                            newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == (ReadMemory(0xf870) == 4 ? 108 : 109)).Value.InternalId;
+                            newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf870) == 4 ? 108 : 109)).Value.InternalId;
                             break;
 
                         case 116: //1/2 spell of wisdom
-                            newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == (ReadMemory(0xf870) == 5 ? 110 : 111)).Value.InternalId;
+                            newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf870) == 5 ? 110 : 111)).Value.InternalId;
                             break;
 
                         default:
@@ -535,7 +547,7 @@ public class MemoryManipulator
                                 break;
 
                             case 40: //random pink bucket received
-                                if (ReadMemory(0xf8b8) == 255) //give blue bucket instead of pink if Save the Crab is completed
+                                if (ReadMemory(0xf8b8) == 255 || ReadMemory(0xfb15) != 0) //give blue bucket instead of pink if Save the Crab is completed or if you already have a blue bucket
                                 {
                                     newItemId = 97;
                                 }
@@ -711,13 +723,22 @@ public class MemoryManipulator
 
             var queuedPopups = writeQueuePopup.Where(p => p.DequeueTimeStamp == 0);
 
-            if (queuedPopups.Count() > 0 && writeQueuePopup.Max(p => p.DequeueTimeStamp) < newIgt - 60)
+            if (queuedPopups.Any() && writeQueuePopup.Max(p => p.DequeueTimeStamp) < newIgt - 60)
             {
                 var popup = queuedPopups.First();
                 SetCustomPopupString(popup.Text);
                 QueueResourceMessage(STRING_CUSTOM, 41);
 
                 popup.DequeueTimeStamp = newIgt;
+
+                WriteMemory(0x250b, 20, globalPtr); //pause conversation script
+                conversationScriptPaused = true;
+            }
+
+            if (conversationScriptPaused && ReadMemory(0xf550) == 0) //resume conversation script when no popups on screen
+            {
+                WriteMemory(0x250b, 16, globalPtr);
+                conversationScriptPaused = false;
             }
 
             igt = newIgt;
@@ -1221,8 +1242,6 @@ public class MemoryManipulator
                     }
                 }
 
-                crabsObtained = ReadMemory(0xf9e3);
-
                 if (ReadMemory(0xfadd) > 0) //player has crab basket in inventory
                 {
                     if (ReadMemory(0xf8ba) != 255) //the crab basket event is not completed
@@ -1287,33 +1306,18 @@ public class MemoryManipulator
                 break;
         }
 
-        var pigDoorsOpened = ReadMemory(0xfa17);
 
         //Prepare pig doors in case player gets the pig bag for that area in that area
-        if ((warpDestination[1] == 0 && (((pigDoorsOpened >> 4) & 1) != 1)) || (warpDestination[1] == 1 && (((pigDoorsOpened >> 2) & 1) != 1)) || (warpDestination[1] == 4 && (((pigDoorsOpened >> 1) & 1) != 1)))
+        var pigDoorsOpened = ReadMemory(0xfa17);
+        var pigDoors = new byte[] { 6, 8, 1, 4, 0 };
+        if (pigDoors.Contains(warpDestination[1]) && (pigDoorsOpened & (byte)Math.Pow(2, pigDoors.IndexOf(warpDestination[1]))) == 0)
         {
-            var bags = ReadMemory(0xf884, 6);
-            var bagList = bags.ToList();
+            var bags = ReadMemory(0xf883, 7);
 
-            if ((warpDestination[1] == 0 && !(bagList.Contains(27) || bagList.Contains(155))) || (warpDestination[1] == 1 && !(bagList.Contains(23) || bagList.Contains(151))) || (warpDestination[1] == 4 && !(bagList.Contains(24) || bagList.Contains(152))))
-            {
-                var bagCount = ReadMemory(0xf883);
+            Enqueue(writeQueueWarp, 0xf883, bags);
+            Enqueue(writeQueueWarp, warpDestination[1] == 0 ? 0x4e81d : warpDestination[1] == 8 ? 0x4e74d : 0x4e26d, [4]);
 
-                var pairs = new List<AddressValuePair>()
-                    {
-                        new AddressValuePair { Address = 0xf883, Value = bagCount },
-                        new AddressValuePair { Address = 0xf884, Value = bags[0] },
-                        new AddressValuePair { Address = 0xf885, Value = bags[1] },
-                        new AddressValuePair { Address = 0xf886, Value = bags[2] },
-                        new AddressValuePair { Address = 0xf887, Value = bags[3] },
-                        new AddressValuePair { Address = 0xf888, Value = bags[4] },
-                        new AddressValuePair { Address = 0xf889, Value = bags[5] },
-                        new AddressValuePair { Address = warpDestination[1] == 0 ? 0x4e81d : 0x4e26d, Value = 4 },
-                    };
-
-                WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
-                Enqueue(writeQueueWarp, pairs);
-            }
+            WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
         }
 
         if (ReadMemory(0xfadc) > 0) 
@@ -1631,11 +1635,12 @@ public class MemoryManipulator
                 break;
             case 1:
             case 4:
-                if (id == 23 || id == 26) WriteMemory(0x4e26d, 2);
+            case 6:
+                if (id == 23 || id == 25 || id == 26) WriteMemory(0x4e26d, 2);
                 break;
-            default:
+            case 8:
+                if (id == 24) WriteMemory(0x4e74d, 2);
                 break;
-
         }
     }
 
@@ -1684,7 +1689,7 @@ public class MemoryManipulator
             }
         }
 
-        crabsObtained = ReadMemory(0xf9e3);
+        WriteMemory(0x250b, 16, globalPtr); //make sure conversation script doesnt get stuck
     }
 
     public void Enqueue(List<QueuedChange> queue, List<AddressValuePair> pairs) => queue.Add(new QueuedChange(ReadTimer(), pairs));
