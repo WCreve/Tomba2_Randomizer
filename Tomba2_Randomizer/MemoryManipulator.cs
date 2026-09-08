@@ -1,11 +1,6 @@
-using Microsoft.Extensions.Logging;
-using MsBox.Avalonia.Base;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -161,6 +156,8 @@ public class MemoryManipulator
         WriteMemory(0xd4c0, new byte[4], globalPtr);
 
         WriteMemory(0xd4d8, [12, 128, 2, 60, 2, 0, 3, 36, 178, 248, 67, 160], globalPtr); //override AddItemWithMessage function
+
+        WriteMemory(0xf9ca, 2); //start at kujara wash level 3
 
         WriteMemory(0xf8b3, 1); //initialized
     }
@@ -477,6 +474,10 @@ public class MemoryManipulator
                         case 101:
                             AddItemWithoutMessage(itemPickedUp[0], 1);
                             custom = true;
+                            break;
+
+                        case 105: //toradako oil collected
+                            WriteMemory(0xf9ca, 9); //skip to level 10 kujara wash
                             break;
 
                         case 108: //clear fruit

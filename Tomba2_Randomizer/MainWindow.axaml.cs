@@ -6,19 +6,15 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Avalonia.Threading;
-using Microsoft.Extensions.Logging;
 using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
 
 namespace Tomba2_Randomizer;
 
@@ -89,7 +85,7 @@ public partial class MainWindow : Window
         updateTabTimer.Start();
 
         findGameTimer = new DispatcherTimer();
-        findGameTimer.Interval = new TimeSpan(0, 0, 0, 0, 200);
+        findGameTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
         findGameTimer.Tick += FindGame;
 
         itemDtosGUI = itemDtos.GroupBy(i => i.Address).Select(i => i.First()).Union(itemDtos.Where(i => string.IsNullOrEmpty(i.DisplayName))).ToList();

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Tomba2_Randomizer
@@ -13,8 +12,6 @@ namespace Tomba2_Randomizer
 
         private Dictionary<int, Item> allItems;
         private Dictionary<int, Item> notRandomItems;
-
-        private string debugQueue;
         
         Random r = new();
 
@@ -188,12 +185,8 @@ namespace Tomba2_Randomizer
 
         public void Randomize()
         {
-            DebugString = "---GAME START---\n";
-            debugQueue = "";
             RandomizedItems = new Dictionary<Item, Item>();
             UpdateEventsAndAreas(true);
-            DebugString += $"{debugQueue}\n";
-            debugQueue = "";
 
             while (ItemsToRandomize.Any())
             {
@@ -216,8 +209,6 @@ namespace Tomba2_Randomizer
                     }
 
                     UpdateEventsAndAreas(true);
-
-                    debugQueue = "";
                 }
                 else
                 {
@@ -285,9 +276,6 @@ namespace Tomba2_Randomizer
                         }
                     }
                 }
-
-                if (unlock && isUnlocked) debugQueue += $"EVENT {ev.Name} Unlocked\n";
-                else if (!unlock && !isUnlocked) debugQueue += $"EVENT {ev.Name} Relocked\n";
             }
 
             foreach (var area in areas.Values.Where(a => a.Unlocked != unlock))
@@ -309,9 +297,6 @@ namespace Tomba2_Randomizer
                         }
                     }
                 }
-
-                if (unlock && isUnlocked) debugQueue += $"AREA {area.Name} Unlocked\n";
-                else if (!unlock && !isUnlocked) debugQueue += $"AREA {area.Name} Relocked\n";
             }
 
             if (changed) UpdateEventsAndAreas(unlock);
