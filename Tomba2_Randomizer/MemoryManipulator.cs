@@ -427,11 +427,11 @@ public class MemoryManipulator
                             break;
 
                         case 62: //hot dregs collected
-                            if (BitConverter.ToInt16(ReadMemory(0x37eb6, 2)) < 10000) //check tomba coordinates to see which dregs are collected.
+                            if (ReadMemory(0x37eaa) == 2) //check tomba approx pos to see which dregs are collected.
                             {
-                                newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 71).Value.InternalId;
+                                newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 70).Value.InternalId;
                             }
-                            else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 70).Value.InternalId;
+                            else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 71).Value.InternalId;
                             break;
 
                         case 63: //icy dregs collected
@@ -486,6 +486,14 @@ public class MemoryManipulator
 
                         case 116: //1/2 spell of wisdom
                             newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf870) == 5 ? 110 : 111)).Value.InternalId;
+                            break;
+
+                        case 128: //mudball surprise
+                            if (ReadMemory(0x37eaa) > 20) //check tomba approx pos to see which mudball is being collected.
+                            {
+                                newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 112).Value.InternalId;
+                            }
+                            else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 174).Value.InternalId;
                             break;
 
                         default:
@@ -968,31 +976,6 @@ public class MemoryManipulator
                                 }
                             break;
 
-                        case 4:
-                            if (enteringInterior[0] == 1) //lift interior
-                            {
-                                if (enteringInterior[1] == 1) //entering
-                                {
-                                    interiorTransition = true;
-
-                                    var staticExplosionStatus = ReadMemory(0xf8cd);
-
-                                    if (ReadMemory(0xf8cb) != 255 && staticExplosionStatus != 0) //player has not fed the kujara and has started static explosion
-                                    {
-                                        WriteMemory(0xf8cd, 0); //temporarly set static explosion to not started to spawn pham
-                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | (staticExplosionStatus == 1 ? 1 : 2))); //to revert the event flag when leaving
-                                    }
-                                }
-                                else if (enteringInterior[1] == 3) //leaving
-                                {
-                                    interiorTransition = true;
-
-                                    if ((ReadMemory(0xf9e2) & 1) == 1) WriteMemory(0xf8cd, 1);
-                                    if ((ReadMemory(0xf9e2) & 2) == 2) WriteMemory(0xf8cd, 255);
-                                }
-                            }
-                            break;
-
                         case 5:
                             if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 21) //pham room
                             {
@@ -1395,6 +1378,15 @@ public class MemoryManipulator
                 WriteMemory(0xf8d0, [193, 249, 66, 144, 0, 0, 0, 0, 128, 0, 66, 48], binPtr); //custom big sack spawn code
 
                 WriteMemory(0x21f20, new byte[4], binPtr); //disable auto-equipping big sack
+
+                if ((ReadMemory(0xfe56) & 16) == 16) //purified
+                {
+                    WriteMemory(0x64c8, 89, binPtr); //prevent three sisters from spawning (not the hide & seek variants)
+                    WriteMemory(0x652c, [75, 1], binPtr); //allow pham to spawn if kujaras not fed
+                    WriteMemory(0x657c, [75, 1], binPtr); //stop traveller from spawning if kujaras not fed
+
+                    if (ReadMemory(0xf8cb) == 1) WriteMemory(0xf7af, 16, binPtr); //fix mountain peach not spawning more than once
+                }
                 break;
             case 5:
                 if (ReadMemory(0xf8ca) != 255) WriteMemory(0x19e8c, 3, binPtr); //disable lift to ranch if let's take the lift not completed
