@@ -17,6 +17,11 @@
 		"address": "0xfab6",
 		"requirements": [
 			{
+				"items": [ 2, 13, 30 ],
+				"areas": [ 8 ],
+				"events": [ 100 ]
+			},
+			{
 				"items": [ 8, 13, 30 ],
 				"areas": [ 8 ],
 				"events": [ 100 ]
@@ -280,6 +285,12 @@
 		"address": "0xfacd",
 		"requirements": [
 			{
+				"items": [ 1, 49 ],
+				"events": [ 33 ],
+				"areas": [ 8 ]
+			},
+			{
+				"items": [ 2, 49 ],
 				"events": [ 33 ],
 				"areas": [ 8 ]
 			}
@@ -851,12 +862,12 @@
 				"areas": [ 5 ]
 			},
 			{
-				"items": [ 1, 126 ],
+				"items": [ 1 ],
 				"areas": [ 5 ],
 				"events": [ 27 ]
 			},
 			{
-				"items": [ 2, 126 ],
+				"items": [ 2 ],
 				"areas": [ 5 ],
 				"events": [ 27 ]
 			}
@@ -1312,7 +1323,7 @@
 		"address": "0xfb0c",
 		"requirements": [
 			{
-				"items": [ 2, 5, 8, 14, 63, 126, 129, 130 ],
+				"items": [ 2, 5, 8, 14, 63, 129, 130 ],
 				"areas": [ 10 ],
 				"events": [ 60 ]
 			},
@@ -1646,7 +1657,7 @@
 		"requirements": [
 			{
 				"areas": [ 5 ],
-				"events": [ 27 ]
+				"events": [ 115 ]
 			}
 		]
 	},
@@ -1683,15 +1694,18 @@
 		"requirements": [
 			{
 				"items": [ 1 ],
-				"areas": [ 4 ]
+				"areas": [ 4 ],
+				"events": [ 20 ]
 			},
 			{
 				"items": [ 2 ],
-				"areas": [ 4 ]
+				"areas": [ 4 ],
+				"events": [ 20 ]
 			},
 			{
 				"items": [ 13 ],
-				"areas": [ 4 ]
+				"areas": [ 4 ],
+				"events": [ 20 ]
 			}
 		]
 	},
@@ -1702,12 +1716,15 @@
 		"address": "0xfb49",
 		"requirements": [
 			{
-				"items": [ 122 ],
-				"areas": [ 9 ],
-				"events": [ 37 ]
+				"items": [ 14, 122 ],
+				"areas": [ 9 ]
 			},
 			{
-				"items": [ 36, 122 ],
+				"items": [ 15, 122 ],
+				"areas": [ 9 ]
+			},
+			{
+				"items": [ 122 ],
 				"areas": [ 9 ],
 				"events": [ 41 ]
 			}

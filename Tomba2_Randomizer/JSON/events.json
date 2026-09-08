@@ -22,6 +22,10 @@
 			{
 				"items": [ 38 ],
 				"events": [ 2 ]
+			},
+			{
+				"items": [ 98 ],
+				"events": [ 2 ]
 			}
 		]
 	},
@@ -369,11 +373,6 @@
 			{
 				"items": [ 13, 35 ],
 				"areas": [ 5 ]
-			},
-			{
-				"items": [ 35 ],
-				"areas": [ 5 ],
-				"events": [ 27 ]
 			},
 			{
 				"events": [ 27 ]
@@ -830,7 +829,7 @@
 		"primary": true,
 		"requirements": [
 			{
-				"items": [ 16, 17, 18, 19, 20 ],
+				"items": [ 16, 17, 18, 19, 20, 26 ],
 				"events": [ 50 ]
 			}
 		]
@@ -843,7 +842,7 @@
 		"primary": true,
 		"requirements": [
 			{
-				"items": [ 16, 17, 18, 19, 20 ],
+				"items": [ 16, 17, 18, 19, 20, 26 ],
 				"events": [ 50 ]
 			}
 		]
@@ -856,7 +855,7 @@
 		"primary": true,
 		"requirements": [
 			{
-				"items": [ 16, 17, 18, 19, 20 ],
+				"items": [ 16, 17, 18, 19, 20, 26 ],
 				"events": [ 50 ]
 			}
 		]
@@ -869,7 +868,7 @@
 		"primary": true,
 		"requirements": [
 			{
-				"items": [ 16, 17, 18, 19, 20 ],
+				"items": [ 16, 17, 18, 19, 20, 26 ],
 				"events": [ 50 ]
 			}
 		]
@@ -882,7 +881,7 @@
 		"primary": true,
 		"requirements": [
 			{
-				"items": [ 16, 17, 18, 19, 20 ],
+				"items": [ 16, 17, 18, 19, 20, 26 ],
 				"events": [ 50 ]
 			}
 		]
@@ -1171,7 +1170,7 @@
 		"primary": false,
 		"requirements": [
 			{
-				"events": [ 73 ]
+				"items": [ 84 ]
 			}
 		]
 	},
@@ -1199,7 +1198,7 @@
 				"events": [ 12 ]
 			},
 			{
-				"items": [ 141 ],
+				"items": [ 174 ],
 				"events": [ 12 ]
 			}
 		]
@@ -1361,6 +1360,10 @@
 				"items": [ 101 ],
 				"areas": [ 2 ],
 				"events": [ 10 ]
+			},
+			{
+				"items": [ 101 ],
+				"areas": [ 9 ]
 			}
 		]
 	},
@@ -1390,13 +1393,13 @@
 		"requirements": [
 			{
 				"items": [ 29 ],
-				"areas": [ 6, 7 ],
-				"events": [ 25 ]
+				"areas": [ 5, 7 ],
+				"events": [ 26 ]
 			},
 			{
 				"items": [ 29, 101 ],
-				"areas": [ 6 ],
-				"events": [ 25 ]
+				"areas": [ 5 ],
+				"events": [ 26 ]
 			}
 		]
 	},
@@ -1427,6 +1430,7 @@
 		"primary": false,
 		"requirements": [
 			{
+				"areas": [ 3 ],
 				"events": [ 10, 91 ]
 			}
 		]
@@ -1439,7 +1443,7 @@
 		"primary": false,
 		"requirements": [
 			{
-				"items": [ 101 ],
+				"items": [ 90 ],
 				"areas": [ 9 ]
 			}
 		]
@@ -1452,7 +1456,8 @@
 		"primary": false,
 		"requirements": [
 			{
-				"items": [ 97 ],
+				"items": [ 38 ],
+				"events": [ 4 ],
 				"areas": [ 2 ]
 			},
 			{
@@ -1767,9 +1772,9 @@
 		"primary": false,
 		"requirements": [
 			{
-				"items": [ 97 ],
+				"items": [ 38 ],
 				"areas": [ 4, 10 ],
-				"events": [ 116 ]
+				"events": [ 4, 116 ]
 			},
 			{
 				"items": [ 98 ],
@@ -1786,19 +1791,19 @@
 		"primary": false,
 		"requirements": [
 			{
-				"items": [ 6, 97 ],
+				"items": [ 6, 38 ],
 				"areas": [ 2, 5 ],
-				"events": [ 9 ]
+				"events": [ 4, 9 ]
 			},
 			{
-				"items": [ 7, 97 ],
+				"items": [ 7, 38 ],
 				"areas": [ 2, 5 ],
-				"events": [ 9 ]
+				"events": [ 4, 9 ]
 			},
 			{
-				"items": [ 8, 97 ],
+				"items": [ 8, 38 ],
 				"areas": [ 2, 5 ],
-				"events": [ 9 ]
+				"events": [ 4, 9 ]
 			},
 			{
 				"items": [ 6, 98 ],
@@ -1865,7 +1870,11 @@
 		"primary": false,
 		"requirements": [
 			{
-				"areas": [ 5 ],
+				"items": [ 13 ],
+				"areas": [ 4, 8 ]
+			},
+			{
+				"areas": [ 4, 8 ],
 				"events": [ 27 ]
 			}
 		]
@@ -2005,9 +2014,9 @@
 		"primary": false,
 		"requirements": [
 			{
-				"items": [ 97 ],
+				"items": [ 38 ],
 				"areas": [ 7, 10 ],
-				"events": [ 116 ]
+				"events": [ 4, 116 ]
 			},
 			{
 				"items": [ 98 ],
@@ -2077,9 +2086,9 @@
 		"primary": false,
 		"requirements": [
 			{
-				"items": [ 97 ],
+				"items": [ 38 ],
 				"areas": [ 2, 5, 9, 10 ],
-				"events": [ 9 ]
+				"events": [ 4, 9 ]
 			},
 			{
 				"items": [ 98 ],
@@ -2098,12 +2107,12 @@
 			{
 				"items": [ 17, 36 ],
 				"areas": [ 9 ],
-				"events": [ 36, 41 ]
+				"events": [ 41 ]
 			},
 			{
 				"items": [ 17, 36 ],
 				"areas": [ 9 ],
-				"events": [ 35, 36 ]
+				"events": [ 35 ]
 			}
 		]
 	},
@@ -2117,12 +2126,12 @@
 			{
 				"items": [ 74, 75, 76, 77, 78 ],
 				"areas": [ 9 ],
-				"events": [ 36, 41, 129 ]
+				"events": [ 41, 129 ]
 			},
 			{
 				"items": [ 74, 75, 76, 77, 78 ],
 				"areas": [ 9 ],
-				"events": [ 35, 36, 129 ]
+				"events": [ 35, 129 ]
 			}
 		]
 	},
@@ -2166,6 +2175,7 @@
 		"requirements": [
 			{
 				"items": [ 121 ],
+				"events": [ 19 ],
 				"areas": [ 3 ]
 			}
 		]
@@ -2179,6 +2189,7 @@
 		"requirements": [
 			{
 				"items": [ 123 ],
+				"events": [ 20 ],
 				"areas": [ 4 ]
 			}
 		]
@@ -2235,7 +2246,7 @@
 		"requirements": [
 			{
 				"items": [ 15, 138 ],
-				"areas": [ 9, 10 ]
+				"areas": [ 7, 10 ]
 			},
 			{
 				"items": [ 15, 101, 138 ],

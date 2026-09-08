@@ -1,7 +1,17 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Platform.Storage;
+using Avalonia.Styling;
+using Avalonia.Threading;
+using Microsoft.Extensions.Logging;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using Avalonia.Controls;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,15 +19,6 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
-using Avalonia;
-using Avalonia.Interactivity;
-using Avalonia.Layout;
-using Avalonia.Media;
-using Avalonia.Platform.Storage;
-using Avalonia.Styling;
-using Avalonia.Threading;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
 
 namespace Tomba2_Randomizer;
 
@@ -730,6 +731,87 @@ public partial class MainWindow : Window
 
                 await box.ShowAsync();
             }
+        }
+    }
+
+    private async void BtnJsonDeserializer_Click(object? sender, RoutedEventArgs e)
+    {
+        var topLevel = GetTopLevel(this);
+
+        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save json stuff",
+            FileTypeChoices = [FilePickerFileTypes.TextPlain]
+        });
+
+        if (file is not null)
+        {
+            await using var stream = await file.OpenWriteAsync();
+            using var streamWriter = new StreamWriter(stream);
+
+            int itemCount = 0, eventCount = 0, areaCount = 0;
+
+            var output = "Items:\n\n";
+            foreach (var item in itemDtos.Where(i => !i.NotRandom))
+            {
+                output += $"{++itemCount}) {item.Name}:\n\t";
+                var reqGroups = item.Requirements;
+                var reqGroupCount = 0;
+                if (reqGroups == null) output += "No requirements\n";
+                else
+                {
+                    foreach (var group in reqGroups)
+                    {
+                        output += (char)('a' + reqGroupCount++) + ")";
+                        output += group.Items == null ? "" : "\tItems: " + string.Join(", ", group.Items.Select(i => itemDtos.First(id => i == id.Id).Name)) + "\n\t";
+                        output += group.Events == null ? "" : "\tEvents: " + string.Join(", ", group.Events.Select(i => eventDtos.First(id => i == id.Id).Name)) + "\n\t";
+                        output += group.Areas == null ? "" : "\tAreas: " + string.Join(", ", group.Areas.Select(i => areaDtos.First(id => i == id.Id).Name)) + "\n\t";
+                    }
+                }
+                output += "\n";
+            }
+
+            output += "\nEvents:\n\n";
+            foreach (var ev in eventDtos)
+            {
+                output += $"{++eventCount}) {ev.Name}:\n\t";
+                var reqGroups = ev.Requirements;
+                var reqGroupCount = 0;
+                if (reqGroups == null) output += "No requirements\n";
+                else
+                {
+                    foreach (var group in reqGroups)
+                    {
+                        output += (char)('a' + reqGroupCount++) + ")";
+                        output += group.Items == null ? "" : "\tItems: " + string.Join(", ", group.Items.Select(i => itemDtos.First(id => i == id.Id).Name)) + "\n\t";
+                        output += group.Events == null ? "" : "\tEvents: " + string.Join(", ", group.Events.Select(i => eventDtos.First(id => i == id.Id).Name)) + "\n\t";
+                        output += group.Areas == null ? "" : "\tAreas: " + string.Join(", ", group.Areas.Select(i => areaDtos.First(id => i == id.Id).Name)) + "\n\t";
+                    }
+                }
+                output += "\n";
+            }
+
+            output += "\nAreas::\n\n";
+            foreach (var area in areaDtos)
+            {
+                output += $"{++areaCount}) {area.Name}:\n\t";
+                var reqGroups = area.Requirements;
+                var reqGroupCount = 0;
+                if (reqGroups == null) output += "No requirements\n";
+                else
+                {
+                    foreach (var group in reqGroups)
+                    {
+                        output += (char)('a' + reqGroupCount++) + ")";
+                        output += group.Items == null ? "" : "\tItems: " + string.Join(", ", group.Items.Select(i => itemDtos.First(id => i == id.Id).Name)) + "\n\t";
+                        output += group.Events == null ? "" : "\tEvents: " + string.Join(", ", group.Events.Select(i => eventDtos.First(id => i == id.Id).Name)) + "\n\t";
+                        output += group.Areas == null ? "" : "\tAreas: " + string.Join(", ", group.Areas.Select(i => areaDtos.First(id => i == id.Id).Name)) + "\n\t";
+                    }
+                }
+                output += "\n";
+            }
+
+            await streamWriter.WriteAsync(output);
         }
     }
 }

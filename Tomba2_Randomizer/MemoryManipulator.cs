@@ -174,6 +174,7 @@ public class MemoryManipulator
             {
                 if (ReadMemory(0xf8b3) == 0) InitializeGame();
                 WriteMemory(0xf8ad, [1, 1, 1]); //re-enable T1 events because LRG's fix for these events is weird
+                WriteMemory(0xf8ac, (byte)(ReadMemory(0xf8c8) == 255 ? 1 : 0)); //enable dwarf event if big sack event completed;
                 loadedBin = currentBin;
                 EditBinMemory();
             }
@@ -203,7 +204,7 @@ public class MemoryManipulator
 
                     switch (itemPickedUp[0])
                     {
-                        case 7:
+                        case 7: //fire hammer
                             WriteMemory(0xf8ac, 1); //enable Tomba 1 dwarf event
                             break;
 
@@ -284,7 +285,10 @@ public class MemoryManipulator
                             break;
 
                         case 28: //last evil pig bag collected
-                            WriteMemory(0xa8b8, [43, 0, 32, 162, 12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160], binPtr);
+                            if (!(ReadMemory(0xfac6, 5).Count(r => r == 1) == 5 && (ReadMemory(0xfad0) == 1 || newItemId == 28))) //prevent opening door to ??? if you don't have all robes and the last pig bag
+                            {
+                                WriteMemory(0xa8b8, [43, 0, 32, 162, 12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160], binPtr);
+                            }
 
                             var newItem = randomizer.RandomizedItems.First(r => r.Key.InternalId == itemPickedUp[0]).Value;
                             QueueCustomPopup((newItem.Color == ItemColor.Green ? "{G}" : newItem.Color == ItemColor.Pink ? "{P}" : "{B}") + newItem.DisplayName + "{W} acquired!{n}All magic power has been restored!{n}Magic power is infinite!");
@@ -442,6 +446,10 @@ public class MemoryManipulator
                             else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 72).Value.InternalId;
                             break;
 
+                        case 82: //rucksack collected
+                            SetFlagRucksack();
+                            break;
+
                         case 97: //blue bucket collected
                             var usingItemBlueBucket = ReadMemory(0xf80a, 2);
                             if (usingItemBlueBucket[0] == 1 && usingItemBlueBucket[1] >= 99 && usingItemBlueBucket[1] <= 101) //no popup message if bucket received from using a full bucket
@@ -530,7 +538,14 @@ public class MemoryManipulator
                             case 20:
                             case 21:
                             case 22:
-                                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 4) //allow unlocking door to ??? if this is your final evil pig robe
+                                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 4 && ReadMemory(0xfad0) == 1) //allow unlocking door to ??? if this is your final evil pig robe and you have the last bag
+                                {
+                                    WriteMemory(0xa8b8, [6, 0, 37, 162, 1, 0, 4, 36, 213, 8, 1, 12, 33, 40, 128, 0], binPtr);
+                                }
+                                break;
+
+                            case 28: //last pig bag
+                                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 5) //allow unlocking door to ??? if you have all the pig bags
                                 {
                                     WriteMemory(0xa8b8, [6, 0, 37, 162, 1, 0, 4, 36, 213, 8, 1, 12, 33, 40, 128, 0], binPtr);
                                 }
@@ -974,7 +989,7 @@ public class MemoryManipulator
                                         WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
                                     }
                                 }
-                            break;
+                            break;  
 
                         case 5:
                             if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 21) //pham room
@@ -1112,7 +1127,9 @@ public class MemoryManipulator
                         {
                             case 1:
                                 var missingRobeCount = ReadMemory(0xfac6, 5).Count(r => r == 0);
-                                QueueCustomPopup("You are missing {P}" + missingRobeCount + " {G}Evil Pig Robes{W}!");
+                                if (missingRobeCount > 0) QueueCustomPopup("You are missing {P}" + missingRobeCount + " {G}Evil Pig Robe" + (missingRobeCount > 1 ? "s" : "") +"{W}!");
+                                if (ReadMemory(0xfad0) == 0) QueueCustomPopup("You are missing {P}Last Pig Bag{W}!");
+
                                 break;
 
                             case 2:
@@ -1296,11 +1313,13 @@ public class MemoryManipulator
         if (pigDoors.Contains(warpDestination[1]) && (pigDoorsOpened & (byte)Math.Pow(2, pigDoors.IndexOf(warpDestination[1]))) == 0)
         {
             var bags = ReadMemory(0xf883, 7);
+            if (!bags.Any(b => b == 23 + pigDoors.IndexOf(warpDestination[1]))) //make sure you don't already have the bag
+            {
+                Enqueue(writeQueueWarp, 0xf883, bags);
+                Enqueue(writeQueueWarp, warpDestination[1] == 0 ? 0x4e81d : (warpDestination[1] == 8 ? 0x4e74d : 0x4e26d), [4]);
 
-            Enqueue(writeQueueWarp, 0xf883, bags);
-            Enqueue(writeQueueWarp, warpDestination[1] == 0 ? 0x4e81d : warpDestination[1] == 8 ? 0x4e74d : 0x4e26d, [4]);
-
-            WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
+                WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
+            }
         }
 
         if (ReadMemory(0xfadc) > 0) 
@@ -1352,7 +1371,7 @@ public class MemoryManipulator
             case 1:
                 if (ReadMemory(0xf8bc) != 255) WriteMemory(-0x3ce8, [73, 0], binPtr); //disable travel to starting beach if win's windmill not completed
 
-                if (ReadMemory(0xfac6, 5).Any(r => r == 0) && ReadMemory(0xf8e5) == 255) //disable unlocking door to ??? if missing an evil pig robe
+                if ((ReadMemory(0xfac6, 5).Any(r => r == 0) || ReadMemory(0xfad0) == 0) && ReadMemory(0xf8e5) == 255) //disable unlocking door to ??? if missing an evil pig robe or last pig bag
                 {
                     WriteMemory(0xa8b8, [43, 0, 32, 162, 12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160], binPtr);
                 }
@@ -1376,6 +1395,8 @@ public class MemoryManipulator
 
                 WriteMemory(0xf8c0, new byte[16], binPtr);
                 WriteMemory(0xf8d0, [193, 249, 66, 144, 0, 0, 0, 0, 128, 0, 66, 48], binPtr); //custom big sack spawn code
+
+                WriteMemory(0x6760, [82, 1, 34, 146, 0, 0, 0, 0, 2, 0, 66, 48, 15, 0, 64, 16, 0, 0, 0, 0, 17, 90, 4, 8, 16, 0, 82, 38], binPtr); //custom rucksack spawn code
 
                 WriteMemory(0x21f20, new byte[4], binPtr); //disable auto-equipping big sack
 
@@ -1440,6 +1461,8 @@ public class MemoryManipulator
                 break;
             case 8:
                 WriteMemory(0x4f28, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 1, 2, 146, 0, 0, 0, 0, 8, 0, 66, 48, 181, 0, 64, 16, 0, 0, 0, 0], binPtr);
+
+                WriteMemory(0x182e0, [38, 249, 67, 144, 255, 0, 2, 36, 53, 2, 98, 16], binPtr); //custom taboo fruit spawn code
 
                 if (ReadMemory(0xf8dc) != 255) WriteMemory(-0x5354, new byte[28], binPtr); //disable travel to circus village if a pig tribe clown statue not completed
 
@@ -1650,6 +1673,7 @@ public class MemoryManipulator
     private void SetFlagBigSack() => WriteMemory(0xf9c1, (byte)(ReadMemory(0xf9c1) | 0b_1000_0000));
 
     private void SetFlagRemoveHexagonGear() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0001));
+    private void SetFlagRucksack() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0010));
 
     private void HandleRewind(int time)
     {
