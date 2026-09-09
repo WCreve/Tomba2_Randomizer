@@ -238,6 +238,7 @@ public class MemoryManipulator
                                 CompleteEvent(25, false);
                                 WriteMemory(0xf9c4, 55); //set all kujaras to delivered
                                 WriteMemory(0xf9c6, 21); //pham cutscene completed
+                                QueueCustomPopup("The {O}Donglin Forest lift{W} was fixed!");
                             }
 
                             if (ReadMemory(0xf8ce) != 255) //raise the ladder not completed
@@ -503,6 +504,15 @@ public class MemoryManipulator
                                 newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 112).Value.InternalId;
                             }
                             else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 174).Value.InternalId;
+                            break;
+
+                        case 129: //low-purity items
+                        case 130:
+                            if(BitConverter.ToInt16(ReadMemory(0x37eae, 2)) < 9200) //don't randomize if retrieving from furnace as a result of not having delivered the power coal
+                            {
+                                AddItemWithMessage(itemPickedUp[0], 1);
+                                custom = true;
+                            }
                             break;
 
                         default:
