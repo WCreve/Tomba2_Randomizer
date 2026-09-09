@@ -223,6 +223,8 @@ public class MemoryManipulator
                                     QueueCustomPopup("Another {P}Pig Suit{W} magically{n}appears in your inventory.{n}Lucky you!");
                                 }
                             }
+
+                            WriteMemory(0x2d240, 21, binPtr); //enable giant fish cutscene
                             break;
 
                         case 19: //evil ice pig robe collected
@@ -1481,6 +1483,11 @@ public class MemoryManipulator
                 {
                     WriteMemory(0x51cb, 20, binPtr);
                     WriteMemory(0x1309B, 20, binPtr);
+                }
+
+                if ((ReadMemory(0xfa3f) & 32) == 0) //prevent first giant fish cutscene if mermaid has not given you the swimming pig suit
+                {
+                    WriteMemory(0x2d240, 255, binPtr);
                 }
 
                 var removedCogs = ReadMemory(0xfa4b);
