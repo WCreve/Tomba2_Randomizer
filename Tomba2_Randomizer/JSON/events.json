@@ -660,6 +660,7 @@
 		"primary": true,
 		"requirements": [
 			{
+				"items": [ 14 ],
 				"areas": [ 10 ],
 				"events": [ 43, 44 ]
 			}
@@ -699,8 +700,7 @@
 		"primary": true,
 		"requirements": [
 			{
-				"items": [ 134, 135, 136, 137 ],
-				"areas": [ 10 ]
+				"items": [ 134, 135, 136, 137 ]
 			}
 		]
 	},
@@ -725,7 +725,8 @@
 		"primary": true,
 		"requirements": [
 			{
-				"items": [ 15, 134, 135, 136, 137 ],
+				"items": [ 15 ],
+				"events": [ 45 ],
 				"areas": [ 10 ]
 			}
 		]

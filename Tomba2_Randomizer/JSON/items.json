@@ -195,8 +195,7 @@
 		"address": "0xfac5",
 		"requirements": [
 			{
-				"items": [ 14 ],
-				"events": [ 43 ]
+				"events": [ 42 ]
 			}
 		]
 	},

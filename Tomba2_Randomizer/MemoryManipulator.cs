@@ -292,8 +292,9 @@ public class MemoryManipulator
 
                             var newItem = randomizer.RandomizedItems.First(r => r.Key.InternalId == itemPickedUp[0]).Value;
                             QueueCustomPopup((newItem.Color == ItemColor.Green ? "{G}" : newItem.Color == ItemColor.Pink ? "{P}" : "{B}") + newItem.DisplayName + "{W} acquired!{n}All magic power has been restored!{n}Magic power is infinite!");
-                            AddItemWithoutMessage(newItem.InternalId, 1);
-                            custom = true;
+                            newItemId = newItem.InternalId;
+                            itemPickedUp[2] = 1;
+
                             break;
 
                         case 36: //star-shaped cog collected
@@ -370,6 +371,9 @@ public class MemoryManipulator
 
                         case 49: //rock crab collected
                             SetFlagRockCrab();
+
+                            if (ReadMemory(0xf870) == 6) WriteMemory(0x58a0, [113, 86, 4, 8], binPtr); //block rock crab respawning
+
                             break;
 
                         case 50: //paon grass collected
@@ -444,6 +448,10 @@ public class MemoryManipulator
                                 newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 73).Value.InternalId;
                             }
                             else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 72).Value.InternalId;
+                            break;
+
+                        case 80: //snow firefly box collected
+                            SetFlagSnowFireflyBox();
                             break;
 
                         case 82: //rucksack collected
@@ -1441,6 +1449,7 @@ public class MemoryManipulator
                 WriteMemory(0x58a0, [81, 1, 34, 146, 0, 0, 0, 0, 64, 0, 66, 48, 68, 0, 64, 20], binPtr); //custom rock crab spawn code
                 WriteMemory(0x50e54, [255, 52, 72, 69, 251, 243, 44, 73, 71, 72, 84, 13, 35, 85, 84, 84, 73], binPtr); //repair potential damage to a resource string
 
+                if ((ReadMemory(0xf9c1) & 64) == 0) WriteMemory(0x58a0, [75, 86, 4, 8], binPtr); //rock crab spawn
                 if ((ReadMemory(0xf9c1) & 32) == 32) WriteMemory(0x11e3c, 2); //disable clear fruit pickup
                 if (ReadMemory(0xf8cd) != 255) WriteMemory(0x14074, 3, binPtr); //disable lift to summit if static explosion not completed
                 break;
@@ -1692,6 +1701,7 @@ public class MemoryManipulator
 
     private void SetFlagRemoveHexagonGear() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0001));
     private void SetFlagRucksack() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0010));
+    private void SetFlagSnowFireflyBox() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0100));
 
     private void HandleRewind(int time)
     {
