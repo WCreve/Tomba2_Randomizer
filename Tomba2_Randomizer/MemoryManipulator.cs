@@ -150,10 +150,7 @@ public class MemoryManipulator
 
         WriteMemory(0x2838c, 73, globalPtr); //disable attaching crab basket to tomba on area load
 
-        WriteMemory(0xd338, [12, 128, 2, 60, 176, 248, 68, 160, 12, 128, 2, 60, 177, 248, 69, 160], globalPtr); //override AddInventoryQuantity function
-        WriteMemory(0xd348, new byte[372], globalPtr);
-        WriteMemory(0xd4bc, [8, 0, 224, 3], globalPtr);
-        WriteMemory(0xd4c0, new byte[4], globalPtr);
+        WriteMemory(0xd338, [12, 128, 2, 60, 176, 248, 68, 160, 177, 248, 67, 144, 33, 24, 101, 0, 177, 248, 67, 160, 8, 0, 224, 3, 0, 0, 0, 0], globalPtr); //override AddInventoryQuantity function
 
         WriteMemory(0xd4d8, [12, 128, 2, 60, 2, 0, 3, 36, 178, 248, 67, 160], globalPtr); //override AddItemWithMessage function
 
