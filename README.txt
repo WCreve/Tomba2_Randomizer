@@ -1,0 +1,1 @@
+Very work in progress but mostly playable randomizer for Tomba 2: Special Edition. Currently only supports the US version with US OST.
