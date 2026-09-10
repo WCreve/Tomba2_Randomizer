@@ -1311,7 +1311,8 @@
 		"requirements": [
 			{
 				"items": [ 13 ],
-				"events": [ 26 ]
+				"events": [ 26 ],
+				"areas": [ 5 ]
 			}
 		]
 	},
@@ -1644,7 +1645,8 @@
 		"requirements": [
 			{
 				"items": [ 13 ],
-				"events": [ 26 ]
+				"events": [ 26 ],
+				"areas": [ 5 ]
 			}
 		]
 	},

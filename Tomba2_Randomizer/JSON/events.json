@@ -329,7 +329,8 @@
 		"requirements": [
 			{
 				"items": [ 46 ],
-				"events": [ 21 ]
+				"events": [ 21 ],
+				"areas": [ 4 ]
 			}
 		]
 	},
@@ -1252,15 +1253,18 @@
 		"requirements": [
 			{
 				"items": [ 6 ],
-				"events": [ 10, 21 ]
+				"events": [ 10, 21 ],
+				"areas": [ 4 ]
 			},
 			{
 				"items": [ 7 ],
-				"events": [ 10, 21 ]
+				"events": [ 10, 21 ],
+				"areas": [ 4 ]
 			},
 			{
 				"items": [ 8 ],
-				"events": [ 10, 21 ]
+				"events": [ 10, 21 ],
+				"areas": [ 4 ]
 			},
 			{
 				"items": [ 6, 28 ],
@@ -1937,7 +1941,8 @@
 		"primary": false,
 		"requirements": [
 			{
-				"events": [ 25, 27 ]
+				"events": [ 25, 27 ],
+				"areas": [ 5 ]
 			}
 		]
 	},

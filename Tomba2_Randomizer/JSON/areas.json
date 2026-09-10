@@ -69,7 +69,8 @@
 		"name": "Donglin Forest - Laughing/Crying Forest",
 		"requirements": [
 			{
-				"events": [ 29 ]
+				"events": [ 29 ],
+				"areas": [ 6 ]
 			}
 		]
 	},
@@ -79,15 +80,18 @@
 		"requirements": [
 			{
 				"items": [ 6 ],
-				"events": [ 29 ]
+				"events": [ 29 ],
+				"areas": [ 7 ]
 			},
 			{
 				"items": [ 7 ],
-				"events": [ 29 ]
+				"events": [ 29 ],
+				"areas": [ 7 ]
 			},
 			{
 				"items": [ 8 ],
-				"events": [ 29 ]
+				"events": [ 29 ],
+				"areas": [ 7 ]
 			}
 		]
 	},
@@ -96,7 +100,14 @@
 		"name": "Circus Village",
 		"requirements": [
 			{
-				"events": [ 33 ]
+				"items": [ 1 ],
+				"events": [ 33 ],
+				"areas": [ 8 ]
+			},
+			{
+				"items": [ 2 ],
+				"events": [ 33 ],
+				"areas": [ 8 ]
 			}
 		]
 	},

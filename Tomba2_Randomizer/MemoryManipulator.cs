@@ -320,15 +320,20 @@ public class MemoryManipulator
                                 AddItemWithMessage(38, 1);
                                 custom = true;
                             }
-                            else if ((ReadMemory(0xf9e2) & 4) == 4)
+                            else
                             {
-                                WriteMemory(0x3a14, 8, binPtr);
-                                WriteMemory(0x1ad2c, 8, binPtr);
-                                WriteMemory(0x1ba80, 7, binPtr);
-                                WriteMemory(0xf9d6, 14);
-                                WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(4 << 0)));
                                 WriteMemory(0xfa45, (byte)(ReadMemory(0xfa45) | 1));
+
+                                if ((ReadMemory(0xf9e2) & 4) == 4)
+                                {
+                                    WriteMemory(0x3a14, 8, binPtr);
+                                    WriteMemory(0x1ad2c, 8, binPtr);
+                                    WriteMemory(0x1ba80, 7, binPtr);
+                                    WriteMemory(0xf9d6, 14);
+                                    WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(4 << 0)));
+                                }
                             }
+                            
                             break;
 
                         case 39: //round cog collected
@@ -742,8 +747,8 @@ public class MemoryManipulator
 
                     if (!custom)
                     {
-                        if (itemPickedUp[2] == 1) AddItemWithoutMessage(newItemId, 1);
-                        else AddItemWithMessage(newItemId, 1);
+                        if (itemPickedUp[2] == 1) AddItemWithoutMessage(newItemId, itemPickedUp[1]);
+                        else AddItemWithMessage(newItemId, itemPickedUp[1]);
                     }
                 }
 
@@ -1072,7 +1077,11 @@ public class MemoryManipulator
                                 {
                                     interiorTransition = true;
 
-                                    if ((ReadMemory(0xf9e2) & 1) == 1) WriteMemory(0xf8d8, (byte)(ReadMemory(0xf8d8) == 255 ? 1 : 255)); //flip gear pickup event state
+                                    if ((ReadMemory(0xf9e2) & 1) == 1)
+                                    {
+                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(1 << 0)));
+                                        WriteMemory(0xf8d8, (byte)(ReadMemory(0xf8d8) == 255 ? 1 : 255)); //flip gear pickup event state
+                                    }
                                 }
                             }
                             else if (enteringInterior[0] == 6) //paon interior
@@ -1091,7 +1100,11 @@ public class MemoryManipulator
                                 {
                                     interiorTransition = true;
 
-                                    if ((ReadMemory(0xf9e2) & 2) == 2) WriteMemory(0x4bca0, 131);
+                                    if ((ReadMemory(0xf9e2) & 2) == 2)
+                                    {
+                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(2 << 0)));
+                                        WriteMemory(0x4bca0, 131);
+                                    }
                                 }
                             }
                             break;
@@ -1235,7 +1248,7 @@ public class MemoryManipulator
                     if ((temporaryFlags & 2) == 2) WriteMemory(0xf8cd, 255);
                     break;
                 case 7:
-                    if ((temporaryFlags & 1) == 1) WriteMemory(0xf8d8, 1);
+                    if ((temporaryFlags & 1) == 1) WriteMemory(0xf8d8, (byte)(ReadMemory(0xf8d8) == 1 ? 255 : 1));
                     if ((temporaryFlags & 2) == 2) WriteMemory(0x4bca0, 131);
                     break;
                 case 8:
@@ -1475,6 +1488,8 @@ public class MemoryManipulator
                     WriteMemory(0xfa45, (byte)(ReadMemory(0xfa45) & ~(1 << 0)));
                     WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 4));
                 }
+
+                WriteMemory(0x10450, new byte[4], binPtr); //prevent delivering triangle gear from despawning ball
 
                 WriteMemory(0x3a2C, 255, binPtr); //spawn circus ball if triangle gear pickup not grabbed but bridge has been raised
 
