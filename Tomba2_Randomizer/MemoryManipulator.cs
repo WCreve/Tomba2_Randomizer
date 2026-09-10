@@ -168,7 +168,7 @@ public class MemoryManipulator
             {
                 if (ReadMemory(0xf8b3) == 0) InitializeGame();
                 WriteMemory(0xf8ad, [1, 1, 1]); //re-enable T1 events because LRG's fix for these events is weird
-                WriteMemory(0xf8ac, (byte)(ReadMemory(0xf8c8) == 255 ? 1 : 0)); //enable dwarf event if big sack event completed;
+                WriteMemory(0xf8ac, (byte)(ReadMemory(0xf8c8) == 255 ? 1 : 0)); //enable dwarf event if big sack event completed
                 loadedBin = currentBin;
                 EditBinMemory();
             }
@@ -1319,6 +1319,17 @@ public class MemoryManipulator
                             WriteMemory(0xf83a, 5); //just warp to start of summit if you can't do anything there
                         }
                     }
+                }
+                
+                break;
+
+            case 6:
+                var ghostsAlive = ReadMemory(0xfa14);
+
+                if ((ghostsAlive & 1) == 0 && warpDestination[0] > 2 && warpDestination[0] < 6) //remove first ghost if entering forest entrance from the back
+                {
+                    if (ghostsAlive == 6) WriteMemory(0xfa14, 5); //if this would have been the last ghost, respawn the second one
+                    else WriteMemory(0xfa14, (byte)(ghostsAlive | 1));
                 }
 
                 break;

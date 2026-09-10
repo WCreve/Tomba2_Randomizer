@@ -56,7 +56,8 @@
 		"name": "Donglin Forest - Forest Entrance",
 		"requirements": [
 			{
-				"events": [ 25 ]
+				"events": [ 25 ],
+				"areas": [ 5 ]
 			},
 			{
 				"items": [ 140 ]
