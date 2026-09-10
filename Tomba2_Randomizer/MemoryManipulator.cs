@@ -31,6 +31,7 @@ public class MemoryManipulator
     private IntPtr globalPtr; //0x40000
     private IntPtr binPtr; //0x110000
     private IntPtr switchPtr; //0x10000
+    private IntPtr spPtr; //scratchpad
 
     private int igt;
 
@@ -80,6 +81,9 @@ public class MemoryManipulator
         IntPtr ptr4 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x8);
         ReadProcessMemory((int)handle, (int)ptr4, buffer, buffer.Length, out bytesRead);
         switchPtr = BitConverter.ToInt32(buffer);
+
+        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A70, buffer, buffer.Length, out bytesRead);
+        spPtr = BitConverter.ToInt32(buffer);
     }
 
     public bool ProcessIsActive { get; set; } = true;
@@ -166,11 +170,14 @@ public class MemoryManipulator
             var currentBin = ReadMemory(-0x7064, binPtr);
             if (currentBin != loadedBin)
             {
-                if (ReadMemory(0xf8b3) == 0) InitializeGame();
-                WriteMemory(0xf8ad, [1, 1, 1]); //re-enable T1 events because LRG's fix for these events is weird
-                WriteMemory(0xf8ac, (byte)(ReadMemory(0xf8c8) == 255 ? 1 : 0)); //enable dwarf event if big sack event completed
-                loadedBin = currentBin;
-                EditBinMemory();
+                if (ReadMemory(0x19b, spPtr) == 1) //finished loading
+                {
+                    if (ReadMemory(0xf8b3) == 0) InitializeGame();
+                    WriteMemory(0xf8ad, [1, 1, 1]); //re-enable T1 events because LRG's fix for these events is weird
+                    WriteMemory(0xf8ac, (byte)(ReadMemory(0xf8c8) == 255 ? 1 : 0)); //enable dwarf event if big sack event completed
+                    loadedBin = currentBin;
+                    EditBinMemory();
+                }
             }
 
             var itemPickedUp = ReadMemory(0xf8b0, 3);
@@ -1385,8 +1392,6 @@ public class MemoryManipulator
 
     private void EditBinMemory()
     {
-        Thread.Sleep(1000);
-
         var area = ReadMemory(0xf870);
 
         SetMagicFlowerPopupLogic(area);
