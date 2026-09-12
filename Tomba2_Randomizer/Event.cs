@@ -22,6 +22,5 @@ public class Event
 
     public bool Unlocked { get; set; }
 
-    public List<RequirementGroup> RequirementGroups { get; set; } = new();
-    public List<RequirementGroup> ImportantGroups { get; set; } = new();
+    public List<RequirementGroup> RequirementGroups { get; set; } = [];
 }

@@ -11,14 +11,6 @@ public class Item
 
     public int CountAddress { get; set; }
 
-    public int PositionAddress
-    {
-        get
-        {
-            return CountAddress + 256;
-        }
-    }
-
     public byte InternalId
     {
         get
@@ -29,11 +21,9 @@ public class Item
 
     public ItemColor Color { get; set; }
 
-    public bool Important { get; set; }
-
     public bool NotRandom { get; set; }
 
-    public List<RequirementGroup> RequirementGroups { get; set; } = new();
+    public bool Unlocked { get; set; }
 
-    public List<RequirementGroup> ImportantGroups { get; set; } = new();
+    public List<RequirementGroup> RequirementGroups { get; set; } = [];
 }

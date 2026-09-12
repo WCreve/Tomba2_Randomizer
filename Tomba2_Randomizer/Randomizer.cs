@@ -12,8 +12,10 @@ namespace Tomba2_Randomizer
 
         private Dictionary<int, Item> allItems;
         private Dictionary<int, Item> notRandomItems;
-        
+
         Random r = new();
+
+        private bool success;
 
         public Randomizer(List<ItemDto> itemDtos, List<AreaDto> areaDtos, List<EventDto> eventDtos)
         {
@@ -141,11 +143,11 @@ namespace Tomba2_Randomizer
             }
         }
 
-        private IEnumerable<Item> ItemsToRandomize
+        private List<Item> RandomItemPool
         {
             get
             {
-                return items.Values.Except(RandomizedItems.Values);
+                return items.Values.Except(RandomizedItems.Values).ToList();
             }
         }
 
@@ -153,24 +155,21 @@ namespace Tomba2_Randomizer
         {
             get
             {
-                return items.Values.Where(i => !i.RequirementGroups.Any() || i.RequirementGroups.Any(rg => !rg.Items.Except(RandomizedItems.Values).Any() && rg.Areas.All(area => area.Unlocked) && rg.Events.All(e => e.Unlocked) && events.Values.Where(e => e.Unlocked).Sum(e => e.AP) > rg.AP));
+                return items.Values.Where(i => i.Unlocked);
+            }
+        }
+
+        private List<Item> AvailableItemsToRandomize
+        {
+            get
+            {
+                return AvailableItems.Except(RandomizedItems.Keys).ToList();
             }
         }
 
         public string DebugString { get; set; }
 
         public Dictionary<Item, Item> RandomizedItems { get; set; }
-
-        public Dictionary<byte, Item> Items
-        {
-            get
-            {
-                return items.Values.ToDictionary(
-                    i => i.InternalId,
-                    i => i
-                );
-            }
-        }
 
         public Dictionary<byte, Event> Events
         {
@@ -183,65 +182,68 @@ namespace Tomba2_Randomizer
             }
         }
 
+
         public void Randomize()
         {
-            RandomizedItems = new Dictionary<Item, Item>();
-            UpdateEventsAndAreas(true);
-
-            while (ItemsToRandomize.Any())
+            while (!success)
             {
-                var randomItemPool = items.Values.Except(RandomizedItems.Values).ToList();
-                var availableItemPool = AvailableItems.Except(RandomizedItems.Keys);
+                RandomizedItems = [];
+                UpdateItems();
 
-                if (availableItemPool.Any())
+                while (RandomItemPool.Count > 0)
                 {
-                    var randomItem = randomItemPool.ElementAt(r.Next(randomItemPool.Count()));
-                    var randomAvailableItem = availableItemPool.ElementAt(r.Next(availableItemPool.Count()));
-
-                    RandomizedItems[randomAvailableItem] = randomItem;
-
-                    foreach (var group in randomAvailableItem.RequirementGroups)
+                    if (AvailableItemsToRandomize.Count == 0)
                     {
-                        if (!group.Items.Except(RandomizedItems.Values).Any() && group.Areas.All(a => a.Unlocked) && group.Events.All(e => e.Unlocked))
+                        //DebugString += $"\nRan out of available items. {RandomItemPool.Count} items left\n";
+                        break;
+                    }
+                    else if (AvailableItemsToRandomize.Count <= 2 && RandomItemPool.Count > 1)
+                    {
+                        var itemToRandomize = AvailableItemsToRandomize[0];
+
+                        var potentialUnlocks = RandomItemPool
+                            .Select(reward => new
+                            {
+                                Item = reward,
+                                Unlocks = GetHypotheticalUnlocks(itemToRandomize, reward)
+                            })
+                            .Where(i => i.Unlocks.Count > 0)
+                            .ToList();
+
+                        if (potentialUnlocks.Count > 0)
                         {
-                            randomAvailableItem.ImportantGroups.Add(group);
+                            var choice = potentialUnlocks[r.Next(potentialUnlocks.Count)];
+                            RandomizedItems[itemToRandomize] = choice.Item;
+                        }
+                        else
+                        {
+                            RandomizedItems[AvailableItemsToRandomize[r.Next(AvailableItemsToRandomize.Count())]] = RandomItemPool[r.Next(RandomItemPool.Count())];
                         }
                     }
-
-                    UpdateEventsAndAreas(true);
-                }
-                else
-                {
-                    var keyPool = RandomizedItems.Keys.Where(k => !RandomizedItems.Keys.Any(i => i.ImportantGroups.Any(g => g.Items.Contains(RandomizedItems[k]))) && !events.Values.Any(e => e.Unlocked && e.ImportantGroups.Any(g => g.Items.Contains(RandomizedItems[k])) && !areas.Values.Any(a => a.Unlocked && a.ImportantGroups.Any(g => g.Items.Contains(RandomizedItems[k]))))).ToList();
-
-                    var randomKey = keyPool.ElementAt(r.Next(keyPool.Count()));
-                    randomKey.ImportantGroups = [];
-
-                    foreach (var group in randomKey.RequirementGroups)
+                    else
                     {
-                        if (!group.Items.Except(RandomizedItems.Values).Any() && group.Areas.All(a => a.Unlocked) && group.Events.All(e => e.Unlocked))
-                        {
-                            randomKey.ImportantGroups.Add(group);
-                        }
+                        RandomizedItems[AvailableItemsToRandomize[r.Next(AvailableItemsToRandomize.Count())]] = RandomItemPool[r.Next(RandomItemPool.Count())];
+                    }
+                    UpdateItems();
+                }
+
+                if (RandomItemPool.Count == 0)
+                {
+                    success = true;
+
+                    foreach (var item in notRandomItems.Values)
+                    {
+                        RandomizedItems[item] = item;
                     }
 
-                    RandomizedItems[randomKey] = randomItemPool.ElementAt(r.Next(randomItemPool.Count()));
-                            
-                    UpdateEventsAndAreas(false);
-                    UpdateEventsAndAreas(true);
+                    foreach (var pair in RandomizedItems.Where(i => !i.Key.NotRandom))
+                    {
+                        DebugString += $"{pair.Key.Name} gives {pair.Value.Name}\n";
+                    }
                 }
-            }
-
-            foreach (var item in notRandomItems.Values)
-            {
-                RandomizedItems[item] = item;
-            }
-
-            foreach (var pair in RandomizedItems)
-            {
-                DebugString += $"{pair.Key.Name} gives {pair.Value.Name}\n";
-            }
+            }            
         }
+
 
         public void Randomize(string itemString)
         {
@@ -253,53 +255,95 @@ namespace Tomba2_Randomizer
             }
         }
 
-        private void UpdateEventsAndAreas(bool unlock)
+        private void UpdateItems()
         {
-            var changed = false;
+            var unlockedItems = new HashSet<Item>();
+            var unlockedEvents = new HashSet<Event>();
+            var unlockedAreas = new HashSet<Area>();
 
-            foreach (var ev in events.Values.Where(e => e.Unlocked != unlock))
+            CalculateUnlockState(unlockedItems, unlockedEvents, unlockedAreas, RandomizedItems);
+
+            foreach (var item in items.Values) item.Unlocked = unlockedItems.Contains(item);
+
+            foreach (var ev in events.Values) ev.Unlocked = unlockedEvents.Contains(ev);
+
+            foreach (var area in areas.Values) area.Unlocked = unlockedAreas.Contains(area);
+        }
+
+        private void CalculateUnlockState(HashSet<Item> unlockedItems, HashSet<Event> unlockedEvents, HashSet<Area> unlockedAreas, IReadOnlyDictionary<Item, Item> randomizedItems)
+        {
+            bool changed;
+
+            do
             {
-                var isUnlocked = !ev.RequirementGroups.Any() || ev.RequirementGroups.Any(rg => !rg.Items.Except(RandomizedItems.Values).Any() && rg.Events.All(e => e.Unlocked) && rg.Areas.All(a => a.Unlocked) && events.Values.Where(e => e.Unlocked).Sum(e => e.AP) >= rg.AP);
-                if (ev.Unlocked != isUnlocked)
+                changed = false;
+
+                var obtainedItems = unlockedItems.Where(randomizedItems.ContainsKey).Select(item => randomizedItems[item]).ToHashSet();
+
+                int availableAP = unlockedEvents.Sum(e => e.AP);
+
+                foreach (var item in items.Values)
                 {
-                    ev.Unlocked = isUnlocked;
-                    changed = true;
-                }
-                if (ev.Unlocked)
-                {
-                    ev.ImportantGroups = [];
-                    foreach (var group in ev.RequirementGroups)
+                    if (unlockedItems.Contains(item)) continue;
+
+                    bool canUnlock = item.RequirementGroups.Count == 0 || item.RequirementGroups.Any(rg => rg.Items.All(requiredItem => obtainedItems.Contains(requiredItem)) &&
+                            rg.Events.All(e => unlockedEvents.Contains(e)) && rg.Areas.All(a => unlockedAreas.Contains(a)) && availableAP >= rg.AP);
+
+                    if (canUnlock)
                     {
-                        if (!group.Items.Except(RandomizedItems.Values).Any() && group.Areas.All(a => a.Unlocked) && group.Events.All(e => e.Unlocked))
-                        {
-                            ev.ImportantGroups.Add(group);
-                        }
+                        unlockedItems.Add(item);
+                        changed = true;
                     }
                 }
-            }
 
-            foreach (var area in areas.Values.Where(a => a.Unlocked != unlock))
-            {
-                var isUnlocked = !area.RequirementGroups.Any() || area.RequirementGroups.Any(rg => !rg.Items.Except(RandomizedItems.Values).Any() && rg.Events.All(e => e.Unlocked) && rg.Areas.All(a => a.Unlocked));
-                if (area.Unlocked != isUnlocked)
+                foreach (var ev in events.Values)
                 {
-                    area.Unlocked = isUnlocked;
-                    changed = true;
-                }
-                if (area.Unlocked)
-                {
-                    area.ImportantGroups = [];
-                    foreach (var group in area.RequirementGroups)
+                    if (unlockedEvents.Contains(ev)) continue;
+
+                    bool canUnlock = ev.RequirementGroups.Count == 0 || ev.RequirementGroups.Any(rg => rg.Items.All(requiredItem => obtainedItems.Contains(requiredItem)) &&
+                            rg.Events.All(e => unlockedEvents.Contains(e)) && rg.Areas.All(a => unlockedAreas.Contains(a)) && availableAP >= rg.AP);
+
+                    if (canUnlock)
                     {
-                        if (!group.Items.Except(RandomizedItems.Values).Any() && group.Areas.All(a => a.Unlocked) && group.Events.All(e => e.Unlocked))
-                        {
-                            area.ImportantGroups.Add(group);
-                        }
+                        unlockedEvents.Add(ev);
+                        changed = true;
                     }
                 }
-            }
 
-            if (changed) UpdateEventsAndAreas(unlock);
+                foreach (var area in areas.Values)
+                {
+                    if (unlockedAreas.Contains(area)) continue;
+
+                    bool canUnlock = area.RequirementGroups.Count == 0 || area.RequirementGroups.Any(rg => rg.Items.All(requiredItem => obtainedItems.Contains(requiredItem)) &&
+                            rg.Events.All(e => unlockedEvents.Contains(e)) && rg.Areas.All(a => unlockedAreas.Contains(a)));
+
+                    if (canUnlock)
+                    {
+                        unlockedAreas.Add(area);
+                        changed = true;
+                    }
+                }
+
+            } while (changed);
+        }
+
+        private HashSet<Item> GetHypotheticalUnlocks(Item pickup, Item reward)
+        {
+            var initiallyUnlockedItems = items.Values.Where(i => i.Unlocked).ToHashSet();
+
+            var unlockedItems = initiallyUnlockedItems.ToHashSet();
+            var unlockedEvents = events.Values.Where(e => e.Unlocked).ToHashSet();
+            var unlockedAreas = areas.Values.Where(a => a.Unlocked).ToHashSet();
+
+            var hypotheticalRandomizedItems =
+                new Dictionary<Item, Item>(RandomizedItems)
+                {
+                    [pickup] = reward
+                };
+
+            CalculateUnlockState(unlockedItems, unlockedEvents, unlockedAreas, hypotheticalRandomizedItems);
+
+            return unlockedItems.Except(initiallyUnlockedItems).ToHashSet();
         }
     }
 }
