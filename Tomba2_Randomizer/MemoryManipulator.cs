@@ -154,7 +154,7 @@ public class MemoryManipulator
 
         WriteMemory(0x2838c, 73, globalPtr); //disable attaching crab basket to tomba on area load
 
-        WriteMemory(0xd338, [12, 128, 2, 60, 176, 248, 68, 160, 177, 248, 67, 144, 33, 24, 101, 0, 177, 248, 67, 160, 8, 0, 224, 3, 0, 0, 0, 0], globalPtr); //override AddInventoryQuantity function
+        WriteMemory(0xd338, [12, 128, 2, 60, 176, 248, 68, 160, 12, 128, 2, 60, 177, 248, 69, 160, 8, 0, 224, 3, 0, 0, 0, 0], globalPtr); //override AddInventoryQuantity function
 
         WriteMemory(0xd4d8, [12, 128, 2, 60, 2, 0, 3, 36, 178, 248, 67, 160], globalPtr); //override AddItemWithMessage function
 
@@ -188,7 +188,7 @@ public class MemoryManipulator
             {
                 HandleRewind(newIgt);
             }
-            if (Math.Abs(igt - newIgt) > 500) //savestate loaded
+            else if (Math.Abs(igt - newIgt) > 500) //savestate loaded
             {
                 HandleRewind(newIgt);
             }
@@ -203,7 +203,7 @@ public class MemoryManipulator
                     var custom = false;
                     var newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == itemPickedUp[0]).Value.InternalId;
 
-                    switch (itemPickedUp[0])
+                    switch (itemPickedUp[0]) //item collected pre-randomization
                     {
                         case 7: //fire hammer
                             WriteMemory(0xf8ac, 1); //enable Tomba 1 dwarf event
@@ -215,13 +215,13 @@ public class MemoryManipulator
                             break;
 
                         case 17: //swimming pig suit collected
-                            if (newItemId != 17 && ReadMemory(0xfac5) == 0)
+                            if (newItemId != 17 && ReadMemory(0xfac5) == 0) //end mermaid convo early if player doesn't have a swimming pig suit
                             {
                                 WriteMemory(0xf9e2, 1); //temporary flag to destroy platform when leaving room
                                 var dialogueScriptOffset = BitConverter.ToUInt16(ReadMemory(0x4240c, 2)) + 0x4006C;
                                 WriteMemory(dialogueScriptOffset, [12, 106]); //skip to end of mermaid dialogue script
 
-                                if (ReadMemory(0xfac4) == 0)
+                                if (ReadMemory(0xfac4) == 0) //give player a new pig suit if they would potentially lose access to circus village convos due to giving away the pig suit
                                 {
                                     AddItemWithoutMessage(16, 1);
                                     QueueCustomPopup("Another {P}Pig Suit{W} magically{n}appears in your inventory.{n}Lucky you!");
@@ -243,7 +243,7 @@ public class MemoryManipulator
                             {
                                 CompleteEvent(25, false);
                                 WriteMemory(0xf9c4, 55); //set all kujaras to delivered
-                                WriteMemory(0xf9c6, 21); //pham cutscene completed
+                                WriteMemory(0xf9c6, 20); //pham cutscene completed
                                 QueueCustomPopup("The {O}Donglin Forest lift{W} was fixed!");
                             }
 
@@ -362,6 +362,11 @@ public class MemoryManipulator
                             }
                             break;
 
+                        case 41: //crab basket collected
+                            if (ReadMemory(0xfadd) == 0 && newItemId != 41) //disable crab catching if player doesn't have crab basket
+                            WriteMemory(0xf9e5, 7);
+                            break;
+
                         case 42: //golden crab collected
                             var crabCaught = (ReadMemory(0xf9e3) - ReadMemory(0xf9e6)) & 7;
 
@@ -386,7 +391,7 @@ public class MemoryManipulator
                             break;
 
                         case 50: //paon grass collected
-                            if (ReadMemory(0xfae6) == 0 /*&& newItemId != 50*/) //skip rest of dialogue if player does not have paon grass to prevent visually equipping the paon grass
+                            if (ReadMemory(0xfae6) == 0) //skip rest of dialogue if player does not have paon grass to prevent visually equipping the paon grass
                             {
                                 WriteMemory(ReadDialogueOffsetPtr(), [44, 87]);
                             }
@@ -510,7 +515,7 @@ public class MemoryManipulator
                             break;
 
                         case 114: //1/2 spell of strength
-                            newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf870) == 4 ? 108 : 109)).Value.InternalId;
+                            newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf870) == 5 ? 108 : 109)).Value.InternalId;
                             break;
 
                         case 116: //1/2 spell of wisdom
@@ -988,6 +993,7 @@ public class MemoryManipulator
                         case 0:
                             if (enteringInterior[0] == 2 && enteringInterior[1] == 1 && ReadMemory(0xf8bc) != 255) //entering windmill while windmill event incomplete
                                 {
+                                    //win looks at golden crab pickups collected instead of golden crabs in inventory, so the crabs collected variable needs to be changed temporarily when entering the windmill
                                     interiorTransition = true;
 
                                     var obtainedCrabs = ReadMemory(0xf9e3);
@@ -1022,7 +1028,7 @@ public class MemoryManipulator
                             break;  
 
                         case 5:
-                            if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 21) //pham room
+                            if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 20) //pham room
                             {
                                 WriteMemory(0xf9c6, 22);
                                 WriteMemory(0xf8b0, [24, 1, 1]);
@@ -1414,6 +1420,13 @@ public class MemoryManipulator
                     WriteMemory(0xc954, new byte[96], binPtr);
                     WriteMemory(0xc9c0, new byte[4], binPtr);
                 }
+
+                //custom tiny pig tracking
+                WriteMemory(0x18094, [153, 1], binPtr);
+                WriteMemory(0x180a0, 1, binPtr);
+                WriteMemory(0x180a8, [153, 1], binPtr);
+                WriteMemory(0x18100, [153, 1], binPtr);
+                WriteMemory(0x18108, 1, binPtr);
                 break;
             case 1:
                 if (ReadMemory(0xf8bc) != 255) WriteMemory(-0x3ce8, [73, 0], binPtr); //disable travel to starting beach if win's windmill not completed
@@ -1424,6 +1437,13 @@ public class MemoryManipulator
                 }
 
                 WriteMemory(0x5ac0, new byte[12], binPtr); //remove last evil pig bag resource popup
+
+                //custom tiny pig tracking
+                WriteMemory(0x13ed0, [153, 1], binPtr);
+                WriteMemory(0x13edc, 2, binPtr);
+                WriteMemory(0x13ee4, [153, 1], binPtr);
+                WriteMemory(0x13f40, [153, 1], binPtr);
+                WriteMemory(0x13f48, 2, binPtr);
                 break;
             case 2:
                 if (ReadMemory(0xf8bf) != 255) WriteMemory(0x25b8, new byte[128], binPtr); //disable travel to pipe area if pull and open not completed
@@ -1455,6 +1475,13 @@ public class MemoryManipulator
 
                     if (ReadMemory(0xf8cb) == 1) WriteMemory(0xf7af, 16, binPtr); //fix mountain peach not spawning more than once
                 }
+
+                //custom tiny pig tracking
+                WriteMemory(0x29c68, [153, 1], binPtr);
+                WriteMemory(0x29c74, 4, binPtr);
+                WriteMemory(0x29c7c, [153, 1], binPtr);
+                WriteMemory(0x29cd4, [153, 1], binPtr);
+                WriteMemory(0x29cdc, 4, binPtr);
                 break;
             case 5:
                 if (ReadMemory(0xf8ca) != 255) WriteMemory(0x19e8c, 3, binPtr); //disable lift to ranch if let's take the lift not completed
@@ -1478,6 +1505,13 @@ public class MemoryManipulator
                 if ((ReadMemory(0xf9c1) & 64) == 0) WriteMemory(0x58a0, [75, 86, 4, 8], binPtr); //rock crab spawn
                 if ((ReadMemory(0xf9c1) & 32) == 32) WriteMemory(0x11e3c, 2); //disable clear fruit pickup
                 if (ReadMemory(0xf8cd) != 255) WriteMemory(0x14074, 3, binPtr); //disable lift to summit if static explosion not completed
+
+                //custom tiny pig tracking
+                WriteMemory(0x2b610, [153, 1], binPtr);
+                WriteMemory(0x2b61c, 8, binPtr);
+                WriteMemory(0x2b624, [153, 1], binPtr);
+                WriteMemory(0x2b680, [153, 1], binPtr);
+                WriteMemory(0x2b688, 8, binPtr);
                 break;
             case 7:
                 if (ReadMemory(0xf8d5) != 255) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
@@ -1532,8 +1566,15 @@ public class MemoryManipulator
                 if (ReadMemory(0xf937) == 1 && removedCogs != 7 && (ReadMemory(0xfa46) & 15) != 15) //custom minitta tunnel gear giving logic
                 {
                     WriteMemory(0x294b8, [12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160, 8, 0, 224, 3, 43, 0, 0, 162], binPtr);
-                }                
-                
+                }
+
+                //custom tiny pig tracking
+                WriteMemory(0x1dc14, [153, 1], binPtr);
+                WriteMemory(0x1dc20, 16, binPtr);
+                WriteMemory(0x1dc28, [153, 1], binPtr);
+                WriteMemory(0x1e1bc, [153, 1], binPtr);
+                WriteMemory(0x1e1c4, 16, binPtr);
+
                 break;
             default:
                 break;

@@ -14,7 +14,7 @@
                     <Label Name="LblHooked" Content="Connected" HorizontalAlignment="Left" Margin="139,21,0,0" VerticalAlignment="Top"/>
                     <Button Name="BtnNewRandom" Content="New Randomization" FontSize="24" Canvas.Left="28" Canvas.Top="99" Height="59" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnNewRandom_OnClick"/>
                     <Button Name="BtnLoadRandom" Content="Load Randomization" FontSize="24" Canvas.Left="28" Canvas.Top="176" Height="58" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnLoadRandom_OnClick"/>
-                    <CheckBox Name="ChkDebug" Content="Also generate debug file" Canvas.Left="338" Canvas.Top="121" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <CheckBox Name="ChkDebug" Content="Include list of randomized items in this file" Canvas.Left="338" Canvas.Top="115" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     <!--<Button Name="BtnJsonDeserializer" Content="dump info" FontSize="24" Canvas.Left="28" Canvas.Top="276" Height="58" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnJsonDeserializer_Click"/>-->
                 </Canvas>
             </TabItem>

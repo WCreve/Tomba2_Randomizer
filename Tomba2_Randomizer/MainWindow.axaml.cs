@@ -671,28 +671,10 @@ public partial class MainWindow : Window
                 output += $"{item.Key.Id},{item.Value.Id}|";
             }
             output = output.Remove(output.Length - 1);
+            if (ChkDebug.IsChecked == true) output += "\n\n" + randomizer.DebugString;
             await streamWriter.WriteAsync(output);
 
             if (memory != null) memory.SetupRandomizer(randomizer);
-        }
-
-        if (ChkDebug.IsChecked == true)
-        {
-            var debugFile = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-            {
-                Title = "Save debug file",
-                FileTypeChoices = [FilePickerFileTypes.TextPlain],
-                SuggestedFileName = $"{timestamp}_DEBUG"
-            });
-
-            if (debugFile is not null)
-            {
-                await using var stream = await debugFile.OpenWriteAsync();
-                using var streamWriter = new StreamWriter(stream);
-
-                await streamWriter.WriteAsync(randomizer.DebugString);
-
-            }
         }
     }
 
@@ -712,7 +694,7 @@ public partial class MainWindow : Window
             await using var stream = await file[0].OpenReadAsync();
             using var streamReader = new StreamReader(stream);
 
-            var itemString = await streamReader.ReadToEndAsync();
+            var itemString = await streamReader.ReadLineAsync();
 
             try
             {
