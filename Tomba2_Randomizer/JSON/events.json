@@ -1397,12 +1397,12 @@
 		"primary": false,
 		"requirements": [
 			{
-				"items": [ 29 ],
+				"items": [ 13, 29 ],
 				"areas": [ 5, 7 ],
 				"events": [ 26 ]
 			},
 			{
-				"items": [ 29, 101 ],
+				"items": [ 13, 29, 101 ],
 				"areas": [ 5 ],
 				"events": [ 26 ]
 			}
@@ -1941,6 +1941,7 @@
 		"primary": false,
 		"requirements": [
 			{
+				"items": [ 13 ],
 				"events": [ 25, 27 ],
 				"areas": [ 5 ]
 			}

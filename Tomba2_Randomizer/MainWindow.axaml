@@ -15,6 +15,7 @@
                     <Button Name="BtnNewRandom" Content="New Randomization" FontSize="24" Canvas.Left="28" Canvas.Top="99" Height="59" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnNewRandom_OnClick"/>
                     <Button Name="BtnLoadRandom" Content="Load Randomization" FontSize="24" Canvas.Left="28" Canvas.Top="176" Height="58" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnLoadRandom_OnClick"/>
                     <CheckBox Name="ChkDebug" Content="Include list of randomized items in this file" Canvas.Left="338" Canvas.Top="115" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <Label Name="LblRandomizer" Content="No randomizer loaded." Margin="139,51,0,0"></Label>
                     <!--<Button Name="BtnJsonDeserializer" Content="dump info" FontSize="24" Canvas.Left="28" Canvas.Top="276" Height="58" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnJsonDeserializer_Click"/>-->
                 </Canvas>
             </TabItem>
@@ -34,7 +35,7 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button Name="BtnGiveAll" Classes="apply" Content="Give All Items" Height="31" Canvas.Left="69" Canvas.Top="201" Width="126" Background="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnGiveAll_Click"/>
+                        <!--<Button Name="BtnGiveAll" Classes="apply" Content="Give All Items" Height="31" Canvas.Left="69" Canvas.Top="201" Width="126" Background="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnGiveAll_Click"/>-->
                     </Canvas>
                 </StackPanel>
             </TabItem>

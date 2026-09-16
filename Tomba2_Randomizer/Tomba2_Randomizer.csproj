@@ -8,13 +8,14 @@
       <PublishSingleFile>true</PublishSingleFile>
       <PublishTrimmed>false</PublishTrimmed>
       <Nullable>enable</Nullable>
+      <DebugType>None</DebugType>
+      <DebugSymbols>false</DebugSymbols>
+      <IncludeSymbolsInSingleFile>false</IncludeSymbolsInSingleFile>
+      <PublishSymbols>false</PublishSymbols>
+      <AllowedReferenceRelatedFileExtensions>
+          .dll;.exe
+      </AllowedReferenceRelatedFileExtensions>
       <ApplicationManifest>app.manifest</ApplicationManifest>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <DebugType>full</DebugType>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-      <DebugType>full</DebugType>
     </PropertyGroup>
     <ItemGroup>
       <None Remove="JSON\areas.json" />
@@ -36,7 +37,6 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
     </ItemGroup>
-
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="12.1.0" />
         <PackageReference Include="Avalonia.Desktop" Version="12.1.0" />

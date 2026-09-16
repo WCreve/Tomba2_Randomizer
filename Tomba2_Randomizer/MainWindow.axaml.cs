@@ -15,6 +15,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace Tomba2_Randomizer;
 
@@ -663,8 +664,15 @@ public partial class MainWindow : Window
             await using var stream = await file.OpenWriteAsync();
             using var streamWriter = new StreamWriter(stream);
 
+            BtnNewRandom.Content = "Randomizing...";
+            LblRandomizer.Content = "No randomizer loaded.";
+
+            BtnNewRandom.IsEnabled = false;
+            BtnLoadRandom.IsEnabled = false;
+            ChkDebug.IsEnabled = false;
+
             randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
-            randomizer.Randomize();
+            await Task.Run(async () => randomizer.Randomize());
             var output = "";
             foreach (var item in randomizer.RandomizedItems)
             {
@@ -675,6 +683,13 @@ public partial class MainWindow : Window
             await streamWriter.WriteAsync(output);
 
             if (memory != null) memory.SetupRandomizer(randomizer);
+
+            BtnNewRandom.Content = "New Randomization";
+            LblRandomizer.Content = "Randomizer ready!";
+
+            BtnNewRandom.IsEnabled = true;
+            BtnLoadRandom.IsEnabled = true;
+            ChkDebug.IsEnabled = true;
         }
     }
 
@@ -701,6 +716,7 @@ public partial class MainWindow : Window
                 randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
                 randomizer.Randomize(itemString);
                 if (memory != null) memory.SetupRandomizer(randomizer);
+                LblRandomizer.Content = "Randomizer ready!";
             }
             catch (Exception)
             {

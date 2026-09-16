@@ -48,6 +48,10 @@
 		"requirements": [
 			{
 				"events": [ 22 ]
+			},
+			{
+				"areas": [ 6 ],
+				"events": [ 25 ]
 			}
 		]
 	},

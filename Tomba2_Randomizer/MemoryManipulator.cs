@@ -56,31 +56,27 @@ public class MemoryManipulator
         _process.Exited += TombaProcessClosed;
 
         IntPtr bytesRead = 0;
+        byte[] baseBuffer = new byte[8];
         byte[] buffer = new byte[8];
 
-        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
+        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, baseBuffer, buffer.Length, out bytesRead);
 
-        IntPtr ptr = IntPtr.Add(BitConverter.ToInt32(buffer), 0x58);
+        IntPtr ptr = IntPtr.Add(BitConverter.ToInt32(baseBuffer), 0x58);
         ReadProcessMemory((int)handle, (int)ptr, buffer, buffer.Length, out bytesRead);
         basePtr = BitConverter.ToInt32(buffer);
 
-        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
-
-        IntPtr ptr2 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x20);
+        IntPtr ptr2 = IntPtr.Add(BitConverter.ToInt32(baseBuffer), 0x20);
         ReadProcessMemory((int)handle, (int)ptr2, buffer, buffer.Length, out bytesRead);
         globalPtr = BitConverter.ToInt32(buffer);
 
-        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
-
-        IntPtr ptr3 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x188);
+        IntPtr ptr3 = IntPtr.Add(BitConverter.ToInt32(baseBuffer), 0x188);
         ReadProcessMemory((int)handle, (int)ptr3, buffer, buffer.Length, out bytesRead);
         binPtr = BitConverter.ToInt32(buffer);
 
-        ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A78, buffer, buffer.Length, out bytesRead);
-
-        IntPtr ptr4 = IntPtr.Add(BitConverter.ToInt32(buffer), 0x8);
+        IntPtr ptr4 = IntPtr.Add(BitConverter.ToInt32(baseBuffer), 0x8);
         ReadProcessMemory((int)handle, (int)ptr4, buffer, buffer.Length, out bytesRead);
         switchPtr = BitConverter.ToInt32(buffer);
+
 
         ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A70, buffer, buffer.Length, out bytesRead);
         spPtr = BitConverter.ToInt32(buffer);
@@ -159,6 +155,8 @@ public class MemoryManipulator
         WriteMemory(0xd4d8, [12, 128, 2, 60, 2, 0, 3, 36, 178, 248, 67, 160], globalPtr); //override AddItemWithMessage function
 
         WriteMemory(0xf9ca, 2); //start at kujara wash level 3
+
+        AddItemWithoutMessage(96, 80); //give 80 magic wings
 
         WriteMemory(0xf8b3, 1); //initialized
     }
@@ -358,7 +356,12 @@ public class MemoryManipulator
                             {
                                 AddItemWithoutMessage(40, 1); //Only randomize the correct pink bucket pickup
                                 custom = true;
-                                break;
+                            }
+
+                            if (ReadMemory(0xf8b8) != 255 && ReadMemory(0xf870) == 0) //allow pick bucket to appear on back if kainen's house not extinguished, if previously disabled
+                            {
+                                WriteMemory(0xb8bc, 255, globalPtr);
+                                WriteMemory(0xb8c3, 16, globalPtr);
                             }
                             break;
 
@@ -491,6 +494,12 @@ public class MemoryManipulator
                             {
                                 AddItemWithoutMessage(itemPickedUp[0], 1);
                                 custom = true;
+
+                                if (ReadMemory(0xf8b8) != 255 && ReadMemory(0xf870) == 0) //prevent pick bucket from appearing on back if kainen's house not extinguished
+                                {
+                                    WriteMemory(0xb8bc, 55, globalPtr);
+                                    WriteMemory(0xb8c3, 20, globalPtr);
+                                }
                             }
                             break;
 
@@ -759,8 +768,8 @@ public class MemoryManipulator
 
                     if (!custom)
                     {
-                        if (itemPickedUp[2] == 1) AddItemWithoutMessage(newItemId, itemPickedUp[1]);
-                        else AddItemWithMessage(newItemId, itemPickedUp[1]);
+                        if (itemPickedUp[2] == 1) AddItemWithoutMessage(newItemId, 1);
+                        else AddItemWithMessage(newItemId, 1);
                     }
                 }
 
@@ -919,61 +928,7 @@ public class MemoryManipulator
     }
 
     private int GetEventAPReward(byte eventId, bool completed) => ReadMemory(0x63b38 + (completed ? (ReadMemory(0x633c9 + eventId * 12, globalPtr) & 15) : (ReadMemory(0x633c9 + eventId * 12, globalPtr) >> 4)) * 4, globalPtr);
-
-    public byte[] ReadMemory(int ptrAddress, int amountOfBytes, IntPtr ptr)
-    {
-        IntPtr bytesRead = 0;
-        IntPtr readPtr = IntPtr.Add(ptr, ptrAddress);
-
-        var bytes = new byte[amountOfBytes];
-        ReadProcessMemory((int)handle, (int)readPtr, bytes, bytes.Length, out bytesRead);
-
-        return bytes;
-    }
-
-    public byte ReadMemory(int ptrAddress, IntPtr ptr) => ReadMemory(ptrAddress, 1, ptr)[0];
-
-    public byte[] ReadMemory(int ptrAddress, int amountOfBytes) => ReadMemory(ptrAddress, amountOfBytes, basePtr);
-
-    public byte ReadMemory(int ptrAddress) => ReadMemory(ptrAddress, 1, basePtr)[0];
-
-    public byte ReadInventoryTopBottomAmount(bool top) => ReadMemory(top ? 0xf8a2 : 0xf8a1);
-
-    public byte ReadPopupAmount() => ReadMemory(0xf550);
-
-    public byte[] ReadEvents()
-    {
-        var eventList = ReadMemory(0xf8b5, 138).ToList();
-        eventList.RemoveAt(62); //event index 62 is unused
-
-        return eventList.ToArray();
-    }
-
-    public byte[] ReadProgress() => ReadMemory(0xf9b4, 168);
-
-    private int ReadTimer() => BitConverter.ToInt32(ReadMemory(0xf878, 4));
-
-    public void WriteMemory(int address, byte[] values, IntPtr ptr)
-    {
-        IntPtr bytesWritten = 0;
-
-        IntPtr textPtr = IntPtr.Add(ptr, address);
-        WriteProcessMemory((int)handle, (int)textPtr, values, values.Count(), out bytesWritten);
-    }
-
-    public void WriteMemory(int address, byte value, IntPtr ptr, bool ignoreRandom = false) => WriteMemory(address, [value], ptr == 0 ? basePtr : ptr);
-
-    public void WriteMemory(int address, byte[] values, bool ignoreRandom = false) => WriteMemory(address, values, basePtr);
-
-    public void WriteMemory(int address, byte value, bool ignoreRandom = false) => WriteMemory(address, [value], basePtr);
-
-    public void WriteProgress(byte[] bytes) => WriteMemory(0xf9b4, bytes);
-
-    public void WriteInventoryTopBottomAmount(bool top, byte amount) => WriteMemory(top ? 0xf8a2 : 0xf8a1, amount);
-
-    public void Teleport(byte area, byte section) => WriteMemory(0xf839, [1, section, area]);
-
-    public bool IsGameRunning() => ReadTimer() > 0 || ReadMemory(0xf9d0) == 95;
+        
 
     public async Task PerformChecks()
     {
@@ -1227,10 +1182,6 @@ public class MemoryManipulator
                         }
                         item.DequeueTimeStamp = ReadTimer();
                     }
-
-                    var customByte1 = ReadMemory(0xf9c1);
-
-                    if (((customByte1 >> 0) & 1) == 0) GiveStarterWings(customByte1);
                 }
             }
 
@@ -1720,23 +1671,6 @@ public class MemoryManipulator
         return (int)(poolHead - 0x800b0000);
     }
 
-    private void GiveStarterWings(byte bits)
-    {
-        if (ReadMemory(0xfb14) == 0)
-        {
-            var amountOfBottomItems = ReadInventoryTopBottomAmount(false);
-
-            WriteInventoryTopBottomAmount(false, (byte)(amountOfBottomItems + 1));
-
-            WriteMemory(0xfc14, amountOfBottomItems);
-        }
-        WriteMemory(0xfb14, 80);
-
-        bits = (byte)(bits | 0b_0000_0001);
-
-        WriteMemory(0xf9c1, bits);
-    }
-
     private void EnablePigDoor(int id)
     {
         switch (ReadMemory(0xf870)) //un-hide pig door if player collects pig bag corresponding to current level
@@ -1833,6 +1767,60 @@ public class MemoryManipulator
         }
     }
 
+    public byte[] ReadMemory(int ptrAddress, int amountOfBytes, IntPtr ptr)
+    {
+        IntPtr bytesRead = 0;
+        IntPtr readPtr = IntPtr.Add(ptr, ptrAddress);
+
+        var bytes = new byte[amountOfBytes];
+        ReadProcessMemory((int)handle, (int)readPtr, bytes, bytes.Length, out bytesRead);
+
+        return bytes;
+    }
+
+    public byte ReadMemory(int ptrAddress, IntPtr ptr) => ReadMemory(ptrAddress, 1, ptr)[0];
+
+    public byte[] ReadMemory(int ptrAddress, int amountOfBytes) => ReadMemory(ptrAddress, amountOfBytes, basePtr);
+
+    public byte ReadMemory(int ptrAddress) => ReadMemory(ptrAddress, 1, basePtr)[0];
+
+    public byte ReadInventoryTopBottomAmount(bool top) => ReadMemory(top ? 0xf8a2 : 0xf8a1);
+
+    public byte ReadPopupAmount() => ReadMemory(0xf550);
+
+    public byte[] ReadEvents()
+    {
+        var eventList = ReadMemory(0xf8b5, 138).ToList();
+        eventList.RemoveAt(62); //event index 62 is unused
+
+        return eventList.ToArray();
+    }
+
+    public byte[] ReadProgress() => ReadMemory(0xf9b4, 168);
+
+    private int ReadTimer() => BitConverter.ToInt32(ReadMemory(0xf878, 4));
+
+    public void WriteMemory(int address, byte[] values, IntPtr ptr)
+    {
+        IntPtr bytesWritten = 0;
+
+        IntPtr textPtr = IntPtr.Add(ptr, address);
+        WriteProcessMemory((int)handle, (int)textPtr, values, values.Length, out bytesWritten);
+    }
+
+    public void WriteMemory(int address, byte value, IntPtr ptr, bool ignoreRandom = false) => WriteMemory(address, [value], ptr == 0 ? basePtr : ptr);
+
+    public void WriteMemory(int address, byte[] values, bool ignoreRandom = false) => WriteMemory(address, values, basePtr);
+
+    public void WriteMemory(int address, byte value, bool ignoreRandom = false) => WriteMemory(address, [value], basePtr);
+
+    public void WriteProgress(byte[] bytes) => WriteMemory(0xf9b4, bytes);
+
+    public void WriteInventoryTopBottomAmount(bool top, byte amount) => WriteMemory(top ? 0xf8a2 : 0xf8a1, amount);
+
+    public void Teleport(byte area, byte section) => WriteMemory(0xf839, [1, section, area]);
+
+    public bool IsGameRunning() => ReadTimer() > 0 || ReadMemory(0xf9d0) == 95;
     public Inventory ReadInventory()
     {
         var itemCounts = ReadMemory(0xfab4, 168);

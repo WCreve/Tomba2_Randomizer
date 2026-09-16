@@ -4,8 +4,8 @@ namespace Tomba2_Randomizer;
 
 public class RequirementGroup
 {
-    public List<Item> Items { get; set; } = new();
-    public List<Area> Areas { get; set; } = new();
-    public List<Event> Events { get; set; } = new();
+    public List<Item> Items { get; set; } = [];
+    public List<Area> Areas { get; set; } = [];
+    public List<Event> Events { get; set; } = [];
     public int AP { get; set; } = new();
 }
