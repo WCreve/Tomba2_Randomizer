@@ -471,6 +471,11 @@ public class MemoryManipulator
                             SetFlagSnowFireflyBox();
                             break;
 
+                        case 81: //getwell plant collected
+                            SetFlagGetwellPlant();
+                            WriteMemory(0x10f78, 144, binPtr); //prevent obtaining duplicates
+                            break;
+
                         case 82: //rucksack collected
                             SetFlagRucksack();
                             break;
@@ -1072,6 +1077,22 @@ public class MemoryManipulator
                                     {
                                         WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(2 << 0)));
                                         WriteMemory(0x4bca0, 131);
+                                    }
+                                }
+                            }
+                            else if (enteringInterior[0] == 11) //getwell interior
+                            {
+                                if (enteringInterior[1] == 1) //entering
+                                {
+                                    interiorTransition = true;
+
+                                    if ((ReadMemory(0xf9c2) & 8) == 0) //make sure getwell plant can be obtained, even if already delivered to boy
+                                    {
+                                        WriteMemory(0x10f78, 32, binPtr);
+                                    }
+                                    else
+                                    {
+                                        WriteMemory(0x10f78, 144, binPtr);
                                     }
                                 }
                             }
@@ -1705,6 +1726,7 @@ public class MemoryManipulator
     private void SetFlagRemoveHexagonGear() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0001));
     private void SetFlagRucksack() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0010));
     private void SetFlagSnowFireflyBox() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0100));
+    private void SetFlagGetwellPlant() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_1000));
 
     private void HandleRewind(int time)
     {
