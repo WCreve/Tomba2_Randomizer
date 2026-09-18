@@ -1,4 +1,5 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -41,6 +42,7 @@ public class MemoryManipulator
     private List<QueuedChange> writeQueueWarp;
     private List<QueuedChange> writeQueueSafe;
     private List<QueuedChange> writeQueuePopup;
+    private List<QueuedChange> writeQueueActor;
 
     private Randomizer randomizer;
 
@@ -111,6 +113,7 @@ public class MemoryManipulator
             writeQueueWarp = new List<QueuedChange>();
             writeQueueSafe = new List<QueuedChange>();
             writeQueuePopup = new List<QueuedChange>();
+            writeQueueActor = new List<QueuedChange>();
 
             Task.Run(CheckForUpdates);
             Task.Run(PerformChecks);
@@ -645,7 +648,7 @@ public class MemoryManipulator
                             case 45: //big sack
                                 if (ReadMemory(0xf870) == 4) //in kujara ranch
                                 {
-                                    var bigSackActor = AllocateActorPool1(); //make big sack appear on back
+                                    var bigSackActor = AllocateActorPool(1); //make big sack appear on back
                                     WriteMemory(bigSackActor + 2, 0x12);
                                     WriteMemory(bigSackActor + 3, 0);
                                     WriteMemory(bigSackActor + 0x1c, BitConverter.GetBytes(0x8011b674));
@@ -656,7 +659,7 @@ public class MemoryManipulator
                             case 50: //paon grass
                                 if (ReadMemory(0xf870) == 7) //in circus village
                                 {
-                                    var paonGrassActor = AllocateActorPool1(); //make paon grass appear on back
+                                    var paonGrassActor = AllocateActorPool(1); //make paon grass appear on back
                                     WriteMemory(paonGrassActor + 2, 0x12);
                                     WriteMemory(paonGrassActor + 3, 0);
                                     WriteMemory(paonGrassActor + 0x1c, BitConverter.GetBytes(0x80117680));
@@ -980,133 +983,133 @@ public class MemoryManipulator
                                         WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
                                     }
                                 }
-                            break;  
+                            break;
 
                         case 5:
-                            if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 20) //pham room
-                            {
-                                WriteMemory(0xf9c6, 22);
-                                WriteMemory(0xf8b0, [24, 1, 1]);
+                                if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 20) //pham room
+                                {
+                                    WriteMemory(0xf9c6, 22);
+                                    WriteMemory(0xf8b0, [24, 1, 1]);
 
-                                var item = randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value;
-                                QueueCustomPopup("{O}Pham{W} gives you " + (item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}") + item.DisplayName + "{W}!");
-                                
+                                    var item = randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value;
+                                    QueueCustomPopup("{O}Pham{W} gives you " + (item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}") + item.DisplayName + "{W}!");
+
+                                }
+                                break;
+
+                            case 6:
+                                if (enteringInterior[0] == 4) //rock crab room
+                                {
+                                    if (enteringInterior[1] == 2 && ReadMemory(0xfa22) == 48 && ReadMemory(0xf9e2) == 0 && ReadMemory(0xf839) == 0)
+                                    {
+                                        WriteMemory(0xf9e2, 1);
+
+                                        if (ReadMemory(0xfae5) == 1)
+                                        {
+                                            WriteMemory(0xfa22, 51);
+                                            RemoveItemWithMessage(49, 1);
+                                            WriteMemory(0xf8b0, [25, 1, 1]);
+
+                                            var item = randomizer.RandomizedItems.First(r => r.Key.InternalId == 25).Value;
+                                            QueueCustomPopup("You're given " + (item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}") + item.DisplayName + "{W}!");
+                                        }
+                                        else
+                                        {
+                                            QueueCustomPopup("Bring a {P}Rock Crab{W} here!");
+                                        }
+                                    }
+                                    else if (enteringInterior[1] == 3)
+                                    {
+                                        interiorTransition = true;
+                                        WriteMemory(0xf9e2, 0);
+                                    }
+                                }
+                                break;
+
+                            case 7:
+                                if (enteringInterior[0] == 7) //triangle gear interior
+                                {
+                                    if (enteringInterior[1] == 1) //entering
+                                    {
+                                        interiorTransition = true;
+
+                                        if (ReadMemory(0xf8d8) == 1 && ReadMemory(0xfada) == 1) //player has triangle gear but hasn't picked up the object
+                                        {
+                                            WriteMemory(0xf8d8, 255); //temporarly set gear pickup event to completed 
+                                            WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 1)); //to revert the event flag when leaving
+                                        }
+                                        else if (ReadMemory(0xf8d8) == 255 && ReadMemory(0xfada) == 0) //player has picked up object but does not have triangle gear
+                                        {
+                                            WriteMemory(0xf8d8, 1);
+                                            WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 1));
+                                        }
+                                    }
+                                    else if (enteringInterior[1] == 3) //leaving
+                                    {
+                                        interiorTransition = true;
+
+                                        if ((ReadMemory(0xf9e2) & 1) == 1)
+                                        {
+                                            WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(1 << 0)));
+                                            WriteMemory(0xf8d8, (byte)(ReadMemory(0xf8d8) == 255 ? 1 : 255)); //flip gear pickup event state
+                                        }
+                                    }
+                                }
+                                else if (enteringInterior[0] == 6) //paon interior
+                                {
+                                    if (enteringInterior[1] == 1) //entering
+                                    {
+                                        interiorTransition = true;
+
+                                        if (ReadMemory(0xf8db) == 1 && ReadMemory(0xfae6) != 1) //player has talked to pig elder about the well, lid is not lifted and player does not have paon grass
+                                        {
+                                            WriteMemory(0x4bca0, 3); //remove pig NPC that starts paon sequence
+                                            WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 2)); //to revert the event flag when leaving
+                                        }
+                                    }
+                                    else if (enteringInterior[1] == 3) //leaving
+                                    {
+                                        interiorTransition = true;
+
+                                        if ((ReadMemory(0xf9e2) & 2) == 2)
+                                        {
+                                            WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(2 << 0)));
+                                            WriteMemory(0x4bca0, 131);
+                                        }
+                                    }
+                                }
+                                break;
+
+                            case 8:
+                                if (enteringInterior[0] == 2)
+                                {
+                                    if (enteringInterior[1] == 1)
+                                    {
+                                        interiorTransition = true;
+
+                                        if (ReadMemory(0xfac4) == 0)
+                                        {
+                                            WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 244, 48, 73, 71, 251, 51, 85, 73, 84, 240, 1, 255], binPtr); //"You need a Pig Suit!" string
+                                            WriteMemory(0x21428, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36], binPtr);
+                                            WriteMemory(0x21434, new byte[28], binPtr);
+                                            WriteMemory(0x21454, [0, 0, 2, 36], binPtr);
+                                        }
+                                        else
+                                        {
+                                            WriteMemory(0x21428, [1, 0, 4, 36, 213, 8, 1, 12, 2, 0, 5, 36, 33, 32, 0, 2, 10, 128, 5, 60, 90, 3, 1, 12, 112, 61, 165, 36, 2, 0, 2, 36, 112, 0, 2, 162, 7, 0, 2, 36, 111, 197, 4, 8, 6, 0, 0, 162], binPtr);
+                                        }
+                                    }
+                                    else if (enteringInterior[1] == 3 && ReadMemory(0xf9e2) == 1)
+                                    {
+                                        interiorTransition = true;
+
+                                        WriteMemory(0xfa3f, (byte)(ReadMemory(0xfa3f) | 32));
+                                        WriteMemory(0xf9e2, 0);
+                                    }
+                                }
+
+                                break;
                             }
-                            break;
-
-                        case 6:
-                            if (enteringInterior[0] == 4) //rock crab room
-                            {
-                                if (enteringInterior[1] == 2 && ReadMemory(0xfa22) == 48 && ReadMemory(0xf9e2) == 0 && ReadMemory(0xf839) == 0)
-                                {
-                                    WriteMemory(0xf9e2, 1);
-
-                                    if (ReadMemory(0xfae5) == 1)
-                                    {
-                                        WriteMemory(0xfa22, 51);
-                                        RemoveItemWithMessage(49, 1);
-                                        WriteMemory(0xf8b0, [25, 1, 1]);
-
-                                        var item = randomizer.RandomizedItems.First(r => r.Key.InternalId == 25).Value;
-                                        QueueCustomPopup("You're given " + (item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}") + item.DisplayName + "{W}!");
-                                    }
-                                    else
-                                    {
-                                        QueueCustomPopup("Bring a {P}Rock Crab{W} here!");
-                                    }
-                                }
-                                else if (enteringInterior[1] == 3)
-                                {
-                                    interiorTransition = true;
-                                    WriteMemory(0xf9e2, 0);
-                                }
-                            }
-                            break;
-
-                        case 7:
-                            if (enteringInterior[0] == 7) //triangle gear interior
-                            {
-                                if (enteringInterior[1] == 1) //entering
-                                {
-                                    interiorTransition = true;
-
-                                    if (ReadMemory(0xf8d8) == 1 && ReadMemory(0xfada) == 1) //player has triangle gear but hasn't picked up the object
-                                    {
-                                        WriteMemory(0xf8d8, 255); //temporarly set gear pickup event to completed 
-                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 1)); //to revert the event flag when leaving
-                                    }
-                                    else if (ReadMemory(0xf8d8) == 255 && ReadMemory(0xfada) == 0) //player has picked up object but does not have triangle gear
-                                    {
-                                        WriteMemory(0xf8d8, 1); 
-                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 1));
-                                    }
-                                }
-                                else if (enteringInterior[1] == 3) //leaving
-                                {
-                                    interiorTransition = true;
-
-                                    if ((ReadMemory(0xf9e2) & 1) == 1)
-                                    {
-                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(1 << 0)));
-                                        WriteMemory(0xf8d8, (byte)(ReadMemory(0xf8d8) == 255 ? 1 : 255)); //flip gear pickup event state
-                                    }
-                                }
-                            }
-                            else if (enteringInterior[0] == 6) //paon interior
-                            {
-                                if (enteringInterior[1] == 1) //entering
-                                {
-                                    interiorTransition = true;
-
-                                    if (ReadMemory(0xf8db) == 1 && ReadMemory(0xfae6) != 1) //player has talked to pig elder about the well, lid is not lifted and player does not have paon grass
-                                    {
-                                        WriteMemory(0x4bca0, 3); //remove pig NPC that starts paon sequence
-                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) | 2)); //to revert the event flag when leaving
-                                    }
-                                }
-                                else if (enteringInterior[1] == 3) //leaving
-                                {
-                                    interiorTransition = true;
-
-                                    if ((ReadMemory(0xf9e2) & 2) == 2)
-                                    {
-                                        WriteMemory(0xf9e2, (byte)(ReadMemory(0xf9e2) & ~(2 << 0)));
-                                        WriteMemory(0x4bca0, 131);
-                                    }
-                                }
-                            }
-                            break;
-
-                        case 8:
-                            if (enteringInterior[0] == 2)
-                            {
-                                if (enteringInterior[1] == 1)
-                                {
-                                    interiorTransition = true;
-
-                                    if (ReadMemory(0xfac4) == 0)
-                                    {
-                                        WriteMemory(0x50e08, [57, 79, 85, 251, 78, 69, 69, 68, 251, 65, 251, 244, 48, 73, 71, 251, 51, 85, 73, 84, 240, 1, 255], binPtr); //"You need a Pig Suit!" string
-                                        WriteMemory(0x21428, [90, 0, 4, 36, 101, 59, 1, 12, 41, 0, 5, 36], binPtr);
-                                        WriteMemory(0x21434, new byte[28], binPtr);
-                                        WriteMemory(0x21454, [0, 0, 2, 36], binPtr);
-                                    }
-                                    else
-                                    {
-                                        WriteMemory(0x21428, [1, 0, 4, 36, 213, 8, 1, 12, 2, 0, 5, 36, 33, 32, 0, 2, 10, 128, 5, 60, 90, 3, 1, 12, 112, 61, 165, 36, 2, 0, 2, 36, 112, 0, 2, 162, 7, 0, 2, 36, 111, 197, 4, 8, 6, 0, 0, 162], binPtr);
-                                    }
-                                }
-                                else if (enteringInterior[1] == 3 && ReadMemory(0xf9e2) == 1)
-                                {
-                                    interiorTransition = true;
-
-                                    WriteMemory(0xfa3f, (byte)(ReadMemory(0xfa3f) | 32));
-                                    WriteMemory(0xf9e2, 0);
-                                }
-                            }
-
-                            break;
-                    }
                 }
                 else if (enteringInterior[1] == 2 || enteringInterior[1] == 4) interiorTransition = false;
 
@@ -1171,6 +1174,45 @@ public class MemoryManipulator
                 if (!isWarping && ReadTimer() > 0)
                 {
                     warping = false;
+
+                    foreach (var item in writeQueueActor.Where(i => i.DequeueTimeStamp == 0))
+                    {
+                        item.DequeueTimeStamp = ReadTimer();
+
+                        var actorData = ReadMemory(item.ActorAddress, 20, binPtr);
+                        var actor = AllocateActorPool(2);
+                        WriteMemory(actor + 0x28, actorData[0]);
+                        WriteMemory(actor + 0x1c, actorData[16..20]);
+                        WriteMemory(actor + 2, actorData[8]);
+                        WriteMemory(actor + 3, actorData[9]);
+                        WriteMemory(actor + 0x2e, actorData[2]);
+                        WriteMemory(actor + 0x2f, actorData[3]);
+                        WriteMemory(actor + 0x32, actorData[4]);
+                        WriteMemory(actor + 0x33, actorData[5]);
+
+                        WriteMemory(actor + 0x36, actorData[6]);
+                        WriteMemory(actor + 0x37, actorData[7]);
+
+                        short value = BinaryPrimitives.ReadInt16LittleEndian(actorData[10..12]);
+
+                        ulong product = (ulong)((long)value * 0x1000L) * 0xB60B60B7UL;
+
+                        ushort result = (ushort)(
+                            ((long)(product >> 40) - (value >> 15)) & 0xFFF
+                        );
+
+                        WriteMemory(actor + 0x56, BitConverter.GetBytes(result));
+
+                        value = BinaryPrimitives.ReadInt16LittleEndian(actorData[12..14]);
+
+                        product = (ulong)((long)value * 0x1000L) * 0xB60B60B7UL;
+
+                        result = (ushort)(
+                            ((long)(product >> 40) - (value >> 15)) & 0xFFF
+                        );
+
+                        WriteMemory(actor + 0x58, BitConverter.GetBytes(result));
+                    }                    
 
                     Thread.Sleep(500);
 
@@ -1263,7 +1305,7 @@ public class MemoryManipulator
                     WriteMemory(0xf9e5, 7); //prevent crab basket from spawning and disable catching if it has already been picked up
                 }
 
-                
+
 
                 break;
 
@@ -1639,11 +1681,25 @@ public class MemoryManipulator
 
     }
 
-    private int AllocateActorPool1()
+    private int AllocateActorPool(byte pool)
     {
-        var poolHead = GetAddressPointer(0x380a0);
+        int poolHeadAddr = 0, poolCountAddr = 0;
+
+        switch (pool)
+        {
+            case 1:
+                poolHeadAddr = 0x380a0;
+                poolCountAddr = 0x37e7d;
+                break;
+            case 2:
+                poolHeadAddr = 0x42398;
+                poolCountAddr = 0x3d8cc;
+                break;
+        }
+
+        var poolHead = GetAddressPointer(poolHeadAddr);
         var uVar5 = GetAddressPointer((int)(poolHead - 0x800b0000 + 0x24));
-        WriteMemory(0x37e7d, (byte)(ReadMemory(0x37e7d) - 1));
+        WriteMemory(poolCountAddr, (byte)(ReadMemory(poolCountAddr) - 1));
 
         var piVar4 = 0x4239c;
         var piVar6 = 0x42624;
@@ -1711,6 +1767,7 @@ public class MemoryManipulator
         writeQueueSafe.RemoveAll(i => i.EnqueueTimeStamp > time);
         writeQueueWarp.RemoveAll(i => i.EnqueueTimeStamp > time);
         writeQueuePopup.RemoveAll(i => i.EnqueueTimeStamp > time);
+        writeQueueActor.RemoveAll(i => i.EnqueueTimeStamp > time);
 
         foreach (var item in writeQueueSafe.Where(i => i.DequeueTimeStamp != 0))
         {
@@ -1729,6 +1786,14 @@ public class MemoryManipulator
         }
 
         foreach (var item in writeQueuePopup.Where(i => i.DequeueTimeStamp != 0))
+        {
+            if (time < item.DequeueTimeStamp)
+            {
+                item.DequeueTimeStamp = 0;
+            }
+        }
+
+        foreach (var item in writeQueueActor.Where(i => i.DequeueTimeStamp != 0))
         {
             if (time < item.DequeueTimeStamp)
             {
@@ -1755,6 +1820,8 @@ public class MemoryManipulator
 
     public void Enqueue(List<QueuedChange> queue, int address, byte[] values) => Enqueue(queue, address, values, basePtr);
 
+    public void EnqueueActor(int address) => writeQueueActor.Add(new QueuedChange(ReadTimer(), address));
+
     private void ClearQueueHistories()
     {
         while (ProcessIsActive)
@@ -1762,6 +1829,7 @@ public class MemoryManipulator
             writeQueueSafe.RemoveAll(i => i.DequeueTimeStamp != 0 && igt - i.DequeueTimeStamp > 50000);
             writeQueueWarp.RemoveAll(i => i.DequeueTimeStamp != 0 && igt - i.DequeueTimeStamp > 50000);
             writeQueuePopup.RemoveAll(i => i.DequeueTimeStamp != 0 && igt - i.DequeueTimeStamp > 50000);
+            writeQueueActor.RemoveAll(i => i.DequeueTimeStamp != 0 && igt - i.DequeueTimeStamp > 50000);
 
             Thread.Sleep(10000);
         }

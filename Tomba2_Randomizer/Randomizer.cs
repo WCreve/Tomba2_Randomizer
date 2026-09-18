@@ -13,7 +13,7 @@ namespace Tomba2_Randomizer
         private Dictionary<int, Item> allItems;
         private Dictionary<int, Item> notRandomItems;
 
-        Random r = new();
+        Random r;
 
         private Dictionary<(Item Pickup, Item Reward), HashSet<Item>> hypotheticalUnlockCache = new();
 
@@ -182,9 +182,16 @@ namespace Tomba2_Randomizer
             }
         }
 
+        public int Seed { get; private set; }
 
-        public void Randomize()
+        public void Randomize() => Randomize((int)DateTime.Now.Ticks);
+
+        public void Randomize(int seed)
         {
+            Seed = seed;
+
+            r = new(seed);
+
             RandomizedItems = [];
             hypotheticalUnlockCache.Clear();
             UpdateItems();

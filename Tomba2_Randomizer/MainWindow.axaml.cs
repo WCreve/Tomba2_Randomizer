@@ -41,6 +41,10 @@ public partial class MainWindow : Window
 
     private Button selectedButton;
 
+    private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "T2Random", "data.json");
+    private AppData appData;
+
+
     public MainWindow()
     {
         InitializeComponent();
@@ -95,6 +99,15 @@ public partial class MainWindow : Window
         CmbAreas.SelectedIndex = 0;
         CmbSections.SelectedIndex = 0;
         CmbItems.ItemsSource = itemDtosGUI.OrderBy(i => i.GUIName).ToList();
+
+        if (!File.Exists(AppDataPath)) appData = new AppData();
+        else
+        {
+            var json = File.ReadAllText(AppDataPath);
+            appData = JsonSerializer.Deserialize<AppData>(json) ?? new AppData();
+        }
+
+        UpdateRecentSeeds();
 
         InitializeEvents();
         InitializeProgressGrid();
@@ -648,84 +661,60 @@ public partial class MainWindow : Window
 
     private async void BtnNewRandom_OnClick(object? sender, RoutedEventArgs e)
     {
-        var timestamp = ((int)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds).ToString();
+        var seed = 0;
 
-        var topLevel = GetTopLevel(this);
-
-        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        if (ChkUseSeed.IsChecked == true && (TxtSeed.Text == null || !int.TryParse(TxtSeed.Text.Trim(), out seed)))
         {
-            Title = "Save seed",
-            FileTypeChoices = [FilePickerFileTypes.TextPlain],
-            SuggestedFileName = timestamp
-        });
+            var box = MessageBoxManager.GetMessageBoxStandard("Error", "Invalid Seed");
 
-        if (file is not null)
-        {
-            await using var stream = await file.OpenWriteAsync();
-            using var streamWriter = new StreamWriter(stream);
-
-            BtnNewRandom.Content = "Randomizing...";
-            LblRandomizer.Content = "No randomizer loaded.";
-
-            BtnNewRandom.IsEnabled = false;
-            BtnLoadRandom.IsEnabled = false;
-            ChkDebug.IsEnabled = false;
-
-            randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
-            await Task.Run(async () => randomizer.Randomize());
-            var output = "";
-            foreach (var item in randomizer.RandomizedItems)
-            {
-                output += $"{item.Key.Id},{item.Value.Id}|";
-            }
-            output = output.Remove(output.Length - 1);
-            if (ChkDebug.IsChecked == true) output += "\n\n" + randomizer.DebugString;
-            await streamWriter.WriteAsync(output);
-
-            if (memory != null) memory.SetupRandomizer(randomizer);
-
-            BtnNewRandom.Content = "New Randomization";
-            LblRandomizer.Content = "Randomizer ready!";
-
-            BtnNewRandom.IsEnabled = true;
-            BtnLoadRandom.IsEnabled = true;
-            ChkDebug.IsEnabled = true;
+            await box.ShowAsync();
+            return;
         }
-    }
 
-    private async void BtnLoadRandom_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var topLevel = GetTopLevel(this);
+        BtnNewRandom.Content = "Randomizing...";
+        LblRandomizer.Content = "No randomizer loaded.";
 
-        var file = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        BtnNewRandom.IsEnabled = false;
+        ChkDebug.IsEnabled = false;
+
+        randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
+        if (ChkUseSeed.IsChecked == false) await Task.Run(async () => randomizer.Randomize());
+        else await Task.Run(async () => randomizer.Randomize(seed));
+
+        if (ChkDebug.IsChecked == true)
         {
-            Title = "Open Text File",
-            AllowMultiple = false,
-            FileTypeFilter = [FilePickerFileTypes.TextPlain]
-        });
+            var topLevel = GetTopLevel(this);
 
-        if (file.Count == 1)
-        {
-            await using var stream = await file[0].OpenReadAsync();
-            using var streamReader = new StreamReader(stream);
-
-            var itemString = await streamReader.ReadLineAsync();
-
-            try
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
-                randomizer.Randomize(itemString);
-                if (memory != null) memory.SetupRandomizer(randomizer);
-                LblRandomizer.Content = "Randomizer ready!";
-            }
-            catch (Exception)
-            {
-                var box = MessageBoxManager
-                    .GetMessageBoxStandard("Error", "Invalid file");
+                Title = "Save item list file",
+                FileTypeChoices = [FilePickerFileTypes.TextPlain],
+                SuggestedFileName = $"{randomizer.Seed}_items"
+            });
 
-                await box.ShowAsync();
+            if (file is not null)
+            {
+                await using var stream = await file.OpenWriteAsync();
+                using var streamWriter = new StreamWriter(stream);
+
+                var output = randomizer.DebugString;
+                await streamWriter.WriteAsync(output);
             }
         }
+
+        if (memory != null) memory.SetupRandomizer(randomizer);
+
+        BtnNewRandom.Content = "Randomize";
+        LblRandomizer.Content = $"Randomizer ready! Current seed: {randomizer.Seed.ToString()}";
+
+        BtnNewRandom.IsEnabled = true;
+        ChkDebug.IsEnabled = true;
+
+        var existingSeed = appData.SeedHistory.FirstOrDefault(s => s.Seed == randomizer.Seed);
+        if (existingSeed == null) appData.SeedHistory.Add(new RandomizerSeed(randomizer.Seed, DateTime.Now.Ticks));
+        else existingSeed.Timestamp = DateTime.Now.Ticks;
+        SaveAppData();
+        UpdateRecentSeeds();
     }
 
     private async void BtnJsonDeserializer_Click(object? sender, RoutedEventArgs e)
@@ -807,5 +796,45 @@ public partial class MainWindow : Window
 
             await streamWriter.WriteAsync(output);
         }
+    }
+
+    private void UpdateRecentSeeds()
+    {
+        CmbRecentSeeds.ItemsSource = appData.GetRecentSeeds();
+        CmbRecentSeeds.SelectedIndex = -1;
+    }
+
+    private void SaveAppData()
+    {
+        var directory = Path.GetDirectoryName(AppDataPath)!;
+        Directory.CreateDirectory(directory);
+
+        var json = JsonSerializer.Serialize(appData, new JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
+        File.WriteAllText(AppDataPath, json);
+    }
+
+    private void CmbRecentSeeds_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (CmbRecentSeeds == null || CmbRecentSeeds.SelectedItem == null) return;
+
+        var selectedSeed = CmbRecentSeeds.SelectedValue;
+        if (selectedSeed != null)
+        {
+            TxtSeed.Text = ((RandomizerSeed)selectedSeed).Seed.ToString();
+
+            CmbRecentSeeds.SelectedIndex = -1;
+        }
+    }
+
+    private void ChkUseSeed_IsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        TxtSeed.IsEnabled = ChkUseSeed.IsChecked == true;
+        LblRecentSeeds.IsVisible = ChkUseSeed.IsChecked == true;
+        CmbRecentSeeds.IsVisible = ChkUseSeed.IsChecked == true;
+
+        TxtSeed.Clear();
     }
 }

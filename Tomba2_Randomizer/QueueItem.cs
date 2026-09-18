@@ -24,11 +24,19 @@ namespace Tomba2_Randomizer
             Text = text;
         }
 
+        public QueuedChange(int timeStamp, int actorAddress)
+        {
+            EnqueueTimeStamp = timeStamp;
+            ActorAddress = actorAddress;
+        }
+
         public int EnqueueTimeStamp { get; private set; }
 
         public int DequeueTimeStamp { get; set; }
 
         public string Text { get; set; }
+
+        public int ActorAddress { get; set; }
 
         public List<AddressValuePair> AddressValuePairs { get; private set; }
     }
