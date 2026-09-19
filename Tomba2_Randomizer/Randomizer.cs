@@ -171,6 +171,8 @@ namespace Tomba2_Randomizer
 
         public Dictionary<Item, Item> RandomizedItems { get; set; }
 
+        public RandomizerSettings Settings { get; set; }
+
         public Dictionary<byte, Event> Events
         {
             get
@@ -181,6 +183,8 @@ namespace Tomba2_Randomizer
                 );
             }
         }
+
+        public byte[] MusicTracks { get; private set; } = [0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 20, 24, 25, 26, 27, 32, 33, 34, 40, 41, 42, 48, 56];
 
         public int Seed { get; private set; }
 
@@ -283,6 +287,12 @@ namespace Tomba2_Randomizer
             {
                 DebugString += $"{pair.Key.Name} gives {pair.Value.Name}\n";
             }
+
+            if (Settings.ShuffleMusic)
+            {
+                ShuffleMusic();
+            }
+
         }
 
         private class PlacementStep
@@ -449,5 +459,7 @@ namespace Tomba2_Randomizer
 
             return unlocks;
         }
+
+        private void ShuffleMusic() => r.Shuffle(MusicTracks);
     }
 }

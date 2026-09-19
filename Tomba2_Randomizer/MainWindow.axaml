@@ -27,6 +27,9 @@
                     </ComboBox>
                     
                     <!--<Button Name="BtnJsonDeserializer" Content="dump info" FontSize="24" Canvas.Left="28" Canvas.Top="276" Height="58" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnJsonDeserializer_Click"/>-->
+
+                    <CheckBox Name="ChkSettingMusic" Content="Shuffle music" Margin="400, 200, 0, 0"></CheckBox>
+
                 </Canvas>
             </TabItem>
             <TabItem IsEnabled="false" Header="Inventory" Name="TabInventory" Height="20" VerticalAlignment="Top">

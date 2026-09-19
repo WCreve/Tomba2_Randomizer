@@ -161,6 +161,8 @@ public class MemoryManipulator
 
         AddItemWithoutMessage(96, 80); //give 80 magic wings
 
+        if (randomizer.Settings.ShuffleMusic) ShuffleMusic();
+
         WriteMemory(0xf8b3, 1); //initialized
     }
 
@@ -1761,6 +1763,32 @@ public class MemoryManipulator
     private void SetFlagRemoveHexagonGear() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0001));
     private void SetFlagRucksack() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0010));
     private void SetFlagSnowFireflyBox() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0100));
+
+    private void ShuffleMusic()
+    {
+        var tracks = randomizer.MusicTracks.ToList();
+
+        WriteMemory(0x64f50, tracks.GetRange(0, 10).ToArray(), globalPtr);
+        WriteMemory(0x64f68, tracks[0], globalPtr);
+        WriteMemory(0x64f6b, tracks[3], globalPtr);
+        WriteMemory(0x64f69, tracks[9], globalPtr);
+        WriteMemory(0x64f71, tracks[9], globalPtr);
+        WriteMemory(0x64f5a, Enumerable.Repeat(tracks[10], 5).ToArray(), globalPtr);
+        WriteMemory(0x64f72, Enumerable.Repeat(tracks[10], 5).ToArray(), globalPtr);
+        WriteMemory(0x64f5f, tracks[11], globalPtr);
+        WriteMemory(0x64f77, tracks[11], globalPtr);
+        WriteMemory(0x64f60, Enumerable.Repeat(tracks[12], 4).ToArray(), globalPtr);
+        WriteMemory(0x64f78, Enumerable.Repeat(tracks[12], 4).ToArray(), globalPtr);
+        WriteMemory(0x64f64, tracks[13], globalPtr);
+        WriteMemory(0x64f7c, tracks[13], globalPtr);
+        WriteMemory(0x64f6a, tracks[14], globalPtr);
+        WriteMemory(0x64f6c, tracks.GetRange(15, 5).ToArray(), globalPtr);
+        WriteMemory(0x34f6c, tracks[20], globalPtr);
+        WriteMemory(0x34fb8, tracks[21], globalPtr);
+        WriteMemory(0x34fc0, tracks[22], globalPtr);
+        WriteMemory(0x3502c, tracks[23], globalPtr);
+        WriteMemory(0x35040, tracks[24], globalPtr);
+    }
 
     private void HandleRewind(int time)
     {

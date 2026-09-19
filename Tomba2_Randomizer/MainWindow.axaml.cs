@@ -678,6 +678,8 @@ public partial class MainWindow : Window
         ChkDebug.IsEnabled = false;
 
         randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
+        randomizer.Settings = SetRandomizerSettings();
+
         if (ChkUseSeed.IsChecked == false) await Task.Run(async () => randomizer.Randomize());
         else await Task.Run(async () => randomizer.Randomize(seed));
 
@@ -796,6 +798,15 @@ public partial class MainWindow : Window
 
             await streamWriter.WriteAsync(output);
         }
+    }
+
+    private RandomizerSettings SetRandomizerSettings()
+    {
+        var settings = new RandomizerSettings
+        {
+            ShuffleMusic = ChkSettingMusic.IsChecked == true
+        };
+        return settings;
     }
 
     private void UpdateRecentSeeds()
