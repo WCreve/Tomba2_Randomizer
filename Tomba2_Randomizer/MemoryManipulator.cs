@@ -171,8 +171,6 @@ public class MemoryManipulator
                 if (ReadMemory(0x19b, spPtr) == 1) //finished loading
                 {
                     if (ReadMemory(0xf8b3) == 0) InitializeGame();
-                    WriteMemory(0xf8ad, [1, 1, 1]); //re-enable T1 events because LRG's fix for these events is weird
-                    WriteMemory(0xf8ac, (byte)(ReadMemory(0xf8c8) == 255 ? 1 : 0)); //enable dwarf event if big sack event completed
                     loadedBin = currentBin;
                     EditBinMemory();
                 }
@@ -203,10 +201,6 @@ public class MemoryManipulator
 
                     switch (itemPickedUp[0]) //item collected pre-randomization
                     {
-                        case 7: //fire hammer
-                            WriteMemory(0xf8ac, 1); //enable Tomba 1 dwarf event
-                            break;
-
                         case 11: //pants collected
                         case 12:
                             newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == (ReadMemory(0xf870) == 0 ? 11 : 12)).Value.InternalId; //check which pants you're picking up based on current area
