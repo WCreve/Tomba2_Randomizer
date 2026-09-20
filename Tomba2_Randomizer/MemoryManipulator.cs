@@ -1474,6 +1474,9 @@ public class MemoryManipulator
                 if ((ReadMemory(0xf9c1) & 32) == 32) WriteMemory(0x11e3c, 2); //disable clear fruit pickup
                 if (ReadMemory(0xf8cd) != 255) WriteMemory(0x14074, 3, binPtr); //disable lift to summit if static explosion not completed
 
+                WriteMemory(0x2a884, [82, 1, 98, 144, 0, 0, 0, 0, 4, 0, 66, 48, 6, 0, 64, 16, 4, 0, 2, 36, 128, 234, 4, 8, 5, 0, 34, 162], binPtr); //custom snow firefly box check code
+                WriteMemory(0x8cc0, [12, 128, 2, 60, 112, 248, 67, 36, 82, 1, 98, 144, 0, 0, 0, 0, 4, 0, 66, 48, 6, 0, 64, 16, 12, 0, 5, 36, 0, 0, 0, 0], binPtr); //custom snow firefly box check code
+
                 //custom tiny pig tracking
                 WriteMemory(0x2b610, [153, 1], binPtr);
                 WriteMemory(0x2b61c, 8, binPtr);
