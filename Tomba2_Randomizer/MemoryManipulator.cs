@@ -1419,6 +1419,8 @@ public class MemoryManipulator
                     WriteMemory(0x10fd8, [12, 128, 3, 60, 1, 0, 2, 36, 241, 249, 98, 160, 0, 0, 2, 36, 5, 0, 98, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr);
                 }
 
+                WriteMemory(0xe524, 17, binPtr); //skip trolley completion check so you can still get trolley ticket from man if you've already done the trolley
+
                 break;
             case 3:
                 WriteMemory(-0x44c4, [49, 53], binPtr); //custom seeds of strength pickup logic
