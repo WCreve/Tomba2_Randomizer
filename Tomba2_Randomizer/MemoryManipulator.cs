@@ -974,7 +974,16 @@ public class MemoryManipulator
                                         WriteMemory(0xf9e2, [0, (byte)((tempCrabInfo[1] & 0xF0) | (tempCrabInfo[0] & 0x0F))]);
                                     }
                                 }
-                            break;  
+                            break;
+
+                        case 1:
+                            if (enteringInterior[0] == 4 && enteringInterior[1] == 1) //laughing room
+                            {
+                                interiorTransition = true;
+
+                                ClearLaughingCryingStatus(true);
+                            }
+                            break;
 
                         case 5:
                             if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 20) //pham room
@@ -985,6 +994,12 @@ public class MemoryManipulator
                                 var item = randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value;
                                 QueueCustomPopup("{O}Pham{W} gives you " + (item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}") + item.DisplayName + "{W}!");
                                 
+                            }
+                            else if (enteringInterior[0] == 6 && enteringInterior[1] == 1) //crying room
+                            {
+                                interiorTransition = true;
+
+                                ClearLaughingCryingStatus(false);
                             }
                             break;
 
@@ -1045,6 +1060,12 @@ public class MemoryManipulator
                                         WriteMemory(0xf8d8, (byte)(ReadMemory(0xf8d8) == 255 ? 1 : 255)); //flip gear pickup event state
                                     }
                                 }
+                            }
+                            else if (enteringInterior[0] == 5 && enteringInterior[1] == 1) //laughing room
+                            {
+                                interiorTransition = true;
+
+                                ClearLaughingCryingStatus(true);
                             }
                             else if (enteringInterior[0] == 6) //paon interior
                             {
@@ -1113,6 +1134,12 @@ public class MemoryManipulator
                                     WriteMemory(0xfa3f, (byte)(ReadMemory(0xfa3f) | 32));
                                     WriteMemory(0xf9e2, 0);
                                 }
+                            }
+                            else if (enteringInterior[0] == 4 && enteringInterior[1] == 1)
+                            {
+                                interiorTransition = true;
+
+                                ClearLaughingCryingStatus(false);
                             }
 
                             break;
@@ -1707,6 +1734,37 @@ public class MemoryManipulator
             case 8:
                 if (id == 24) WriteMemory(0x4e74d, 2);
                 break;
+        }
+    }
+
+    private void ClearLaughingCryingStatus(bool laughing)
+    {
+        if ((ReadMemory(0xfe51) & 4) == 0 && ReadMemory(0xfb1f) == 0)
+        {
+            //clear laughing/crying status if player has no means of clearing it without dying.
+            //if the player has at least 1/4 of a full magic gauge they will lose up to half their juice, otherwise they become covered in oil
+
+            var popupString = "You suddenly {O}stop " + (laughing ? "laughing" : "crying") + "{W}...{n}";
+
+            var magicJuice = ReadMemory(0xf87e, 2);
+
+            var status = ReadMemory(0xf881) - (laughing ? 1 : 2);
+            if (magicJuice[0] < magicJuice[1] / 4)
+            {
+                if ((status & 8) == 0) status += 8;
+                WriteMemory(0x37e8d, (byte)(ReadMemory(0x37e8d) | 66)); 
+                popupString += "But become {O}covered in oil{W}!";
+            }
+            else
+            {
+                var newMagicJuice = magicJuice[0] / 2;
+                WriteMemory(0xf87e, (byte)(newMagicJuice >= 0 ? newMagicJuice : 0));
+                popupString += "At the cost of your {O}Magic Power{W}!";
+            }
+
+            WriteMemory(0xf881, (byte)status); //remove laughing/crying status
+            WriteMemory(0x37ff4, (byte)status);
+            QueueCustomPopup(popupString);
         }
     }
 
