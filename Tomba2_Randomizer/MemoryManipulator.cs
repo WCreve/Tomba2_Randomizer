@@ -1090,6 +1090,19 @@ public class MemoryManipulator
                                     }
                                 }
                             }
+                            else if (enteringInterior[0] == 8 && enteringInterior[1] == 1)
+                            {
+                                interiorTransition = true;
+
+                                if (ReadMemory(0xf935) != 255) //disable handing in tiny pigs if ice candy event not completed
+                                {
+                                    WriteMemory(-0xa0c8, 255, globalPtr);
+                                }
+                                else
+                                {
+                                    WriteMemory(-0xa0c8, 28, globalPtr);
+                                }
+                            }
                             else if (enteringInterior[0] == 11) //getwell interior
                             {
                                 if (enteringInterior[1] == 1) //entering
