@@ -513,11 +513,6 @@ public class MemoryManipulator
                             WriteMemory(0xf9ca, 9); //skip to level 10 kujara wash
                             break;
 
-                        case 108: //clear fruit
-                            SetFlagClearFuit();
-                            WriteMemory(0x11e3c, 2, binPtr); //disable clear fruit pickup
-                            break;
-
                         case 112: //1/2 spell of courage
                             newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf817) == 1 ? 106: 107)).Value.InternalId;
                             break;
@@ -1471,8 +1466,14 @@ public class MemoryManipulator
                 WriteMemory(0x50e54, [255, 52, 72, 69, 251, 243, 44, 73, 71, 72, 84, 13, 35, 85, 84, 84, 73], binPtr); //repair potential damage to a resource string
 
                 if ((ReadMemory(0xf9c1) & 64) == 0) WriteMemory(0x58a0, [75, 86, 4, 8], binPtr); //rock crab spawn
-                if ((ReadMemory(0xf9c1) & 32) == 32) WriteMemory(0x11e3c, 2); //disable clear fruit pickup
                 if (ReadMemory(0xf8cd) != 255) WriteMemory(0x14074, 3, binPtr); //disable lift to summit if static explosion not completed
+
+                WriteMemory(0x11e0c, [193, 249, 66, 144], binPtr); //custom clear fruit code
+                WriteMemory(0x11e14, 32, binPtr);
+                WriteMemory(0x11e28, new byte[4], binPtr);
+                WriteMemory(0x11e58, [185, 1, 98, 144], binPtr);
+                WriteMemory(0x11e60, 32, binPtr);
+                WriteMemory(0x11e68, [185, 1, 98, 160], binPtr);
 
                 WriteMemory(0x2a884, [82, 1, 98, 144, 0, 0, 0, 0, 4, 0, 66, 48, 6, 0, 64, 16, 4, 0, 2, 36, 128, 234, 4, 8, 5, 0, 34, 162], binPtr); //custom snow firefly box check code
                 WriteMemory(0x8cc0, [12, 128, 2, 60, 112, 248, 67, 36, 82, 1, 98, 144, 0, 0, 0, 0, 4, 0, 66, 48, 6, 0, 64, 16, 12, 0, 5, 36, 0, 0, 0, 0], binPtr); //custom snow firefly box check code
