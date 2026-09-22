@@ -418,10 +418,11 @@ public class MemoryManipulator
                             }
                             else //trolley reaches goal, give items
                             {
+                                itemPickedUp[2] = 1;
                                 while (sessionSeedsCollected != 0)
                                 {
                                     int seedNumber = BitOperations.TrailingZeroCount(sessionSeedsCollected);
-                                    AddItemWithoutMessage(randomizer.RandomizedItems.First(r => r.Key.Id == 58 + seedNumber).Value.InternalId, 1);
+                                    AddRandomItemToInventory(randomizer.RandomizedItems.First(r => r.Key.Id == 58 + seedNumber).Value.InternalId, itemPickedUp);
 
                                     sessionSeedsCollected &= (byte)(sessionSeedsCollected - 1);
                                 }
@@ -481,7 +482,7 @@ public class MemoryManipulator
                                 AddItemWithoutMessage(97, 1);
                                 custom = true;
                             }
-                            else if (!(ReadMemory(0xf870) == 1)) //blue bucket reward from trolley does get randomized
+                            else if (!((ReadMemory(0xf870) == 1) && ReadMemory(0xf817) == 2)) //blue bucket reward from trolley does get randomized
                             {
                                 AddItemWithMessage(97, 1);
                                 custom = true;
@@ -548,222 +549,8 @@ public class MemoryManipulator
 
                     if (!custom)
                     {
-                        switch (newItemId)
-                        {
-                            case 1: //weapons
-                            case 2:
-                            case 3:
-                            case 4:
-                            case 5:
-                            case 6:
-                            case 7:
-                            case 8:
-                            case 9:
-                                WriteMemory(0xf88c, newItemId); //auto-equip weapon
-                                WriteMemory(0x37eec, newItemId);
-                                break;
+                        AddRandomItemToInventory(newItemId, itemPickedUp);
 
-                            case 11: //pants
-                            case 12:
-                                var pantsFound = ReadMemory(0xf9cf);
-                                newItemId = (byte)(pantsFound == 0 ? 11 : 12);
-
-                                WriteMemory(0xf9cf, ++pantsFound);
-                                break;
-
-                            case 18: //evil pig robes
-                            case 19:
-                            case 20:
-                            case 21:
-                            case 22:
-                                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 4 && ReadMemory(0xfad0) == 1) //allow unlocking door to ??? if this is your final evil pig robe and you have the last bag
-                                {
-                                    WriteMemory(0xa8b8, [6, 0, 37, 162, 1, 0, 4, 36, 213, 8, 1, 12, 33, 40, 128, 0], binPtr);
-                                }
-                                break;
-
-                            case 28: //last pig bag
-                                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 5) //allow unlocking door to ??? if you have all the pig bags
-                                {
-                                    WriteMemory(0xa8b8, [6, 0, 37, 162, 1, 0, 4, 36, 213, 8, 1, 12, 33, 40, 128, 0], binPtr);
-                                }
-                                break;
-
-                            case 37: //hexagon gear
-                                if ((ReadMemory(0xf9c2) & 1) == 1)
-                                {
-                                    QueueCustomPopup("{P}Hexagon Gear{W} obtained and used!");
-                                    WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) & ~(1 << 0)));
-                                    custom = true;
-                                }
-
-                                if (ReadMemory(0xf870) == 5) //in summit
-                                {
-                                    if (ReadMemory(0xf937) != 0 && (ReadMemory(0xfa4b) & 2) == 0) //allowed to recollect gears and hexagon gear has not been recollected
-                                    {
-                                        WriteMemory(0x4e268, 1); //enable recollecting hexagon gear
-                                        WriteMemory(0x182be, [80, 162], binPtr);
-                                    }
-                                }
-                                break;
-
-                            case 40: //random pink bucket received
-                                if (ReadMemory(0xf8b8) == 255 || ReadMemory(0xfb15) != 0) //give blue bucket instead of pink if Save the Crab is completed or if you already have a blue bucket
-                                {
-                                    newItemId = 97;
-                                }
-                                else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
-                                {
-                                    var bucketPairs = new List<AddressValuePair>
-                                        {
-                                            new AddressValuePair { Address = 0xf88e, Value = 40 },
-                                            new AddressValuePair { Address = 0xf81c, Value = 1 },
-                                            new AddressValuePair { Address = 0x37e85, Value = 17 }
-                                        };
-                                    Enqueue(writeQueueSafe, bucketPairs);
-                                }
-                                break;
-
-                            case 41: //crab basket
-                                WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6)); //enable crab catching unless all crabs have already been caught
-                                break;
-
-                            case 44: //trolley rail
-                                if (ReadMemory(0xf870) == 2) //in CMT
-                                {
-                                    WriteMemory(0x10fd8, [10, 128, 5, 60, 90, 3, 1, 12, 192, 60, 165, 36, 2, 0, 2, 36, 112, 0, 98, 162, 254, 131, 4, 8, 1, 0, 2, 36], binPtr); //re-enable trolley cutscene
-                                }
-
-                                break;
-
-                            case 45: //big sack
-                                if (ReadMemory(0xf870) == 4) //in kujara ranch
-                                {
-                                    var bigSackActor = AllocateActorPool1(); //make big sack appear on back
-                                    WriteMemory(bigSackActor + 2, 0x12);
-                                    WriteMemory(bigSackActor + 3, 0);
-                                    WriteMemory(bigSackActor + 0x1c, BitConverter.GetBytes(0x8011b674));
-                                    WriteMemory(bigSackActor + 0x28, (byte)(ReadMemory(bigSackActor + 0x28) | 0x80));
-                                }
-                                break;
-
-                            case 50: //paon grass
-                                if (ReadMemory(0xf870) == 7) //in circus village
-                                {
-                                    var paonGrassActor = AllocateActorPool1(); //make paon grass appear on back
-                                    WriteMemory(paonGrassActor + 2, 0x12);
-                                    WriteMemory(paonGrassActor + 3, 0);
-                                    WriteMemory(paonGrassActor + 0x1c, BitConverter.GetBytes(0x80117680));
-                                    WriteMemory(paonGrassActor + 0x28, (byte)(ReadMemory(paonGrassActor + 0x28) | 0x80));
-                                }
-                                break;
-
-                            case 52: //carpenter book
-                                if (ReadMemory(0xf870) == 7) //in circus village
-                                {
-                                    WriteMemory(0x19544, [64, 0, 0, 166, 118, 195, 4, 12, 4, 0, 4, 36, 81, 195, 4, 12], binPtr); //enable statue explosion cutscene
-                                }
-                                break;
-
-                            case 77: //chick food
-                                AddItemWithoutMessage(77, 2);
-                                QueuePopupMessage(87, 2, 66);
-                                custom = true;
-                                break;
-
-                            case 96: //magic wings
-                                if (itemPickedUp[1] == 2)
-                                {
-                                    AddItemWithoutMessage(96, 2);
-                                    QueuePopupMessage(137, 2, 66);
-                                    custom = true;
-                                }
-                                break;
-
-                            case 112: //spell of courage
-                                if (ReadMemory(0xfb24) == 0)
-                                {
-                                    AddItemWithoutMessage(112, 1);
-                                    QueueResourceMessage(STRING_COURAGE_HALF, 65);
-                                }
-                                else
-                                {
-                                    AddItemWithoutMessage(111, 1);
-                                    RemoveItemWithoutMessage(112, 1);
-                                    QueueResourceMessage(STRING_COURAGE_FULL, 65);
-                                }
-                                custom = true;
-                                break;
-                            case 114: //spell of strength
-                                if (ReadMemory(0xfb26) == 0)
-                                {
-                                    AddItemWithoutMessage(114, 1);
-                                    QueueResourceMessage(STRING_STRENGTH_HALF, 65);
-                                }
-                                else
-                                {
-                                    AddItemWithoutMessage(113, 1);
-                                    RemoveItemWithoutMessage(114, 1);
-                                    QueueResourceMessage(STRING_STRENGTH_FULL, 65);
-                                }
-                                custom = true;
-                                break;
-                            case 116: //spell of wisdom
-                                if (ReadMemory(0xfb28) == 0)
-                                {
-                                    AddItemWithoutMessage(116, 1);
-                                    QueueResourceMessage(STRING_WISDOM_HALF, 65);
-                                }
-                                else
-                                {
-                                    AddItemWithoutMessage(115, 1);
-                                    RemoveItemWithoutMessage(116, 1);
-                                    QueueResourceMessage(STRING_WISDOM_FULL, 65);
-                                }
-                                custom = true;
-                                break;
-
-                            case 124: //potato
-                                if (itemPickedUp[1] == 3)
-                                {
-                                    AddItemWithoutMessage(124, 3);
-                                    QueuePopupMessage(138, 2, 66);
-                                    custom = true;
-                                }
-                                break;
-
-                            case 160: //harp pieces
-                            case 161:
-                            case 162:
-                            case 163:
-                                var harpPieces = ReadMemory(0xfb54, 4);
-                                if (harpPieces.Count(c => c != 0) == 3)
-                                {
-                                    CompleteEvent(44);
-
-                                    AddItemWithMessage(newItemId, 1);
-
-                                    for (var i = 0; i < harpPieces.Length; i++)
-                                    {
-                                        RemoveItemWithoutMessage((byte)(i + 160), 1);
-                                    }
-
-                                    AddItemWithoutMessage(164, 1);
-                                    QueueResourceMessage(STRING_HARP, 65);
-
-                                    custom = true;
-                                }
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-
-                    if (!custom)
-                    {
-                        if (itemPickedUp[2] == 1) AddItemWithoutMessage(newItemId, 1);
-                        else AddItemWithMessage(newItemId, 1);
                     }
                 }
 
@@ -808,6 +595,229 @@ public class MemoryManipulator
         }
 
         IsActive = false;
+    }
+
+    private void AddRandomItemToInventory(byte itemId, byte[] itemPickedUp)
+    {
+        var custom = false;
+
+        switch (itemId)
+        {
+            case 1: //weapons
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                WriteMemory(0xf88c, itemId); //auto-equip weapon
+                WriteMemory(0x37eec, itemId);
+                break;
+
+            case 11: //pants
+            case 12:
+                var pantsFound = ReadMemory(0xf9cf);
+                itemId = (byte)(pantsFound == 0 ? 11 : 12);
+
+                WriteMemory(0xf9cf, ++pantsFound);
+                break;
+
+            case 18: //evil pig robes
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 4 && ReadMemory(0xfad0) == 1) //allow unlocking door to ??? if this is your final evil pig robe and you have the last bag
+                {
+                    WriteMemory(0xa8b8, [6, 0, 37, 162, 1, 0, 4, 36, 213, 8, 1, 12, 33, 40, 128, 0], binPtr);
+                }
+                break;
+
+            case 28: //last pig bag
+                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 5) //allow unlocking door to ??? if you have all the pig bags
+                {
+                    WriteMemory(0xa8b8, [6, 0, 37, 162, 1, 0, 4, 36, 213, 8, 1, 12, 33, 40, 128, 0], binPtr);
+                }
+                break;
+
+            case 37: //hexagon gear
+                if ((ReadMemory(0xf9c2) & 1) == 1)
+                {
+                    QueueCustomPopup("{P}Hexagon Gear{W} obtained and used!");
+                    WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) & ~(1 << 0)));
+                    custom = true;
+                }
+
+                if (ReadMemory(0xf870) == 5) //in summit
+                {
+                    if (ReadMemory(0xf937) != 0 && (ReadMemory(0xfa4b) & 2) == 0) //allowed to recollect gears and hexagon gear has not been recollected
+                    {
+                        WriteMemory(0x4e268, 1); //enable recollecting hexagon gear
+                        WriteMemory(0x182be, [80, 162], binPtr);
+                    }
+                }
+                break;
+
+            case 40: //random pink bucket received
+                if (ReadMemory(0xf8b8) == 255 || ReadMemory(0xfb15) != 0) //give blue bucket instead of pink if Save the Crab is completed or if you already have a blue bucket
+                {
+                    itemId = 97;
+                }
+                else if (ReadMemory(0xf870) == 0) //auto-equip pink bucket if in starting beach
+                {
+                    var bucketPairs = new List<AddressValuePair>
+                                        {
+                                            new AddressValuePair { Address = 0xf88e, Value = 40 },
+                                            new AddressValuePair { Address = 0xf81c, Value = 1 },
+                                            new AddressValuePair { Address = 0x37e85, Value = 17 }
+                                        };
+                    Enqueue(writeQueueSafe, bucketPairs);
+                }
+                break;
+
+            case 41: //crab basket
+                WriteMemory(0xf9e5, (byte)(ReadMemory(0xf8bb) == 255 ? 7 : 6)); //enable crab catching unless all crabs have already been caught
+                break;
+
+            case 44: //trolley rail
+                if (ReadMemory(0xf870) == 2) //in CMT
+                {
+                    WriteMemory(0x10fd8, [10, 128, 5, 60, 90, 3, 1, 12, 192, 60, 165, 36, 2, 0, 2, 36, 112, 0, 98, 162, 254, 131, 4, 8, 1, 0, 2, 36], binPtr); //re-enable trolley cutscene
+                }
+
+                break;
+
+            case 45: //big sack
+                if (ReadMemory(0xf870) == 4) //in kujara ranch
+                {
+                    var bigSackActor = AllocateActorPool1(); //make big sack appear on back
+                    WriteMemory(bigSackActor + 2, 0x12);
+                    WriteMemory(bigSackActor + 3, 0);
+                    WriteMemory(bigSackActor + 0x1c, BitConverter.GetBytes(0x8011b674));
+                    WriteMemory(bigSackActor + 0x28, (byte)(ReadMemory(bigSackActor + 0x28) | 0x80));
+                }
+                break;
+
+            case 50: //paon grass
+                if (ReadMemory(0xf870) == 7) //in circus village
+                {
+                    var paonGrassActor = AllocateActorPool1(); //make paon grass appear on back
+                    WriteMemory(paonGrassActor + 2, 0x12);
+                    WriteMemory(paonGrassActor + 3, 0);
+                    WriteMemory(paonGrassActor + 0x1c, BitConverter.GetBytes(0x80117680));
+                    WriteMemory(paonGrassActor + 0x28, (byte)(ReadMemory(paonGrassActor + 0x28) | 0x80));
+                }
+                break;
+
+            case 52: //carpenter book
+                if (ReadMemory(0xf870) == 7) //in circus village
+                {
+                    WriteMemory(0x19544, [64, 0, 0, 166, 118, 195, 4, 12, 4, 0, 4, 36, 81, 195, 4, 12], binPtr); //enable statue explosion cutscene
+                }
+                break;
+
+            case 77: //chick food
+                AddItemWithoutMessage(77, 2);
+                if (itemPickedUp[2] != 1) QueuePopupMessage(87, 2, 66);
+                custom = true;
+                break;
+
+            case 96: //magic wings
+                if (itemPickedUp[1] == 2)
+                {
+                    AddItemWithoutMessage(96, 2);
+                    QueuePopupMessage(137, 2, 66);
+                    custom = true;
+                }
+                break;
+
+            case 112: //spell of courage
+                if (ReadMemory(0xfb24) == 0)
+                {
+                    AddItemWithoutMessage(112, 1);
+                    QueueResourceMessage(STRING_COURAGE_HALF, 65);
+                }
+                else
+                {
+                    AddItemWithoutMessage(111, 1);
+                    RemoveItemWithoutMessage(112, 1);
+                    QueueResourceMessage(STRING_COURAGE_FULL, 65);
+                }
+                custom = true;
+                break;
+            case 114: //spell of strength
+                if (ReadMemory(0xfb26) == 0)
+                {
+                    AddItemWithoutMessage(114, 1);
+                    QueueResourceMessage(STRING_STRENGTH_HALF, 65);
+                }
+                else
+                {
+                    AddItemWithoutMessage(113, 1);
+                    RemoveItemWithoutMessage(114, 1);
+                    QueueResourceMessage(STRING_STRENGTH_FULL, 65);
+                }
+                custom = true;
+                break;
+            case 116: //spell of wisdom
+                if (ReadMemory(0xfb28) == 0)
+                {
+                    AddItemWithoutMessage(116, 1);
+                    QueueResourceMessage(STRING_WISDOM_HALF, 65);
+                }
+                else
+                {
+                    AddItemWithoutMessage(115, 1);
+                    RemoveItemWithoutMessage(116, 1);
+                    QueueResourceMessage(STRING_WISDOM_FULL, 65);
+                }
+                custom = true;
+                break;
+
+            case 124: //potato
+                if (itemPickedUp[1] == 3)
+                {
+                    AddItemWithoutMessage(124, 3);
+                    QueuePopupMessage(138, 2, 66);
+                    custom = true;
+                }
+                break;
+
+            case 160: //harp pieces
+            case 161:
+            case 162:
+            case 163:
+                var harpPieces = ReadMemory(0xfb54, 4);
+                if (harpPieces.Count(c => c != 0) == 3)
+                {
+                    CompleteEvent(44);
+
+                    if (itemPickedUp[2] != 1) AddItemWithMessage(itemId, 1);
+                    else AddItemWithoutMessage(itemId, 1);
+
+                    for (var i = 0; i < harpPieces.Length; i++)
+                    {
+                        RemoveItemWithoutMessage((byte)(i + 160), 1);
+                    }
+
+                    AddItemWithoutMessage(164, 1);
+                    QueueResourceMessage(STRING_HARP, 65);
+
+                    custom = true;
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        if (!custom)
+        {
+            if (itemPickedUp[2] == 1) AddItemWithoutMessage(itemId, 1);
+            else AddItemWithMessage(itemId, 1);
+        }
     }
 
     public void AddItemWithMessage(byte itemId, byte amount, bool custom = false)

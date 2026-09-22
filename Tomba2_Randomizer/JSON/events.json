@@ -1031,10 +1031,11 @@
 		"primary": false,
 		"requirements": [
 			{
-				"items": [ 104 ],
+				"items": [ 93, 104 ],
 				"events": [ 63 ]
 			},
 			{
+				"items": [ 93 ],
 				"events": [ 63, 131 ]
 			}
 		]
@@ -2169,7 +2170,7 @@
 		"primary": false,
 		"requirements": [
 			{
-				"events": [ 63 ]
+				"events": [ 64 ]
 			}
 		]
 	},
@@ -2197,7 +2198,7 @@
 			{
 				"items": [ 123 ],
 				"areas": [ 4 ],
-				"events": [ 64 ]
+				"events": [ 132 ]
 			}
 		]
 	},
@@ -2237,12 +2238,12 @@
 		"requirements": [
 			{
 				"areas": [ 7, 9 ],
-				"events": [ 64 ]
+				"events": [ 132 ]
 			},
 			{
 				"items": [ 101 ],
 				"areas": [ 9 ],
-				"events": [ 64 ]
+				"events": [ 132 ]
 			}
 		]
 	},
@@ -2256,12 +2257,12 @@
 			{
 				"items": [ 15, 138 ],
 				"areas": [ 7, 10 ],
-				"events": [ 64 ]
+				"events": [ 132 ]
 			},
 			{
 				"items": [ 15, 101, 138 ],
 				"areas": [ 10 ],
-				"events": [ 64 ]
+				"events": [ 132 ]
 			}
 		]
 	}
