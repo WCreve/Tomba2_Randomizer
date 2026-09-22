@@ -1590,6 +1590,13 @@ public class MemoryManipulator
                     WriteMemory(0x294b8, [12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160, 8, 0, 224, 3, 43, 0, 0, 162], binPtr);
                 }
 
+                WriteMemory(0x51a0, [82, 1], binPtr); //100 year old amulet spawn logic
+                WriteMemory(0x51a8, 16, binPtr);
+                WriteMemory(0x6160, new byte[8], binPtr);
+                WriteMemory(0x6160, [82, 1], binPtr);
+                WriteMemory(0x6180, 16, binPtr);
+                WriteMemory(0x6188, [82, 1], binPtr);
+
                 //custom tiny pig tracking
                 WriteMemory(0x1dc14, [153, 1], binPtr);
                 WriteMemory(0x1dc20, 16, binPtr);
@@ -1808,6 +1815,7 @@ public class MemoryManipulator
     private void SetFlagRucksack() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0010));
     private void SetFlagSnowFireflyBox() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0100));
     private void SetFlagGetwellPlant() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_1000));
+    private void SetFlag100YearOldAmulet() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0001_0000));
 
     private void HandleRewind(int time)
     {

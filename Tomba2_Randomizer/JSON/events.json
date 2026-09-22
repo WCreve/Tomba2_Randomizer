@@ -2170,7 +2170,11 @@
 		"primary": false,
 		"requirements": [
 			{
-				"events": [ 64 ]
+				"items": [ 104 ],
+				"events": [ 32, 64 ]
+			},
+			{
+				"events": [ 33, 64 ]
 			}
 		]
 	},
