@@ -765,7 +765,7 @@
 		"address": "0xfaea",
 		"requirements": [
 			{
-				"events": [ 82 ]
+				"events": [ 83 ]
 			}
 		]
 	},
@@ -777,7 +777,7 @@
 		"address": "0xfaea",
 		"requirements": [
 			{
-				"events": [ 82 ]
+				"events": [ 83 ]
 			}
 		]
 	},
@@ -789,7 +789,7 @@
 		"address": "0xfaea",
 		"requirements": [
 			{
-				"events": [ 82 ]
+				"events": [ 83 ]
 			}
 		]
 	},
@@ -801,7 +801,7 @@
 		"address": "0xfaea",
 		"requirements": [
 			{
-				"events": [ 82 ]
+				"events": [ 83 ]
 			}
 		]
 	},
@@ -813,7 +813,7 @@
 		"address": "0xfaea",
 		"requirements": [
 			{
-				"events": [ 82 ]
+				"events": [ 83 ]
 			}
 		]
 	},
