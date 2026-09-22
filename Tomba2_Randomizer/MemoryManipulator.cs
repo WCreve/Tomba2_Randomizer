@@ -1040,6 +1040,11 @@ public class MemoryManipulator
                                     WriteMemory(0xf9e2, 0);
                                 }
                             }
+                            else if (enteringInterior[0] == 6 && enteringInterior[1] == 1)
+                            {
+                                interiorTransition = true;
+                                ClearLaughingCryingStatus(true);
+                            }
                             break;
 
                         case 7:
