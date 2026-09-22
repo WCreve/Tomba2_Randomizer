@@ -11,6 +11,7 @@
       <DebugType>None</DebugType>
       <DebugSymbols>false</DebugSymbols>
       <IncludeSymbolsInSingleFile>false</IncludeSymbolsInSingleFile>
+      <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
       <PublishSymbols>false</PublishSymbols>
       <AllowedReferenceRelatedFileExtensions>
           .dll;.exe
@@ -27,21 +28,8 @@
       <None Remove="JSON\teleports.json" />
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Include="Images\*.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="JSON\areas.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="JSON\events.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="JSON\items.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="JSON\teleports.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
+      <EmbeddedResource Include="JSON\**\*.*" />
+      <EmbeddedResource Include="Images\**\*.*" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="12.1.0" />
