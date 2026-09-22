@@ -188,6 +188,9 @@ namespace Tomba2_Randomizer
 
         public int Seed { get; private set; }
 
+        public bool ResetTracker { get; set; }
+        public List<byte> ItemTrackerStatus { get; set; } = [];
+
         public void Randomize() => Randomize((int)DateTime.Now.Ticks);
 
         public void Randomize(int seed)

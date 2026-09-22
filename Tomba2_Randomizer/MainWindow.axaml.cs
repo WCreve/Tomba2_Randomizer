@@ -1,12 +1,16 @@
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.LogicalTree;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using MsBox.Avalonia;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +20,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Tomba2_Randomizer;
 
@@ -43,7 +48,6 @@ public partial class MainWindow : Window
 
     private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "T2Random", "data.json");
     private AppData appData;
-
 
     public MainWindow()
     {
@@ -83,6 +87,12 @@ public partial class MainWindow : Window
         {
             string json = sr.ReadToEnd();
             teleportAreas = JsonSerializer.Deserialize<List<TeleportArea>>(json, options);
+        }
+
+        var iconPaths = assembly.GetManifestResourceNames().Where(mrn => mrn.EndsWith(".png"));
+        foreach (var item in itemDtos.Where(i => !string.IsNullOrWhiteSpace(i.IconPath)))
+        {
+            item.Icon = new Bitmap(iconPaths.Where(p => p.Contains(item.IconPath)).Select(assembly.GetManifestResourceStream).FirstOrDefault(assembly.GetManifestResourceStream("Tomba2_Randomizer.Icons.missingicon.png")));
         }
 
         updateTabTimer = new DispatcherTimer();
@@ -157,7 +167,11 @@ public partial class MainWindow : Window
                 findGameTimer.Tick -= FindGame;
                 findGameTimer.Tick += CheckStillRunning;
 
-                if (randomizer != null) memory.SetupRandomizer(randomizer);
+                if (randomizer != null)
+                {
+                    memory.SetupRandomizer(randomizer);
+                    InitializeItemTracker();
+                }
             }
             else
             {
@@ -644,6 +658,7 @@ public partial class MainWindow : Window
         updateTabTimer.Tick -= TrackInventory;
         updateTabTimer.Tick -= TrackEvents;
         updateTabTimer.Tick -= TrackProgress;
+        updateTabTimer.Tick -= TrackItemTracker;
 
         if (TabInventory.IsSelected)
         {
@@ -656,6 +671,10 @@ public partial class MainWindow : Window
         else if (TabProgress.IsSelected)
         {
             updateTabTimer.Tick += TrackProgress;
+        }
+        else if (CnvRandomizerActive.IsVisible)
+        {
+            updateTabTimer.Tick += TrackItemTracker;
         }
     }
 
@@ -676,6 +695,8 @@ public partial class MainWindow : Window
 
         BtnNewRandom.IsEnabled = false;
         ChkDebug.IsEnabled = false;
+        ChkUseSeed.IsEnabled = false;
+        ChkSettingMusic.IsEnabled = false;
 
         randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
         randomizer.Settings = SetRandomizerSettings();
@@ -706,11 +727,15 @@ public partial class MainWindow : Window
 
         if (memory != null) memory.SetupRandomizer(randomizer);
 
+        InitializeItemTracker();
+
         BtnNewRandom.Content = "Randomize";
         LblRandomizer.Content = $"Randomizer ready! Current seed: {randomizer.Seed.ToString()}";
 
         BtnNewRandom.IsEnabled = true;
         ChkDebug.IsEnabled = true;
+        ChkUseSeed.IsEnabled = true;
+        ChkSettingMusic.IsEnabled = true;
 
         var existingSeed = appData.SeedHistory.FirstOrDefault(s => s.Seed == randomizer.Seed);
         if (existingSeed == null) appData.SeedHistory.Add(new RandomizerSeed(randomizer.Seed, DateTime.Now.Ticks));
@@ -800,6 +825,69 @@ public partial class MainWindow : Window
         }
     }
 
+    private void InitializeItemTracker()
+    {
+        if (memory != null) memory.ResetTracker();
+
+        CnvRandomizerActive.IsVisible = true;
+        CnvRandomizerSetup.IsVisible = false;
+
+        CnvItemTracker.Children.Clear();
+
+        SldItemsPerRow.Value = appData.ItemsPerRow;
+        var itemsPerRow = appData.ItemsPerRow;
+
+        int i = 0;
+        foreach (var item in itemDtos.Where(i => i.Icon != null).OrderBy(i => i.Address))
+        {
+            var b = new Border
+            {
+                BorderBrush = Brush.Parse("Gray"),
+                Background = Brush.Parse("Black"),
+                BorderThickness = new Thickness(2),
+                Margin = new Thickness(10 + 32 * (i % itemsPerRow), 10 + 32 * (i / itemsPerRow), 0, 0),
+                Tag = (byte)item.Id
+            };
+
+            var r = new Avalonia.Controls.Image
+            {
+                Source = item.Icon,
+                Opacity = 0.5
+            };
+
+            b.Child = r;
+            CnvItemTracker.Children.Add(b);
+            i++;
+        }
+
+        updateTabTimer.Tick += TrackItemTracker;
+    }
+
+    private void TrackItemTracker(object? sender, EventArgs e)
+    {
+        if (randomizer.ResetTracker)
+        {
+            foreach (var border in CnvItemTracker.Children.OfType<Border>())
+            {
+                border.BorderBrush = Brush.Parse("Gray");
+                border.Child.Opacity = 0.5;
+            }
+            randomizer.ResetTracker = false;
+        }
+        foreach (var item in randomizer.ItemTrackerStatus)
+        {
+            var border = (Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == item);
+            if (border != null) ToggleItem(border);
+        }
+        randomizer.ItemTrackerStatus = [];
+    }
+
+    private void ToggleItem(Border icon)
+    {
+        icon.BorderBrush = Brush.Parse("Gold");
+        icon.Child.Opacity = 1;
+    }
+
     private RandomizerSettings SetRandomizerSettings()
     {
         var settings = new RandomizerSettings
@@ -847,5 +935,36 @@ public partial class MainWindow : Window
         CmbRecentSeeds.IsVisible = ChkUseSeed.IsChecked == true;
 
         TxtSeed.Clear();
+    }
+
+    private void BtnStopRandomizer_Click(object? sender, RoutedEventArgs e)
+    {
+        CnvRandomizerActive.IsVisible = false;
+        CnvRandomizerSetup.IsVisible = true;
+        LblRandomizer.Content = "No randomizer loaded.";
+
+        updateTabTimer.Tick -= TrackItemTracker;
+    }
+
+    private void SldItemsPerRow_ValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (SldItemsPerRow != null)
+        {
+            var i = 0;
+            var itemsPerRow = (int)SldItemsPerRow.Value;
+            foreach (var border in CnvItemTracker.Children.OfType<Border>())
+            {
+                border.Margin = new Thickness(10 + 32 * (i % itemsPerRow), 10 + 32 * (i / itemsPerRow), 0, 0);
+                i++;
+            }
+            appData.ItemsPerRow = itemsPerRow;
+            SaveAppData();
+        }        
+    }
+
+    private void BtnToggleBackground_Click(object? sender, RoutedEventArgs e)
+    {
+        if (CnvItemTracker.Background == Brush.Parse("LimeGreen")) CnvItemTracker.Background = Brush.Parse("Transparent");
+        else CnvItemTracker.Background = Brush.Parse("LimeGreen");
     }
 }

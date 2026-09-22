@@ -7,7 +7,22 @@ namespace Tomba2_Randomizer
 {
     public class AppData
     {
-        public List<RandomizerSeed> SeedHistory { get; set; } = [];
+        private List<RandomizerSeed> _seedHistory;
+
+        public int ItemsPerRow { get; set; } = 16;
+
+        public List<RandomizerSeed> SeedHistory 
+        {
+            get
+            {
+                return _seedHistory;
+            }
+            set
+            {
+                if (value.Count > 50) value.RemoveRange(0, value.Count - 50);
+                _seedHistory = value;
+            }
+        }
 
         public List<RandomizerSeed> GetRecentSeeds()
         {

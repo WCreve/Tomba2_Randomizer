@@ -27,6 +27,9 @@
       <None Remove="JSON\teleports.json" />
     </ItemGroup>
     <ItemGroup>
+      <EmbeddedResource Include="Images\*.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
       <EmbeddedResource Include="JSON\areas.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>

@@ -8,7 +8,8 @@
 			{
 				"events": [ 30 ]
 			}
-		]
+		],
+		"iconpath": "grapple.png"
 	},
 	{
 		"id": 2,
@@ -26,7 +27,8 @@
 				"areas": [ 8 ],
 				"events": [ 100 ]
 			}
-		]
+		],
+		"iconpath": "dokapin.png"
 	},
 	{
 		"id": 3,
@@ -37,7 +39,8 @@
 			{
 				"events": [ 5 ]
 			}
-		]
+		],
+		"iconpath": "boomerangicon.png"
 	},
 	{
 		"id": 4,
@@ -48,7 +51,8 @@
 			{
 				"areas": [ 2 ]
 			}
-		]
+		],
+		"iconpath": "iceboomerang.png"
 	},
 	{
 		"id": 5,
@@ -61,7 +65,8 @@
 				"areas": [ 2 ],
 				"events": [ 98 ]
 			}
-		]
+		],
+		"iconpath": "glacierboomerang.png"
 	},
 	{
 		"id": 6,
@@ -72,7 +77,8 @@
 			{
 				"events": [ 15 ]
 			}
-		]
+		],
+		"iconpath": "hammericon.png"
 	},
 	{
 		"id": 7,
@@ -83,7 +89,8 @@
 			{
 				"events": [ 20 ]
 			}
-		]
+		],
+		"iconpath": "firehammer.png"
 	},
 	{
 		"id": 8,
@@ -96,7 +103,8 @@
 				"areas": [ 4 ],
 				"events": [ 99 ]
 			}
-		]
+		],
+		"iconpath": "torchhammer.png"
 	},
 	{
 		"id": 9,
@@ -107,7 +115,8 @@
 			{
 				"events": [ 129 ]
 			}
-		]
+		],
+		"iconpath": "pigball.png"
 	},
 	{
 		"id": 10,
@@ -119,7 +128,8 @@
 				"items": [ 27 ],
 				"events": [ 8 ]
 			}
-		]
+		],
+		"iconpath": "fastpants.png"
 	},
 	{
 		"id": 11,
@@ -151,7 +161,8 @@
 				"items": [ 15, 27, 105 ],
 				"areas": [ 7 ]
 			}
-		]
+		],
+		"iconpath": "turbopants.png"
 	},
 	{
 		"id": 12,
@@ -162,7 +173,8 @@
 			{
 				"events": [ 66 ]
 			}
-		]
+		],
+		"iconpath": "birdclothes.png"
 	},
 	{
 		"id": 13,
@@ -174,7 +186,8 @@
 				"items": [ 27, 28 ],
 				"areas": [ 4 ]
 			}
-		]
+		],
+		"iconpath": "squirrelclothes.png"
 	},
 	{
 		"id": 14,
@@ -186,7 +199,8 @@
 				"items": [ 51 ],
 				"areas": [ 9 ]
 			}
-		]
+		],
+		"iconpath": "pigsuiticon.png"
 	},
 	{
 		"id": 15,
@@ -197,7 +211,8 @@
 			{
 				"events": [ 42 ]
 			}
-		]
+		],
+		"iconpath": "swimmingpigsuit.png"
 	},
 	{
 		"id": 16,
@@ -208,7 +223,8 @@
 			{
 				"events": [ 19 ]
 			}
-		]
+		],
+		"iconpath": "flamepigrobe.png"
 	},
 	{
 		"id": 17,
@@ -219,7 +235,8 @@
 			{
 				"events": [ 27 ]
 			}
-		]
+		],
+		"iconpath": "icepigrobe.png"
 	},
 	{
 		"id": 18,
@@ -230,7 +247,8 @@
 			{
 				"events": [ 34 ]
 			}
-		]
+		],
+		"iconpath": "ghostpigrobe.png"
 	},
 	{
 		"id": 19,
@@ -241,7 +259,8 @@
 			{
 				"events": [ 41 ]
 			}
-		]
+		],
+		"iconpath": "earthpigrobe.png"
 	},
 	{
 		"id": 20,
@@ -252,7 +271,8 @@
 			{
 				"events": [ 49 ]
 			}
-		]
+		],
+		"iconpath": "waterpigrobe.png"
 	},
 	{
 		"id": 21,
@@ -263,7 +283,8 @@
 			{
 				"events": [ 18 ]
 			}
-		]
+		],
+		"iconpath": "flamepigbag.png"
 	},
 	{
 		"id": 22,
@@ -275,7 +296,8 @@
 				"events": [ 25 ],
 				"areas": [ 5 ]
 			}
-		]
+		],
+		"iconpath": "icepigbag.png"
 	},
 	{
 		"id": 23,
@@ -293,7 +315,8 @@
 				"events": [ 33 ],
 				"areas": [ 8 ]
 			}
-		]
+		],
+		"iconpath": "ghostpigbag.png"
 	},
 	{
 		"id": 24,
@@ -304,7 +327,8 @@
 			{
 				"events": [ 40 ]
 			}
-		]
+		],
+		"iconpath": "earthpigbag.png"
 	},
 	{
 		"id": 25,
@@ -315,7 +339,8 @@
 			{
 				"events": [ 48 ]
 			}
-		]
+		],
+		"iconpath": "waterpigbag.png"
 	},
 	{
 		"id": 26,
@@ -326,7 +351,8 @@
 			{
 				"events": [ 50 ]
 			}
-		]
+		],
+		"iconpath": "lastpigbag.png"
 	},
 	{
 		"id": 27,
@@ -337,7 +363,8 @@
 			{
 				"events": [ 8 ]
 			}
-		]
+		],
+		"iconpath": "redkey.png"
 	},
 	{
 		"id": 28,
@@ -348,7 +375,8 @@
 			{
 				"events": [ 24 ]
 			}
-		]
+		],
+		"iconpath": "greenkey.png"
 	},
 	{
 		"id": 29,
@@ -359,7 +387,8 @@
 			{
 				"events": [ 31 ]
 			}
-		]
+		],
+		"iconpath": "bluekey.png"
 	},
 	{
 		"id": 30,
@@ -372,7 +401,8 @@
 				"areas": [ 10 ],
 				"events": [ 46 ]
 			}
-		]
+		],
+		"iconpath": "whitekey.png"
 	},
 	{
 		"id": 31,
@@ -398,7 +428,8 @@
 				"items": [ 72, 73, 101, 140 ],
 				"areas": [ 6 ]
 			}
-		]
+		],
+		"iconpath": "coldpowder.png"
 	},
 	{
 		"id": 32,
@@ -424,7 +455,8 @@
 				"items": [ 70, 71, 101, 140 ],
 				"areas": [ 6 ]
 			}
-		]
+		],
+		"iconpath": "hotpowder.png"
 	},
 	{
 		"id": 33,
@@ -435,13 +467,15 @@
 			{
 				"events": [ 67 ]
 			}
-		]
+		],
+		"iconpath": "mermaidscale.png"
 	},
 	{
 		"id": 34,
 		"name": "Star-shaped Cog",
 		"color": "Pink",
-		"address": "0xfad8"
+		"address": "0xfad8",
+		"iconpath": "starshapedcog.png"
 	},
 	{
 		"id": 35,
@@ -457,7 +491,8 @@
 				"areas": [ 5 ],
 				"events": [ 27 ]
 			}
-		]
+		],
+		"iconpath": "hexagongear.png"
 	},
 	{
 		"id": 36,
@@ -468,7 +503,8 @@
 			{
 				"events": [ 36 ]
 			}
-		]
+		],
+		"iconpath": "trianglegear.png"
 	},
 	{
 		"id": 37,
@@ -479,14 +515,16 @@
 			{
 				"areas": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "roundcog.png"
 	},
 	{
 		"id": 38,
 		"name": "Bucket (pink)",
 		"displayname": "Bucket",
 		"color": "Pink",
-		"address": "0xfadc"
+		"address": "0xfadc",
+		"iconpath": "bucketicon.png"
 	},
 	{
 		"id": 39,
@@ -500,7 +538,8 @@
 			{
 				"events": [ 48 ]
 			}
-		]
+		],
+		"iconpath": "crabbasket.png"
 	},
 	{
 		"id": 40,
@@ -512,7 +551,8 @@
 			{
 				"events": [ 4 ]
 			}
-		]
+		],
+		"iconpath": "goldencrab.png"
 	},
 	{
 		"id": 41,
@@ -529,7 +569,8 @@
 				"items": [ 39 ],
 				"events": [ 48 ]
 			}
-		]
+		],
+		"iconpath": "goldencrab.png"
 	},
 	{
 		"id": 42,
@@ -546,7 +587,8 @@
 				"items": [ 39 ],
 				"events": [ 48 ]
 			}
-		]
+		],
+		"iconpath": "goldencrab.png"
 	},
 	{
 		"id": 43,
@@ -557,7 +599,8 @@
 			{
 				"events": [ 17 ]
 			}
-		]
+		],
+		"iconpath": "bombs.png"
 	},
 	{
 		"id": 44,
@@ -568,7 +611,8 @@
 			{
 				"events": [ 16 ]
 			}
-		]
+		],
+		"iconpath": "trolleyrail.png"
 	},
 	{
 		"id": 45,
@@ -579,7 +623,8 @@
 			{
 				"areas": [ 4 ]
 			}
-		]
+		],
+		"iconpath": "bigsack.png"
 	},
 	{
 		"id": 46,
@@ -590,7 +635,8 @@
 			{
 				"areas": [ 4 ]
 			}
-		]
+		],
+		"iconpath": "mountainpeach.png"
 	},
 	{
 		"id": 47,
@@ -602,7 +648,8 @@
 				"items": [ 27 ],
 				"areas": [ 4 ]
 			}
-		]
+		],
+		"iconpath": "travelersdiary.png"
 	},
 	{
 		"id": 48,
@@ -618,7 +665,8 @@
 				"items": [ 140 ],
 				"areas": [ 6 ]
 			}
-		]
+		],
+		"iconpath": "bluefruit.png"
 	},
 	{
 		"id": 49,
@@ -634,7 +682,8 @@
 				"items": [ 2 ],
 				"areas": [ 8 ]
 			}
-		]
+		],
+		"iconpath": "rockcrab.png"
 	},
 	{
 		"id": 50,
@@ -645,7 +694,8 @@
 			{
 				"events": [ 38 ]
 			}
-		]
+		],
+		"iconpath": "paongrass.png"
 	},
 	{
 		"id": 51,
@@ -657,7 +707,8 @@
 				"items": [ 36 ],
 				"areas": [ 9 ]
 			}
-		]
+		],
+		"iconpath": "closetkey.png"
 	},
 	{
 		"id": 52,
@@ -668,7 +719,8 @@
 			{
 				"events": [ 39 ]
 			}
-		]
+		],
+		"iconpath": "carpenterbook.png"
 	},
 	{
 		"id": 53,
@@ -685,7 +737,8 @@
 				"events": [ 48 ],
 				"AP": 30000
 			}
-		]
+		],
+		"iconpath": "pignosepanel.png"
 	},
 	{
 		"id": 54,
@@ -699,7 +752,8 @@
 				"events": [ 9 ],
 				"AP": 100000
 			}
-		]
+		],
+		"iconpath": "pignosepanel.png"
 	},
 	{
 		"id": 55,
@@ -723,7 +777,8 @@
 				"areas": [ 4 ],
 				"AP": 500000
 			}
-		]
+		],
+		"iconpath": "pignosepanel.png"
 	},
 	{
 		"id": 56,
@@ -742,7 +797,8 @@
 				"areas": [ 8 ],
 				"AP": 1000000
 			}
-		]
+		],
+		"iconpath": "pignosepanel.png"
 	},
 	{
 		"id": 57,
@@ -755,7 +811,8 @@
 				"areas": [ 11 ],
 				"AP": 2000000
 			}
-		]
+		],
+		"iconpath": "pignosepanel.png"
 	},
 	{
 		"id": 58,
@@ -767,7 +824,8 @@
 			{
 				"events": [ 83 ]
 			}
-		]
+		],
+		"iconpath": "seedsofstrength.png"
 	},
 	{
 		"id": 59,
@@ -779,7 +837,8 @@
 			{
 				"events": [ 83 ]
 			}
-		]
+		],
+		"iconpath": "seedsofstrength.png"
 	},
 	{
 		"id": 60,
@@ -791,7 +850,8 @@
 			{
 				"events": [ 83 ]
 			}
-		]
+		],
+		"iconpath": "seedsofstrength.png"
 	},
 	{
 		"id": 61,
@@ -803,7 +863,8 @@
 			{
 				"events": [ 83 ]
 			}
-		]
+		],
+		"iconpath": "seedsofstrength.png"
 	},
 	{
 		"id": 62,
@@ -815,7 +876,8 @@
 			{
 				"events": [ 83 ]
 			}
-		]
+		],
+		"iconpath": "seedsofstrength.png"
 	},
 	{
 		"id": 63,
@@ -826,25 +888,29 @@
 			{
 				"events": [ 85 ]
 			}
-		]
+		],
+		"iconpath": "goldensun.png"
 	},
 	{
 		"id": 64,
 		"name": "Red Chick",
 		"color": "Pink",
-		"address": "0xfaec"
+		"address": "0xfaec",
+		"iconpath": "redchick.png"
 	},
 	{
 		"id": 65,
 		"name": "Blue Chick",
 		"color": "Pink",
-		"address": "0xfaed"
+		"address": "0xfaed",
+		"iconpath": "bluechick.png"
 	},
 	{
 		"id": 66,
 		"name": "Rare Fish",
 		"color": "Pink",
-		"address": "0xfaee"
+		"address": "0xfaee",
+		"iconpath": "rarefish.png"
 	},
 	{
 		"id": 67,
@@ -870,7 +936,8 @@
 				"areas": [ 5 ],
 				"events": [ 27 ]
 			}
-		]
+		],
+		"iconpath": "raresquid.png"
 	},
 	{
 		"id": 68,
@@ -886,7 +953,8 @@
 				"items": [ 15 ],
 				"areas": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "rarecrab.png"
 	},
 	{
 		"id": 69,
@@ -906,7 +974,8 @@
 				"items": [ 8 ],
 				"areas": [ 7 ]
 			}
-		]
+		],
+		"iconpath": "rareshrimp.png"
 	},
 	{
 		"id": 70,
@@ -919,7 +988,8 @@
 				"areas": [ 2 ],
 				"events": [ 9 ]
 			}
-		]
+		],
+		"iconpath": "anemoneshotdregs.png"
 	},
 	{
 		"id": 71,
@@ -932,7 +1002,8 @@
 				"areas": [ 2 ],
 				"events": [ 9 ]
 			}
-		]
+		],
+		"iconpath": "anemoneshotdregs.png"
 	},
 	{
 		"id": 72,
@@ -949,7 +1020,8 @@
 				"items": [ 8 ],
 				"areas": [ 4 ]
 			}
-		]
+		],
+		"iconpath": "anemonesicydregs.png"
 	},
 	{
 		"id": 73,
@@ -982,7 +1054,8 @@
 				"items": [ 8, 13 ],
 				"areas": [ 4 ]
 			}
-		]
+		],
+		"iconpath": "anemonesicydregs.png"
 	},
 	{
 		"id": 74,
@@ -993,7 +1066,8 @@
 			{
 				"items": [ 9 ]
 			}
-		]
+		],
+		"iconpath": "tinyflyingpig.png"
 	},
 	{
 		"id": 75,
@@ -1005,7 +1079,8 @@
 				"items": [ 9 ],
 				"areas": [ 2 ]
 			}
-		]
+		],
+		"iconpath": "tinyflamepig.png"
 	},
 	{
 		"id": 76,
@@ -1017,7 +1092,8 @@
 				"items": [ 9 ],
 				"areas": [ 4 ]
 			}
-		]
+		],
+		"iconpath": "tinyicepig.png"
 	},
 	{
 		"id": 77,
@@ -1037,7 +1113,8 @@
 				"items": [ 2, 9 ],
 				"areas": [ 8 ]
 			}
-		]
+		],
+		"iconpath": "tinyghostpig.png"
 	},
 	{
 		"id": 78,
@@ -1049,7 +1126,8 @@
 				"items": [ 9 ],
 				"areas": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "tinywaterpig.png"
 	},
 	{
 		"id": 79,
@@ -1063,7 +1141,8 @@
 			{
 				"events": [ 48 ]
 			}
-		]
+		],
+		"iconpath": "goldfishhook.png"
 	},
 	{
 		"id": 80,
@@ -1075,7 +1154,8 @@
 				"areas": [ 2, 3 ],
 				"events": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "trolleyticket.png"
 	},
 	{
 		"id": 81,
@@ -1087,7 +1167,8 @@
 				"items": [ 27 ],
 				"areas": [ 2 ]
 			}
-		]
+		],
+		"iconpath": "powercoal.png"
 	},
 	{
 		"id": 82,
@@ -1100,7 +1181,8 @@
 				"areas": [ 2, 3 ],
 				"events": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "bakedbanana.png"
 	},
 	{
 		"id": 83,
@@ -1112,7 +1194,8 @@
 				"areas": [ 2, 3 ],
 				"events": [ 12 ]
 			}
-		]
+		],
+		"iconpath": "clay.png"
 	},
 	{
 		"id": 84,
@@ -1123,7 +1206,8 @@
 			{
 				"events": [ 73 ]
 			}
-		]
+		],
+		"iconpath": "clayspatula.png"
 	},
 	{
 		"id": 85,
@@ -1136,7 +1220,8 @@
 				"areas": [ 2, 3 ],
 				"events": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "masterspot.png"
 	},
 	{
 		"id": 86,
@@ -1189,7 +1274,8 @@
 				"items": [ 13, 27 ],
 				"areas": [ 2 ]
 			}
-		]
+		],
+		"iconpath": "chickfood.png"
 	},
 	{
 		"id": 87,
@@ -1205,7 +1291,8 @@
 				"areas": [ 5 ],
 				"events": [ 27 ]
 			}
-		]
+		],
+		"iconpath": "largefuse.png"
 	},
 	{
 		"id": 88,
@@ -1221,7 +1308,8 @@
 				"items": [ 2 ],
 				"areas": [ 6 ]
 			}
-		]
+		],
+		"iconpath": "lightcuttingbox.png"
 	},
 	{
 		"id": 89,
@@ -1234,7 +1322,8 @@
 				"areas": [ 6 ],
 				"events": [ 109 ]
 			}
-		]
+		],
+		"iconpath": "snowfireflybox.png"
 	},
 	{
 		"id": 90,
@@ -1245,7 +1334,8 @@
 			{
 				"events": [ 35 ]
 			}
-		]
+		],
+		"iconpath": "getwellplant.png"
 	},
 	{
 		"id": 91,
@@ -1258,7 +1348,8 @@
 				"areas": [ 4 ],
 				"events": [ 111 ]
 			}
-		]
+		],
+		"iconpath": "rucksack.png"
 	},
 	{
 		"id": 92,
@@ -1282,7 +1373,8 @@
 				"items": [ 2 ],
 				"events": [ 48 ]
 			}
-		]
+		],
+		"iconpath": "spoon.png"
 	},
 	{
 		"id": 93,
@@ -1301,7 +1393,8 @@
 				"items": [ 15, 104 ],
 				"areas": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "nishikiswings.png"
 	},
 	{
 		"id": 94,
@@ -1314,7 +1407,8 @@
 				"events": [ 26, 132 ],
 				"areas": [ 5 ]
 			}
-		]
+		],
+		"iconpath": "invisiblemirror.png"
 	},
 	{
 		"id": 95,
@@ -1332,7 +1426,8 @@
 				"areas": [ 10 ],
 				"events": [ 60 ]
 			}
-		]
+		],
+		"iconpath": "goldenpowder.png"
 	},
 	{
 		"id": 96,
@@ -1350,7 +1445,8 @@
 				"areas": [ 7, 10 ],
 				"events": [ 116 ]
 			}
-		]
+		],
+		"iconpath": "baron.png"
 	},
 	{
 		"id": 97,
@@ -1375,7 +1471,8 @@
 			{
 				"events": [ 83 ]
 			}
-		]
+		],
+		"iconpath": "bucket.png"
 	},
 	{
 		"id": 99,
@@ -1386,7 +1483,8 @@
 			{
 				"events": [ 127 ]
 			}
-		]
+		],
+		"iconpath": "mermaidbucket.png"
 	},
 	{
 		"id": 100,
@@ -1397,7 +1495,8 @@
 			{
 				"events": [ 121 ]
 			}
-		]
+		],
+		"iconpath": "toradakooilremover.png"
 	},
 	{
 		"id": 101,
@@ -1408,7 +1507,8 @@
 			{
 				"events": [ 88 ]
 			}
-		]
+		],
+		"iconpath": "mysterymushroom.png"
 	},
 	{
 		"id": 102,
@@ -1419,7 +1519,8 @@
 			{
 				"events": [ 89 ]
 			}
-		]
+		],
+		"iconpath": "normalfruit.png"
 	},
 	{
 		"id": 103,
@@ -1435,7 +1536,8 @@
 				"items": [ 2 ],
 				"areas": [ 8 ]
 			}
-		]
+		],
+		"iconpath": "clearfruit.png"
 	},
 	{
 		"id": 104,
@@ -1446,7 +1548,8 @@
 			{
 				"events": [ 70 ]
 			}
-		]
+		],
+		"iconpath": "minittamushroom.png"
 	},
 	{
 		"id": 105,
@@ -1457,7 +1560,8 @@
 			{
 				"events": [ 114 ]
 			}
-		]
+		],
+		"iconpath": "taboofruit.png"
 	},
 	{
 		"id": 106,
@@ -1469,7 +1573,8 @@
 			{
 				"events": [ 73 ]
 			}
-		]
+		],
+		"iconpath": "halfspell.png"
 	},
 	{
 		"id": 107,
@@ -1481,7 +1586,8 @@
 			{
 				"events": [ 90 ]
 			}
-		]
+		],
+		"iconpath": "halfspell.png"
 	},
 	{
 		"id": 108,
@@ -1493,7 +1599,8 @@
 			{
 				"events": [ 117 ]
 			}
-		]
+		],
+		"iconpath": "halfspell.png"
 	},
 	{
 		"id": 109,
@@ -1505,7 +1612,8 @@
 			{
 				"events": [ 68 ]
 			}
-		]
+		],
+		"iconpath": "halfspell.png"
 	},
 	{
 		"id": 110,
@@ -1517,7 +1625,8 @@
 			{
 				"events": [ 119 ]
 			}
-		]
+		],
+		"iconpath": "halfspell.png"
 	},
 	{
 		"id": 111,
@@ -1529,7 +1638,8 @@
 			{
 				"events": [ 110 ]
 			}
-		]
+		],
+		"iconpath": "halfspell.png"
 	},
 	{
 		"id": 112,
@@ -1553,7 +1663,8 @@
 				"areas": [ 2 ],
 				"events": [ 9 ]
 			}
-		]
+		],
+		"iconpath": "mudballsurprise.png"
 	},
 	{
 		"id": 174,
@@ -1566,7 +1677,8 @@
 				"areas": [ 2 ],
 				"events": [ 9 ]
 			}
-		]
+		],
+		"iconpath": "mudballsurprise.png"
 	},
 	{
 		"id": 113,
@@ -1584,7 +1696,8 @@
 				"areas": [ 2, 3 ],
 				"events": [ 12 ]
 			}
-		]
+		],
+		"iconpath": "lowpuritylightomite.png"
 	},
 	{
 		"id": 114,
@@ -1597,7 +1710,8 @@
 				"areas": [ 2, 3 ],
 				"events": [ 12 ]
 			}
-		]
+		],
+		"iconpath": "lowpurityhardonium.png"
 	},
 	{
 		"id": 115,
@@ -1610,7 +1724,8 @@
 				"areas": [ 2, 3 ],
 				"events": [ 12, 77 ]
 			}
-		]
+		],
+		"iconpath": "hipuritylightomite.png"
 	},
 	{
 		"id": 116,
@@ -1623,7 +1738,8 @@
 				"areas": [ 2, 3 ],
 				"events": [ 12, 77 ]
 			}
-		]
+		],
+		"iconpath": "hipurityhardonium.png"
 	},
 	{
 		"id": 117,
@@ -1635,7 +1751,8 @@
 				"areas": [ 2 ],
 				"events": [ 9 ]
 			}
-		]
+		],
+		"iconpath": "bananaicon.png"
 	},
 	{
 		"id": 118,
@@ -1648,7 +1765,8 @@
 				"events": [ 26 ],
 				"areas": [ 5 ]
 			}
-		]
+		],
+		"iconpath": "itchingsalve.png"
 	},
 	{
 		"id": 119,
@@ -1660,7 +1778,8 @@
 				"areas": [ 5 ],
 				"events": [ 115 ]
 			}
-		]
+		],
+		"iconpath": "icestatue.png"
 	},
 	{
 		"id": 120,
@@ -1672,7 +1791,8 @@
 				"areas": [ 2 ],
 				"events": [ 19 ]
 			}
-		]
+		],
+		"iconpath": "smallmudclump.png"
 	},
 	{
 		"id": 121,
@@ -1685,7 +1805,8 @@
 				"areas": [ 2, 3 ],
 				"events": [ 12 ]
 			}
-		]
+		],
+		"iconpath": "minersring.png"
 	},
 	{
 		"id": 122,
@@ -1708,7 +1829,8 @@
 				"areas": [ 4 ],
 				"events": [ 20, 132 ]
 			}
-		]
+		],
+		"iconpath": "largeflowerseed.png"
 	},
 	{
 		"id": 123,
@@ -1729,7 +1851,8 @@
 				"areas": [ 9 ],
 				"events": [ 41 ]
 			}
-		]
+		],
+		"iconpath": "petitfaceflower.png"
 	},
 	{
 		"id": 124,
@@ -1740,7 +1863,8 @@
 			{
 				"events": [ 134 ]
 			}
-		]
+		],
+		"iconpath": "dwarfsproof.png"
 	},
 	{
 		"id": 125,
@@ -1751,7 +1875,8 @@
 			{
 				"events": [ 135 ]
 			}
-		]
+		],
+		"iconpath": "mizunosproof.png"
 	},
 	{
 		"id": 126,
@@ -1762,7 +1887,8 @@
 			{
 				"events": [ 131 ]
 			}
-		]
+		],
+		"iconpath": "minittabell.png"
 	},
 	{
 		"id": 127,
@@ -1773,7 +1899,8 @@
 			{
 				"events": [ 136 ]
 			}
-		]
+		],
+		"iconpath": "yansproof.png"
 	},
 	{
 		"id": 128,
@@ -1784,7 +1911,8 @@
 			{
 				"events": [ 137 ]
 			}
-		]
+		],
+		"iconpath": "oldmansproof.png"
 	},
 	{
 		"id": 129,
@@ -1795,7 +1923,8 @@
 			{
 				"events": [ 123 ]
 			}
-		]
+		],
+		"iconpath": "goldenmoon.png"
 	},
 	{
 		"id": 130,
@@ -1806,7 +1935,8 @@
 			{
 				"events": [ 72 ]
 			}
-		]
+		],
+		"iconpath": "goldenstar.png"
 	},
 	{
 		"id": 131,
@@ -1826,7 +1956,8 @@
 				"items": [ 13 ],
 				"areas": [ 4 ]
 			}
-		]
+		],
+		"iconpath": "mysteryreflector.png"
 	},
 	{
 		"id": 132,
@@ -1837,7 +1968,8 @@
 			{
 				"areas": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "crystal.png"
 	},
 	{
 		"id": 133,
@@ -1849,7 +1981,8 @@
 				"items": [ 132 ],
 				"areas": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "crystalpanel.png"
 	},
 	{
 		"id": 134,
@@ -1865,7 +1998,8 @@
 				"items": [ 29, 126 ],
 				"areas": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "harpsrightside.png"
 	},
 	{
 		"id": 135,
@@ -1878,7 +2012,8 @@
 				"areas": [ 10 ],
 				"events": [ 42 ]
 			}
-		]
+		],
+		"iconpath": "harpsleftside.png"
 	},
 	{
 		"id": 136,
@@ -1890,7 +2025,8 @@
 				"items": [ 15, 30 ],
 				"areas": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "highpitchpearl.png"
 	},
 	{
 		"id": 137,
@@ -1902,7 +2038,8 @@
 				"items": [ 15 ],
 				"areas": [ 10 ]
 			}
-		]
+		],
+		"iconpath": "lowpitchpearl.png"
 	},
 	{
 		"id": 138,
@@ -1915,7 +2052,8 @@
 				"areas": [ 10 ],
 				"events": [ 132 ]
 			}
-		]
+		],
+		"iconpath": "100yearamulet.png"
 	},
 	{
 		"id": 139,
@@ -1927,7 +2065,8 @@
 				"items": [ 6, 29 ],
 				"areas": [ 3 ]
 			}
-		]
+		],
+		"iconpath": "coalminebell.png"
 	},
 	{
 		"id": 140,
@@ -1941,7 +2080,8 @@
 			{
 				"events": [ 34 ]
 			}
-		]
+		],
+		"iconpath": "donglinbell.png"
 	},
 	{
 		"id": 141,
@@ -2165,14 +2305,16 @@
 		"name": "Blackjack",
 		"color": "Green",
 		"address": "0xfab4",
-		"notrandom": true
+		"notrandom": true,
+		"iconpath": "blackjack.png"
 	},
 	{
 		"id": 173,
 		"name": "Green Pants",
 		"color": "Green",
 		"address": "0xfabe",
-		"notrandom": true
+		"notrandom": true,
+		"iconpath": "greenpants.png"
 	},
 	{
 		"id": 175,

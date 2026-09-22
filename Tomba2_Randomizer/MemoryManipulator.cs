@@ -1,5 +1,6 @@
 using System;
 using System.Buffers.Binary;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -163,6 +164,9 @@ public class MemoryManipulator
 
         if (randomizer.Settings.ShuffleMusic) ShuffleMusic();
 
+        UpdateTracker(172);
+        UpdateTracker(173);
+
         WriteMemory(0xf8b3, 1); //initialized
     }
 
@@ -201,7 +205,7 @@ public class MemoryManipulator
                 }
                 else
                 {
-                    var custom = false;
+                    bool custom = false, customTracker = false;
                     var newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == itemPickedUp[0]).Value.InternalId;
 
                     switch (itemPickedUp[0]) //item collected pre-randomization
@@ -374,6 +378,9 @@ public class MemoryManipulator
 
                             newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 42 - BitOperations.TrailingZeroCount(crabCaught)).Value.InternalId;
 
+                            UpdateTracker((byte)(42 - BitOperations.TrailingZeroCount(crabCaught)));
+                            customTracker = true;
+
                             WriteMemory(0xf9e6, (byte)(ReadMemory(0xf9e6) + crabCaught));
                             break;
 
@@ -405,6 +412,9 @@ public class MemoryManipulator
 
                             newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 53 + pigNoseAreas.IndexOf(currentArea)).Value.InternalId;
 
+                            UpdateTracker((byte)(53 + pigNoseAreas.IndexOf(currentArea)));
+                            customTracker = true;
+
                             break;
 
                         case 54: //seeds of strength collected
@@ -430,6 +440,9 @@ public class MemoryManipulator
                                     AddRandomItemToInventory(randomizer.RandomizedItems.First(r => r.Key.Id == 58 + seedNumber).Value.InternalId, itemPickedUp);
 
                                     sessionSeedsCollected &= (byte)(sessionSeedsCollected - 1);
+
+                                    UpdateTracker((byte)(58 + seedNumber));
+                                    customTracker = true;
                                 }
 
                                 WriteMemory(0xf9e2, 0);
@@ -442,8 +455,20 @@ public class MemoryManipulator
                         case 57: //red/blue chick pickup checks
                             var chickStatus = ReadMemory(0xf9f2);
 
-                            if (chickStatus == 136) newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == 56).Value.InternalId; //Player has picked up 2 red chicks
-                            if (chickStatus == 204) newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == 57).Value.InternalId; //Player has picked up 2 blue chicks
+                            if (chickStatus == 136) //Player has picked up 2 blue chicks
+                            {
+                                newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == 56).Value.InternalId;
+
+                                UpdateTracker(64);
+                                customTracker = true;
+                            }
+                            else if (chickStatus == 204) //Player has picked up 2 red chicks
+                            {
+                                newItemId = randomizer.RandomizedItems.First(i => i.Key.InternalId == 57).Value.InternalId;
+
+                                UpdateTracker(65);
+                                customTracker = true;
+                            }
 
                             break;
 
@@ -455,16 +480,34 @@ public class MemoryManipulator
                             if (ReadMemory(0x37eaa) == 2) //check tomba approx pos to see which dregs are collected.
                             {
                                 newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 70).Value.InternalId;
+
+                                UpdateTracker(70);
+                                customTracker = true;
                             }
-                            else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 71).Value.InternalId;
+                            else
+                            {
+                                newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 71).Value.InternalId;
+
+                                UpdateTracker(71);
+                                customTracker = true;
+                            }
                             break;
 
                         case 63: //icy dregs collected
                             if (ReadMemory(0x37eaa) < 10) //check tomba approx pos to see which dregs are collected.
                             {
                                 newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 73).Value.InternalId;
+
+                                UpdateTracker(73);
+                                customTracker = true;
                             }
-                            else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 72).Value.InternalId;
+                            else
+                            {
+                                newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 72).Value.InternalId;
+
+                                UpdateTracker(72);
+                                customTracker = true;
+                            }
                             break;
 
                         case 80: //snow firefly box collected
@@ -521,22 +564,41 @@ public class MemoryManipulator
 
                         case 112: //1/2 spell of courage
                             newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf817) == 1 ? 106: 107)).Value.InternalId;
+
+                            UpdateTracker((byte)(ReadMemory(0xf817) == 1 ? 106 : 107));
+                            customTracker = true;
                             break;
 
                         case 114: //1/2 spell of strength
                             newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf870) == 5 ? 108 : 109)).Value.InternalId;
+
+                            UpdateTracker((byte)(ReadMemory(0xf870) == 5 ? 108 : 109));
+                            customTracker = true;
                             break;
 
                         case 116: //1/2 spell of wisdom
                             newItemId = randomizer.RandomizedItems.First(i => i.Key.Id == (ReadMemory(0xf870) == 5 ? 110 : 111)).Value.InternalId;
+
+                            UpdateTracker((byte)(ReadMemory(0xf870) == 5 ? 110 : 111));
+                            customTracker = true;
                             break;
 
                         case 128: //mudball surprise
                             if (ReadMemory(0x37eaa) > 20) //check tomba approx pos to see which mudball is being collected.
                             {
                                 newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 112).Value.InternalId;
+
+                                UpdateTracker(112);
+                                customTracker = true;
                             }
-                            else newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 174).Value.InternalId;
+                            else
+                            {
+                                newItemId = randomizer.RandomizedItems.First(r => r.Key.Id == 174).Value.InternalId;
+
+                                UpdateTracker(174);
+                                customTracker = true;
+                            }
+                            
                             break;
 
                         case 129: //low-purity items
@@ -556,9 +618,13 @@ public class MemoryManipulator
                     {
                         AddRandomItemToInventory(newItemId, itemPickedUp);
 
+                        if (!customTracker)
+                        {
+                            var itemId = randomizer.RandomizedItems.First(ri => ri.Key.InternalId == itemPickedUp[0]).Key.Id;
+                            UpdateTracker(itemId);
+                        }
                     }
                 }
-
                 WriteMemory(0xf8b0, [0, 0, 0]);
             }
 
@@ -1861,6 +1927,34 @@ public class MemoryManipulator
         }
     }
 
+    private bool[] ReadTracker()
+    {
+        var ba = new BitArray(ReadMemory(0xf940, 22));
+        var items = new bool[ba.Length];
+        ba.CopyTo(items, 0);
+
+        return items;
+    }
+
+    private void UpdateTracker(byte id)
+    {
+        var trackerAddress = 0xf940 + id / 8;
+        WriteMemory(trackerAddress, (byte)(ReadMemory(trackerAddress) | (byte)Math.Pow(2, id % 8)));
+
+        randomizer.ItemTrackerStatus.Add(id);
+    }
+
+    public void ResetTracker()
+    {
+        randomizer.ResetTracker = true;
+
+        var trackerItems = ReadTracker();
+        for (byte i = 0; i < trackerItems.Length; i++)
+        {
+            if (trackerItems[i]) randomizer.ItemTrackerStatus.Add(i);
+        }
+    }
+
     private uint GetAddressPointer(int address) => BitConverter.ToUInt32(ReadMemory(address, 4));
 
     private int ReadDialogueOffsetPtr() => BitConverter.ToUInt16(ReadMemory(0x4240c, 2)) + 0x4006C;
@@ -1908,6 +2002,8 @@ public class MemoryManipulator
 
     private void HandleRewind(int time)
     {
+        ResetTracker();
+
         writeQueueSafe.RemoveAll(i => i.EnqueueTimeStamp > time);
         writeQueueWarp.RemoveAll(i => i.EnqueueTimeStamp > time);
         writeQueuePopup.RemoveAll(i => i.EnqueueTimeStamp > time);

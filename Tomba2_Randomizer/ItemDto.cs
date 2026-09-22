@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using System;
 using System.Collections.Generic;
 
@@ -26,6 +27,9 @@ public class ItemDto
             return (byte)(Convert.ToInt32(Address, 16) - 0xfab4);
         }
     }
+
+    public string IconPath { get; set; }
+    public Bitmap Icon { get; set; }
 
     public List<RequirementDto> Requirements { get; set; }
 }
