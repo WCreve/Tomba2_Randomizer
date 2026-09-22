@@ -11,12 +11,25 @@
         <TabControl Name="TabControl" SelectionChanged="SelectingItemsControl_OnSelectionChanged">
             <TabItem Name="TabMain" Header="Main">
                 <Canvas>
-                    <Label Name="LblHooked" Content="Connected" HorizontalAlignment="Left" Margin="139,21,0,0" VerticalAlignment="Top"/>
-                    <Button Name="BtnNewRandom" Content="New Randomization" FontSize="24" Canvas.Left="28" Canvas.Top="99" Height="59" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnNewRandom_OnClick"/>
-                    <Button Name="BtnLoadRandom" Content="Load Randomization" FontSize="24" Canvas.Left="28" Canvas.Top="176" Height="58" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnLoadRandom_OnClick"/>
-                    <CheckBox Name="ChkDebug" Content="Include list of randomized items in this file" Canvas.Left="338" Canvas.Top="115" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <Label Name="LblRandomizer" Content="No randomizer loaded." Margin="139,51,0,0"></Label>
+                    <Label Name="LblHooked" Content="Connected" HorizontalAlignment="Left" Margin="29,21,0,0" VerticalAlignment="Top"/>
+                    <Button Name="BtnNewRandom" Content="Randomize" FontSize="24" Canvas.Left="28" Canvas.Top="99" Height="59" Width="230" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnNewRandom_OnClick"/>
+                    <CheckBox Name="ChkDebug" Content="Generate item list text file" Canvas.Left="278" Canvas.Top="115" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <Label Name="LblRandomizer" Content="No randomizer loaded." Margin="29,51,0,0"></Label>
+                    <CheckBox Name="ChkUseSeed" Content="Use seed" Margin="29,176,0,0" IsCheckedChanged="ChkUseSeed_IsCheckedChanged"></CheckBox>
+                    <TextBox IsEnabled="False" Name="TxtSeed" Margin="150, 175, 0, 0" Width="150" HorizontalContentAlignment="Right"></TextBox>
+                    <Label Name="LblRecentSeeds" IsVisible="False" Content="Recent seeds" Margin="29,225,0,0"></Label>
+                    <ComboBox Name="CmbRecentSeeds" IsVisible="False" SelectedIndex="0" Canvas.Left="150" Canvas.Top="220" Width="280" PlaceholderText="Select a seed from the dropdown" HorizontalContentAlignment="Right" SelectionChanged="CmbRecentSeeds_SelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="local:RandomizerSeed">
+                                <TextBlock Text="{Binding SeedString}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    
                     <!--<Button Name="BtnJsonDeserializer" Content="dump info" FontSize="24" Canvas.Left="28" Canvas.Top="276" Height="58" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnJsonDeserializer_Click"/>-->
+
+                    <CheckBox Name="ChkSettingMusic" Content="Shuffle music" Margin="400, 200, 0, 0"></CheckBox>
+
                 </Canvas>
             </TabItem>
             <TabItem IsEnabled="false" Header="Inventory" Name="TabInventory" Height="20" VerticalAlignment="Top">

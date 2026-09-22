@@ -1311,7 +1311,7 @@
 		"requirements": [
 			{
 				"items": [ 80 ],
-				"events": [ 15 ]
+				"events": [ 9 ]
 			}
 		]
 	},
