@@ -697,6 +697,8 @@ public partial class MainWindow : Window
         ChkDebug.IsEnabled = false;
         ChkUseSeed.IsEnabled = false;
         ChkSettingMusic.IsEnabled = false;
+        CmbRecentSeeds.IsEnabled = false;
+        TxtSeed.IsEnabled = false;
 
         randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
         randomizer.Settings = SetRandomizerSettings();
@@ -736,6 +738,8 @@ public partial class MainWindow : Window
         ChkDebug.IsEnabled = true;
         ChkUseSeed.IsEnabled = true;
         ChkSettingMusic.IsEnabled = true;
+        CmbRecentSeeds.IsEnabled = true;
+        TxtSeed.IsEnabled = true;
 
         var existingSeed = appData.SeedHistory.FirstOrDefault(s => s.Seed == randomizer.Seed);
         if (existingSeed == null) appData.SeedHistory.Add(new RandomizerSeed(randomizer.Seed, DateTime.Now.Ticks));
