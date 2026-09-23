@@ -1495,10 +1495,10 @@ public class MemoryManipulator
         if (pigDoors.Contains(warpDestination[1]) && (pigDoorsOpened & (byte)Math.Pow(2, pigDoors.IndexOf(warpDestination[1]))) == 0)
         {
             var bags = ReadMemory(0xf883, 7);
-            if (!bags.Any(b => b == 23 + pigDoors.IndexOf(warpDestination[1]))) //make sure you don't already have the bag
+            if (!bags.Any(b => b == 23 + pigDoors.IndexOf(warpDestination[1])) && warpDestination[1] != 8) //make sure you don't already have the bag
             {
                 Enqueue(writeQueueWarp, 0xf883, bags);
-                Enqueue(writeQueueWarp, warpDestination[1] == 0 ? 0x4e81d : (warpDestination[1] == 8 ? 0x4e74d : 0x4e26d), [4]);
+                Enqueue(writeQueueWarp, warpDestination[1] == 0 ? 0x4e81d : 0x4e26d, [4]);
 
                 WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
             }
