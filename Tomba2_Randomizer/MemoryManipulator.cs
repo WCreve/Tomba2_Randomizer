@@ -167,6 +167,12 @@ public class MemoryManipulator
         UpdateTracker(172);
         UpdateTracker(173);
 
+        WriteMemory(0xf9d2, randomizer.BeachBarrels);
+        WriteMemory(0x398a4, randomizer.BeachBarrels, globalPtr);
+
+        WriteMemory(0xf9ce, randomizer.ForestSeesaws);
+        WriteMemory(0x398cc, randomizer.ForestSeesaws, globalPtr);
+
         WriteMemory(0xf8b3, 1); //initialized
     }
 
@@ -761,27 +767,27 @@ public class MemoryManipulator
 
                 break;
 
-                            case 45: //big sack
-                                if (ReadMemory(0xf870) == 4) //in kujara ranch
-                                {
-                                    var bigSackActor = AllocateActorPool(1); //make big sack appear on back
-                                    WriteMemory(bigSackActor + 2, 0x12);
-                                    WriteMemory(bigSackActor + 3, 0);
-                                    WriteMemory(bigSackActor + 0x1c, BitConverter.GetBytes(0x8011b674));
-                                    WriteMemory(bigSackActor + 0x28, (byte)(ReadMemory(bigSackActor + 0x28) | 0x80));
-                                }
-                                break;
+            case 45: //big sack
+                if (ReadMemory(0xf870) == 4) //in kujara ranch
+                {
+                    var bigSackActor = AllocateActorPool(1); //make big sack appear on back
+                    WriteMemory(bigSackActor + 2, 0x12);
+                    WriteMemory(bigSackActor + 3, 0);
+                    WriteMemory(bigSackActor + 0x1c, BitConverter.GetBytes(0x8011b674));
+                    WriteMemory(bigSackActor + 0x28, (byte)(ReadMemory(bigSackActor + 0x28) | 0x80));
+                }
+                break;
 
-                            case 50: //paon grass
-                                if (ReadMemory(0xf870) == 7) //in circus village
-                                {
-                                    var paonGrassActor = AllocateActorPool(1); //make paon grass appear on back
-                                    WriteMemory(paonGrassActor + 2, 0x12);
-                                    WriteMemory(paonGrassActor + 3, 0);
-                                    WriteMemory(paonGrassActor + 0x1c, BitConverter.GetBytes(0x80117680));
-                                    WriteMemory(paonGrassActor + 0x28, (byte)(ReadMemory(paonGrassActor + 0x28) | 0x80));
-                                }
-                                break;
+            case 50: //paon grass
+                if (ReadMemory(0xf870) == 7) //in circus village
+                {
+                    var paonGrassActor = AllocateActorPool(1); //make paon grass appear on back
+                    WriteMemory(paonGrassActor + 2, 0x12);
+                    WriteMemory(paonGrassActor + 3, 0);
+                    WriteMemory(paonGrassActor + 0x1c, BitConverter.GetBytes(0x80117680));
+                    WriteMemory(paonGrassActor + 0x28, (byte)(ReadMemory(paonGrassActor + 0x28) | 0x80));
+                }
+                break;
 
             case 52: //carpenter book
                 if (ReadMemory(0xf870) == 7) //in circus village
@@ -1644,6 +1650,8 @@ public class MemoryManipulator
                 WriteMemory(0x2a884, [82, 1, 98, 144, 0, 0, 0, 0, 4, 0, 66, 48, 6, 0, 64, 16, 4, 0, 2, 36, 128, 234, 4, 8, 5, 0, 34, 162], binPtr); //custom snow firefly box check code
                 WriteMemory(0x8cc0, [12, 128, 2, 60, 112, 248, 67, 36, 82, 1, 98, 144, 0, 0, 0, 0, 4, 0, 66, 48, 6, 0, 64, 16, 12, 0, 5, 36, 0, 0, 0, 0], binPtr); //custom snow firefly box check code
 
+                WriteMemory(0x162a4, randomizer.ForestSeesaws, binPtr); //treasure house cutscene and event only pops when seesaw status changes from the default randomized one
+                
                 //custom tiny pig tracking
                 WriteMemory(0x2b610, [153, 1], binPtr);
                 WriteMemory(0x2b61c, 8, binPtr);
@@ -1942,7 +1950,7 @@ public class MemoryManipulator
         var trackerAddress = 0xf940 + id / 8;
         WriteMemory(trackerAddress, (byte)(ReadMemory(trackerAddress) | (byte)Math.Pow(2, id % 8)));
 
-        randomizer.ItemTrackerStatus.Add(id);
+        randomizer.ItemTracker.Add(id);
     }
 
     public void ResetTracker()
@@ -1952,7 +1960,7 @@ public class MemoryManipulator
         var trackerItems = ReadTracker();
         for (byte i = 0; i < trackerItems.Length; i++)
         {
-            if (trackerItems[i]) randomizer.ItemTrackerStatus.Add(i);
+            if (trackerItems[i]) randomizer.ItemTracker.Add(i);
         }
     }
 

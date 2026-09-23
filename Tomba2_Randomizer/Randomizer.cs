@@ -186,10 +186,14 @@ namespace Tomba2_Randomizer
 
         public byte[] MusicTracks { get; private set; } = [0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 20, 24, 25, 26, 27, 32, 33, 34, 40, 41, 42, 48, 56];
 
+        public byte BeachBarrels { get; private set; }
+
+        public byte ForestSeesaws { get; private set; }
+
         public int Seed { get; private set; }
 
         public bool ResetTracker { get; set; }
-        public List<byte> ItemTrackerStatus { get; set; } = [];
+        public List<byte> ItemTracker { get; set; } = [];
 
         public void Randomize() => Randomize((int)DateTime.Now.Ticks);
 
@@ -296,6 +300,8 @@ namespace Tomba2_Randomizer
                 ShuffleMusic();
             }
 
+            BeachBarrels = (byte)r.Next(1, 255);
+            ForestSeesaws = (byte)r.Next(1, 15);
         }
 
         private class PlacementStep

@@ -881,12 +881,25 @@ public partial class MainWindow : Window
             }
             randomizer.ResetTracker = false;
         }
-        foreach (var item in randomizer.ItemTrackerStatus)
+
+        foreach (var item in randomizer.ItemTracker)
         {
-            var border = (Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == item);
-            if (border != null) ToggleItem(border);
+            if (ChkItemTrackerType.IsChecked == true)
+            {
+                var randomItem = randomizer.RandomizedItems.FirstOrDefault(ri => ri.Key.Id == item).Value;
+                if (randomItem != null)
+                {
+                    var border = (Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == randomItem.Id);
+                    if (border != null) ToggleItem(border);
+                }
+            }
+            else
+            {
+                var border = (Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == item);
+                if (border != null) ToggleItem(border);
+            }
         }
-        randomizer.ItemTrackerStatus = [];
+        randomizer.ItemTracker = [];
     }
 
     private void ToggleItem(Border icon)
@@ -966,12 +979,17 @@ public partial class MainWindow : Window
             }
             appData.ItemsPerRow = itemsPerRow;
             SaveAppData();
-        }        
+        }
     }
 
     private void BtnToggleBackground_Click(object? sender, RoutedEventArgs e)
     {
         if (CnvItemTracker.Background == Brush.Parse("LimeGreen")) CnvItemTracker.Background = Brush.Parse("Transparent");
         else CnvItemTracker.Background = Brush.Parse("LimeGreen");
+    }
+
+    private void ChkItemTrackerType_IsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (memory != null && memory.IsActive) memory.ResetTracker();
     }
 }
