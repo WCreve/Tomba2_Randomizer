@@ -7,7 +7,7 @@ namespace Tomba2_Randomizer
 {
     public class AppData
     {
-        private List<RandomizerSeed> _seedHistory;
+        private List<RandomizerSeed> _seedHistory = new List<RandomizerSeed>();
 
         public int ItemsPerRow { get; set; } = 16;
 

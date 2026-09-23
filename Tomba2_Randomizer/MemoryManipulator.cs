@@ -277,7 +277,8 @@ public class MemoryManipulator
                             if (ReadMemory(0xf8d1) != 255) //kill the guards not completed
                             {
                                 CompleteEvent(29, false);
-                                AddItemWithMessage(167, 1, true);
+                                Enqueue(writeQueueSafe, 0xf8b0, [167, 1, 1]);
+                                QueueCustomPopupItem(randomizer.RandomizedItems.First(r => r.Key.Id == 140).Value);
                                 //look into adding a donglin bell item pickup
                             }
 
@@ -1708,7 +1709,7 @@ public class MemoryManipulator
                 WriteMemory(0x51a0, [82, 1], binPtr); //100 year old amulet spawn logic
                 WriteMemory(0x51a8, 16, binPtr);
                 WriteMemory(0x6160, new byte[8], binPtr);
-                WriteMemory(0x6160, [82, 1], binPtr);
+                WriteMemory(0x6178, [82, 1], binPtr);
                 WriteMemory(0x6180, 16, binPtr);
                 WriteMemory(0x6188, [82, 1], binPtr);
 

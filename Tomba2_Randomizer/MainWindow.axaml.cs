@@ -147,7 +147,10 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                // ignored
+                memory = null;
+                LblHooked.Content = "Could not access Tomba 2 process";
+                LblHooked.Foreground = new SolidColorBrush(Colors.Red);
+                return;
             }
 
             if (memory.IsGameRunning())
