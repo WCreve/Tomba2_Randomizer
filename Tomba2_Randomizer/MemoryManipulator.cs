@@ -218,7 +218,11 @@ public class MemoryManipulator
                     {
                         case 11: //pants collected
                         case 12:
-                            newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == (ReadMemory(0xf870) == 0 ? 11 : 12)).Value.InternalId; //check which pants you're picking up based on current area
+                            var area = ReadMemory(0xf870);
+                            newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == (area == 0 ? 11 : 12)).Value.InternalId; //check which pants you're picking up based on current area
+
+                            UpdateTracker((byte)(area == 0 ? 11 : 12));
+                            customTracker = true;
                             break;
 
                         case 17: //swimming pig suit collected
