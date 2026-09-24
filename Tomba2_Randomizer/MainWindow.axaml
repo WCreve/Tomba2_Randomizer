@@ -14,7 +14,7 @@
                     <Label Name="LblHooked" Content="Connected" HorizontalAlignment="Left" Margin="29,21,0,0" VerticalAlignment="Top"/>
                     <Label Name="LblRandomizer" Content="No randomizer loaded." Margin="29,51,0,0"></Label>
                     <Canvas Name="CnvRandomizerSetup">
-                        <Button Name="BtnNewRandom" Content="Randomize" FontSize="24" Canvas.Left="28" Canvas.Top="99" Height="59" Width="230" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnNewRandom_OnClick"/>
+                        <Button Name="BtnNewRandom" Content="Start Randomizer" FontSize="24" Canvas.Left="28" Canvas.Top="99" Height="59" Width="230" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnNewRandom_OnClick"/>
                         <CheckBox Name="ChkDebug" Content="Generate item list text file" Canvas.Left="278" Canvas.Top="115" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                         <CheckBox Name="ChkUseSeed" Content="Use seed" Margin="29,176,0,0" IsCheckedChanged="ChkUseSeed_IsCheckedChanged"></CheckBox>
                         <TextBox IsEnabled="False" Name="TxtSeed" Margin="150, 175, 0, 0" Width="150" HorizontalContentAlignment="Right"></TextBox>

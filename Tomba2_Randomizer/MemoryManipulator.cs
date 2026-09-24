@@ -252,23 +252,8 @@ public class MemoryManipulator
 
                             if (ReadMemory(0xf8cd) != 255) //static explosion not completed
                             {
-                                CompleteEvent(25, false);
                                 WriteMemory(0xf9c4, 55); //set all kujaras to delivered
                                 WriteMemory(0xf9c6, 20); //pham cutscene completed
-                                QueueCustomPopup("The {O}Donglin Forest lift{W} was fixed!");
-                            }
-
-                            if (ReadMemory(0xf8ce) != 255) //raise the ladder not completed
-                            {
-                                CompleteEvent(26, false);
-                                if (ReadMemory(0xfad9) == 1) //if player has hexagon gear, remove
-                                {
-                                    QueueCustomPopup("Your {P}Hexagon Gear{W} was{n}used automatically!");
-                                }
-                                else
-                                {
-                                    SetFlagRemoveHexagonGear();
-                                }
                             }
 
                             if (ReadMemory(0xf9c5) == 0) //summit ice block not pushed
@@ -724,24 +709,6 @@ public class MemoryManipulator
                 }
                 break;
 
-            case 37: //hexagon gear
-                if ((ReadMemory(0xf9c2) & 1) == 1)
-                {
-                    QueueCustomPopup("{P}Hexagon Gear{W} obtained and used!");
-                    WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) & ~(1 << 0)));
-                    custom = true;
-                }
-
-                if (ReadMemory(0xf870) == 5) //in summit
-                {
-                    if (ReadMemory(0xf937) != 0 && (ReadMemory(0xfa4b) & 2) == 0) //allowed to recollect gears and hexagon gear has not been recollected
-                    {
-                        WriteMemory(0x4e268, 1); //enable recollecting hexagon gear
-                        WriteMemory(0x182be, [80, 162], binPtr);
-                    }
-                }
-                break;
-
             case 40: //random pink bucket received
                 if (ReadMemory(0xf8b8) == 255 || ReadMemory(0xfb15) != 0) //give blue bucket instead of pink if Save the Crab is completed or if you already have a blue bucket
                 {
@@ -1087,16 +1054,16 @@ public class MemoryManipulator
                             break;
 
                         case 5:
-                                if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 20) //pham room
-                                {
-                                    WriteMemory(0xf9c6, 22);
-                                    WriteMemory(0xf8b0, [24, 1, 1]);
+                            if (enteringInterior[0] == 2 && enteringInterior[1] == 2 && ReadMemory(0xf9c6) == 20) //pham room
+                            {
+                                CompleteEvent(25, true);
+                                WriteMemory(0xf9c6, 22);
+                                WriteMemory(0xf8b0, [24, 1, 1]);
 
                                 var item = randomizer.RandomizedItems.First(r => r.Key.InternalId == 24).Value;
                                 QueueCustomPopup("{O}Pham{W} gives you " + (item.Color == ItemColor.Green ? "{G}" : item.Color == ItemColor.Blue ? "{B}" : "{P}") + item.DisplayName + "{W}!");
-                                
                             }
-                            else if (enteringInterior[0] == 6 && enteringInterior[1] == 1) //crying room
+                            if (enteringInterior[0] == 6 && enteringInterior[1] == 1) //crying room
                             {
                                 interiorTransition = true;
 
@@ -1463,35 +1430,35 @@ public class MemoryManipulator
                 break;
 
             case 5:
-                if (warpDestination[0] == 6) //travelling backwards from donglin
-                {
-                    if (ReadMemory(0xf8cd) != 255) //static explosion event not completed
-                    {
-                        var kujaraPurified = (ReadMemory(0xfe56) & 32) == 32;
-                        var hasSquirrelClothes = ReadMemory(0xfac3) == 1;
+                //if (warpDestination[0] == 6) //travelling backwards from donglin
+                //{
+                //    if (ReadMemory(0xf8cd) != 255) //static explosion event not completed
+                //    {
+                //        var kujaraPurified = (ReadMemory(0xfe56) & 32) == 32;
+                //        var hasSquirrelClothes = ReadMemory(0xfac3) == 1;
 
-                        if (kujaraPurified || hasSquirrelClothes)
-                        {
-                            WriteMemory(0x65210, [250, 56, 52, 208, 104, 57, 10, 1], globalPtr); //overwrite warp destination coordinates to put player outside of Pham's hut
-                            Enqueue(writeQueueWarp, 0x65210, [0, 43, 192, 208, 0, 78, 10, 43], globalPtr); //revert changes after warp
+                //        if (kujaraPurified || hasSquirrelClothes)
+                //        {
+                //            WriteMemory(0x65210, [250, 56, 52, 208, 104, 57, 10, 1], globalPtr); //overwrite warp destination coordinates to put player outside of Pham's hut
+                //            Enqueue(writeQueueWarp, 0x65210, [0, 43, 192, 208, 0, 78, 10, 43], globalPtr); //revert changes after warp
 
-                            if (!kujaraPurified)
-                            {
-                                if (ReadMemory(0x37eef) != 15) //auto-equip squirrel clothes if not equipped (maybe add invisibility checks etc)
-                                {
-                                    Enqueue(writeQueueWarp, 0xf88f, [15]); 
-                                    Enqueue(writeQueueWarp, 0x37eef, [15]);
-                                    Enqueue(writeQueueWarp, 0xf81d, [1]);
-                                    Enqueue(writeQueueWarp, 0x37e84, [4, 17, 0]);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            WriteMemory(0xf83a, 5); //just warp to start of summit if you can't do anything there
-                        }
-                    }
-                }
+                //            if (!kujaraPurified)
+                //            {
+                //                if (ReadMemory(0x37eef) != 15) //auto-equip squirrel clothes if not equipped (maybe add invisibility checks etc)
+                //                {
+                //                    Enqueue(writeQueueWarp, 0xf88f, [15]); 
+                //                    Enqueue(writeQueueWarp, 0x37eef, [15]);
+                //                    Enqueue(writeQueueWarp, 0xf81d, [1]);
+                //                    Enqueue(writeQueueWarp, 0x37e84, [4, 17, 0]);
+                //                }
+                //            }
+                //        }
+                //        else
+                //        {
+                //            WriteMemory(0xf83a, 5); //just warp to start of summit if you can't do anything there
+                //        }
+                //    }
+                //}
                 
                 break;
 
@@ -1636,13 +1603,9 @@ public class MemoryManipulator
                 if ((ReadMemory(0xfe56) & 32) == 32) //purified
                 {
                     WriteMemory(0x30eb0, 38, binPtr); //change hexagon gear pickup sprite 
-                    if (ReadMemory(0xf937) != 0 && (ReadMemory(0xfa4b) & 2) == 0) //allowed to recollect gears and hexagon gear has not been recollected
-                    {
-                        if ((ReadMemory(0xf9c2) & 1) == 1) //hexagon gear has not been obtained yet
-                        {
-                            WriteMemory(0x182be, [0, 0], binPtr); //disable recollecting hexagon gear
-                        }
-                    }
+
+                    WriteMemory(0x18358, [12, 128, 2, 60, 112, 248, 80, 36, 78, 1, 130, 144, 0, 0, 0, 0, 8, 0, 66, 52, 78, 1, 130, 160], binPtr); //prevent softlock if raising ladder while purified
+                    WriteMemory(0x18370, new byte[36], binPtr);
                 }
                 break;
             case 6:
