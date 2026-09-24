@@ -867,6 +867,15 @@ public class MemoryManipulator
                 }
                 break;
 
+            case 148: //large flower seed
+                if (ReadMemory(0xf870) == 7) //allow planting of seed without issues if obtained seed in circus village
+                {
+                    WriteMemory(0x221d6, 32, binPtr);
+                    WriteMemory(0x222ec, 32, binPtr);
+                    WriteMemory(0x222d4, [33, 16, 98, 0], binPtr);
+                }
+                break;
+
             case 160: //harp pieces
             case 161:
             case 162:
@@ -1655,6 +1664,13 @@ public class MemoryManipulator
                 WriteMemory(0x8cc0, [12, 128, 2, 60, 112, 248, 67, 36, 82, 1, 98, 144, 0, 0, 0, 0, 4, 0, 66, 48, 6, 0, 64, 16, 12, 0, 5, 36, 0, 0, 0, 0], binPtr); //custom snow firefly box check code
 
                 WriteMemory(0x162a4, randomizer.ForestSeesaws, binPtr); //treasure house cutscene and event only pops when seesaw status changes from the default randomized one
+
+                if (ReadMemory(0xfb48) == 0) //prevent issues if you load into circus village without a large flower seed but you get it there and try to plant it
+                {
+                    WriteMemory(0x221d6, 50, binPtr);
+                    WriteMemory(0x222ec, 0, binPtr);
+                    WriteMemory(0x222d4, new byte[4], binPtr);
+                }
                 
                 //custom tiny pig tracking
                 WriteMemory(0x2b610, [153, 1], binPtr);

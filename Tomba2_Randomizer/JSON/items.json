@@ -513,6 +513,23 @@
 		"address": "0xfadb",
 		"requirements": [
 			{
+				"items": [ 11 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 13 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 14 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 105 ],
 				"areas": [ 10 ]
 			}
 		],
@@ -1966,6 +1983,23 @@
 		"address": "0xfb52",
 		"requirements": [
 			{
+				"items": [ 11 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 13 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 14 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 105 ],
 				"areas": [ 10 ]
 			}
 		],
@@ -1978,7 +2012,23 @@
 		"address": "0xfb53",
 		"requirements": [
 			{
-				"items": [ 132 ],
+				"items": [ 11, 132 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 13, 132 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 14, 132 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 15, 132 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 105, 132 ],
 				"areas": [ 10 ]
 			}
 		],
