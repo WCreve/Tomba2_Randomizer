@@ -34,6 +34,7 @@ public class MemoryManipulator
     private IntPtr binPtr; //0x110000
     private IntPtr switchPtr; //0x10000
     private IntPtr spPtr; //scratchpad
+    private IntPtr dialoguePtr; //0x1bffbf
 
     private int igt;
 
@@ -79,6 +80,10 @@ public class MemoryManipulator
         IntPtr ptr4 = IntPtr.Add(BitConverter.ToInt32(baseBuffer), 0x8);
         ReadProcessMemory((int)handle, (int)ptr4, buffer, buffer.Length, out bytesRead);
         switchPtr = BitConverter.ToInt32(buffer);
+
+        IntPtr ptr5 = IntPtr.Add(BitConverter.ToInt32(baseBuffer), 0xe0);
+        ReadProcessMemory((int)handle, (int)ptr5, buffer, buffer.Length, out bytesRead);
+        dialoguePtr = BitConverter.ToInt32(buffer);
 
 
         ReadProcessMemory((int)handle, baseAddress + 0x0F3E2A70, buffer, buffer.Length, out bytesRead);
@@ -1671,6 +1676,8 @@ public class MemoryManipulator
                     WriteMemory(0x12da4, new byte[8], binPtr);
                     WriteMemory(0x12dac, 2, binPtr);
                 }
+
+                SetPigRobeHintStrings();
                 break;
             case 8:
                 WriteMemory(0x4f28, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 1, 2, 146, 0, 0, 0, 0, 8, 0, 66, 48, 181, 0, 64, 16, 0, 0, 0, 0], binPtr);
@@ -1778,7 +1785,21 @@ public class MemoryManipulator
 
     private void QueueCustomPopup(string input) => writeQueuePopup.Add(new QueuedChange(igt, input));
 
-    private void SetCustomPopupString(string input)
+    private void SetCustomPopupString(string input) => WriteMemory(0x50e08, ConvertToTombaText(input), binPtr);
+
+    private void SetPigRobeHintStrings()
+    {
+        WriteMemory(0x9c7c, ConvertToTombaText("Pig Robes are.{E}{n}"), dialoguePtr);
+
+        var robes = randomizer.RandomizedItems.Where(ri => ri.Value.Id > 15 && ri.Value.Id < 21).OrderBy(ri => ri.Key.Id).Select(ri => ri.Key).ToList();
+        WriteMemory(0x9c8b, ConvertToTombaText("The Flame Pig Robe...{E}" + (robes[0].Color == ItemColor.Green ? "{G}" : (robes[0].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[0].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        WriteMemory(0x9cd6, ConvertToTombaText("The Ghost Pig Robe...{E}" + (robes[2].Color == ItemColor.Green ? "{G}" : (robes[2].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[2].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        WriteMemory(0x9d61, ConvertToTombaText("The Earth Pig Robe...{E}" + (robes[3].Color == ItemColor.Green ? "{G}" : (robes[3].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[3].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        WriteMemory(0x9de1, ConvertToTombaText("The Water Pig Robe...{E}" + (robes[4].Color == ItemColor.Green ? "{G}" : (robes[4].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[4].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        WriteMemory(0x9e64, ConvertToTombaText("The Ice Pig Robe...{E}" + (robes[1].Color == ItemColor.Green ? "{G}" : (robes[1].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[1].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+    }
+
+    private byte[] ConvertToTombaText(string input)
     {
         var popupText = new byte[input.Length - input.Count('{') * 2 + 1];
         int outputIndex = 0;
@@ -1812,6 +1833,9 @@ public class MemoryManipulator
                     case 'W':
                         popupText[outputIndex] = 240; //end colour
                         break;
+                    case 'E':
+                        popupText[outputIndex] = 248; //end of dialogue box
+                        break;
                 }
                 i += 2;
             }
@@ -1820,8 +1844,7 @@ public class MemoryManipulator
 
         popupText[outputIndex] = 255;
 
-        WriteMemory(0x50e08, popupText, binPtr);
-
+        return popupText;
     }
 
     private int AllocateActorPool(byte pool)

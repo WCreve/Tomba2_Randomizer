@@ -694,7 +694,7 @@ public partial class MainWindow : Window
         }
 
         BtnNewRandom.Content = "Randomizing...";
-        LblRandomizer.Content = "No randomizer loaded.";
+        LblRandomizer.Content = "No randomizer loaded. Start the randomizer before loading or starting a save!";
 
         BtnNewRandom.IsEnabled = false;
         ChkDebug.IsEnabled = false;

@@ -6,13 +6,13 @@
         mc:Ignorable="d" CanResize="False"
         Width="1340" Height="760"
         x:Class="Tomba2_Randomizer.MainWindow"
-        Title="Tomba2 Randomizer v0.2.0.alpha1">
+        Title="Tomba2 Randomizer v0.2.1.beta1">
     <Grid>
         <TabControl Name="TabControl" SelectionChanged="SelectingItemsControl_OnSelectionChanged">
             <TabItem Name="TabMain" Header="Main">
                 <Canvas>
                     <Label Name="LblHooked" Content="Connected" HorizontalAlignment="Left" Margin="29,21,0,0" VerticalAlignment="Top"/>
-                    <Label Name="LblRandomizer" Content="No randomizer loaded." Margin="29,51,0,0"></Label>
+                    <Label Name="LblRandomizer" Content="No randomizer loaded. Start the randomizer before loading or starting a save!" Margin="29,51,0,0"></Label>
                     <Canvas Name="CnvRandomizerSetup">
                         <Button Name="BtnNewRandom" Content="Start Randomizer" FontSize="24" Canvas.Left="28" Canvas.Top="99" Height="59" Width="230" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnNewRandom_OnClick"/>
                         <CheckBox Name="ChkDebug" Content="Generate item list text file" Canvas.Left="278" Canvas.Top="115" HorizontalAlignment="Center" VerticalAlignment="Top"/>
