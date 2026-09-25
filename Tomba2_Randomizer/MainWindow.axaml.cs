@@ -700,6 +700,7 @@ public partial class MainWindow : Window
         ChkDebug.IsEnabled = false;
         ChkUseSeed.IsEnabled = false;
         ChkSettingMusic.IsEnabled = false;
+        ChkBanGoldenPowder.IsEnabled = false;
         CmbRecentSeeds.IsEnabled = false;
         TxtSeed.IsEnabled = false;
 
@@ -741,6 +742,7 @@ public partial class MainWindow : Window
         ChkDebug.IsEnabled = true;
         ChkUseSeed.IsEnabled = true;
         ChkSettingMusic.IsEnabled = true;
+        ChkBanGoldenPowder.IsEnabled = true;
         CmbRecentSeeds.IsEnabled = true;
         TxtSeed.IsEnabled = true;
 
@@ -912,7 +914,8 @@ public partial class MainWindow : Window
     {
         var settings = new RandomizerSettings
         {
-            ShuffleMusic = ChkSettingMusic.IsChecked == true
+            ShuffleMusic = ChkSettingMusic.IsChecked == true,
+            BanGoldenPowder = ChkBanGoldenPowder.IsChecked == true            
         };
         return settings;
     }
@@ -961,7 +964,7 @@ public partial class MainWindow : Window
     {
         CnvRandomizerActive.IsVisible = false;
         CnvRandomizerSetup.IsVisible = true;
-        LblRandomizer.Content = "No randomizer loaded.";
+        LblRandomizer.Content = "No randomizer loaded. Start the randomizer before loading or starting a save!";
 
         updateTabTimer.Tick -= TrackItemTracker;
     }

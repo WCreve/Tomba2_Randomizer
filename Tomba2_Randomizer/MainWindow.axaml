@@ -30,6 +30,7 @@
                         <!--<Button Name="BtnJsonDeserializer" Content="dump info" FontSize="24" Canvas.Left="28" Canvas.Top="276" Height="58" Width="290" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnJsonDeserializer_Click"/>-->
 
                         <CheckBox Name="ChkSettingMusic" Content="Shuffle music" Margin="450, 220, 0, 0"></CheckBox>
+                        <CheckBox Name="ChkBanGoldenPowder" Content="Ban Golden Powder" IsChecked="True" Margin="450, 250, 0, 0"></CheckBox>
                     </Canvas>
                     <Canvas Name="CnvRandomizerActive" IsVisible="False">
                         <Button Name="BtnStopRandomizer" Content="Stop randomizer" FontSize="24" Canvas.Left="28" Canvas.Top="99" Height="59" Width="230" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="BtnStopRandomizer_Click"></Button>
