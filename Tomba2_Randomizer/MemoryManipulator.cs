@@ -1789,14 +1789,16 @@ public class MemoryManipulator
 
     private void SetPigRobeHintStrings()
     {
-        WriteMemory(0x9c7c, ConvertToTombaText("Pig Robes are.{E}{n}"), dialoguePtr);
+        var isPurified = (ReadMemory(0xfe56) & 128) != 0;
 
-        var robes = randomizer.RandomizedItems.Where(ri => ri.Value.Id > 15 && ri.Value.Id < 21).OrderBy(ri => ri.Key.Id).Select(ri => ri.Key).ToList();
-        WriteMemory(0x9c8b, ConvertToTombaText("The Flame Pig Robe...{E}" + (robes[0].Color == ItemColor.Green ? "{G}" : (robes[0].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[0].DisplayName + "{W}!{E}{n}"), dialoguePtr);
-        WriteMemory(0x9cd6, ConvertToTombaText("The Ghost Pig Robe...{E}" + (robes[2].Color == ItemColor.Green ? "{G}" : (robes[2].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[2].DisplayName + "{W}!{E}{n}"), dialoguePtr);
-        WriteMemory(0x9d61, ConvertToTombaText("The Earth Pig Robe...{E}" + (robes[3].Color == ItemColor.Green ? "{G}" : (robes[3].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[3].DisplayName + "{W}!{E}{n}"), dialoguePtr);
-        WriteMemory(0x9de1, ConvertToTombaText("The Water Pig Robe...{E}" + (robes[4].Color == ItemColor.Green ? "{G}" : (robes[4].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[4].DisplayName + "{W}!{E}{n}"), dialoguePtr);
-        WriteMemory(0x9e64, ConvertToTombaText("The Ice Pig Robe...{E}" + (robes[1].Color == ItemColor.Green ? "{G}" : (robes[1].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[1].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        WriteMemory(isPurified ? 0x9c68 : 0x9c7c, ConvertToTombaText("Pig Robes are.{E}{n}"), dialoguePtr);
+
+        var robes = randomizer.RandomizedItems.Where(ri => ri.Value.Id > 15 && ri.Value.Id < 21).OrderBy(ri => ri.Value.Id).Select(ri => ri.Key).ToList();
+        WriteMemory(isPurified ? 0x9c77 : 0x9c8b, ConvertToTombaText("The Flame Pig Robe...{E}" + (robes[0].Color == ItemColor.Green ? "{G}" : (robes[0].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[0].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        WriteMemory(isPurified ? 0x9cc2 : 0x9cd6, ConvertToTombaText("The Ghost Pig Robe...{E}" + (robes[2].Color == ItemColor.Green ? "{G}" : (robes[2].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[2].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        WriteMemory(isPurified ? 0x9d4d : 0x9d61, ConvertToTombaText("The Earth Pig Robe...{E}" + (robes[3].Color == ItemColor.Green ? "{G}" : (robes[3].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[3].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        WriteMemory(isPurified ? 0x9dcd : 0x9de1, ConvertToTombaText("The Water Pig Robe...{E}" + (robes[4].Color == ItemColor.Green ? "{G}" : (robes[4].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[4].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        WriteMemory(isPurified ? 0x9e50 : 0x9e64, ConvertToTombaText("The Ice Pig Robe...{E}" + (robes[1].Color == ItemColor.Green ? "{G}" : (robes[1].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[1].DisplayName + "{W}!{E}{n}"), dialoguePtr);
     }
 
     private byte[] ConvertToTombaText(string input)
