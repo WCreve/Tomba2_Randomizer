@@ -1856,15 +1856,15 @@
 		"address": "0xfb49",
 		"requirements": [
 			{
-				"items": [ 14, 122 ],
+				"items": [ 14, 36, 122 ],
 				"areas": [ 9 ]
 			},
 			{
-				"items": [ 15, 122 ],
+				"items": [ 15, 36, 122 ],
 				"areas": [ 9 ]
 			},
 			{
-				"items": [ 122 ],
+				"items": [ 36, 122 ],
 				"areas": [ 9 ],
 				"events": [ 41 ]
 			}

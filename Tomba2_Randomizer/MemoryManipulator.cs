@@ -2,6 +2,7 @@ using System;
 using System.Buffers.Binary;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -168,6 +169,7 @@ public class MemoryManipulator
         AddItemWithoutMessage(96, 80); //give 80 magic wings
 
         if (randomizer.Settings.ShuffleMusic) ShuffleMusic();
+        if (randomizer.Settings.BanGoldenPowder) DisableGoldenPowder();
 
         UpdateTracker(172);
         UpdateTracker(173);
@@ -1238,8 +1240,8 @@ public class MemoryManipulator
                 }
                 else if (enteringInterior[1] == 2 || enteringInterior[1] == 4) interiorTransition = false;
 
-                var popups = ReadMemory(0xf9f1);
 
+                var popups = ReadMemory(0xf9f1);
                 
                 if (popups != 0)
                 {
@@ -1247,6 +1249,12 @@ public class MemoryManipulator
                     {
                         var flowersWatered = BitOperations.PopCount(ReadMemory(0xfa13));
                         QueueCustomPopup("Watered " + (flowersWatered == 5 ? "{G}all" : ("{B}" + flowersWatered)) + " {O}Magic Flower" + (flowersWatered > 1 ? "s" : "") + "{W}!");
+                    }
+                    else if (popups == 254)
+                    {
+                        QueueCustomPopup("{B}Golden Powder{W} is banned!");
+                        WriteMemory(0xf881, (byte)(ReadMemory(0xf881) | 8));
+                        WriteMemory(0x37e8d, (byte)(ReadMemory(0x37e8d) | 66));
                     }
                     else
                     {
@@ -1719,6 +1727,10 @@ public class MemoryManipulator
                 WriteMemory(0x1e1c4, 16, binPtr);
 
                 break;
+
+            case 19:
+                if (randomizer.Settings.BanGoldenPowder) WriteMemory(-0x3260, new byte[4], binPtr);
+                break;
             default:
                 break;
         }
@@ -2015,6 +2027,11 @@ public class MemoryManipulator
         WriteMemory(0x34fc0, tracks[22], globalPtr);
         WriteMemory(0x3502c, tracks[23], globalPtr);
         WriteMemory(0x35040, tracks[24], globalPtr);
+    }
+
+    private void DisableGoldenPowder()
+    {
+        WriteMemory(-0xaf20, [12, 128, 3, 60, 254, 0, 2, 36, 241, 249, 98, 160, 67, 212, 0, 8, 33, 16, 0, 0], globalPtr);
     }
 
     private void HandleRewind(int time)
