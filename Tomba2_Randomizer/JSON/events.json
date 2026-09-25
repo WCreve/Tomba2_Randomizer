@@ -721,7 +721,7 @@
 		"requirements": [
 			{
 				"items": [ 15 ],
-				"events": [ 45 ],
+				"events": [ 42, 45 ],
 				"areas": [ 10 ]
 			}
 		]

@@ -1318,12 +1318,7 @@
 		"address": "0xfb03",
 		"requirements": [
 			{
-				"items": [ 1 ],
-				"areas": [ 6 ]
-			},
-			{
-				"items": [ 2 ],
-				"areas": [ 6 ]
+				"areas": [ 6, 7 ]
 			}
 		],
 		"iconpath": "lightcuttingbox.png"
