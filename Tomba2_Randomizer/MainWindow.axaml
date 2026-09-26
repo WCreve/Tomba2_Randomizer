@@ -6,7 +6,7 @@
         mc:Ignorable="d" CanResize="False"
         Width="1340" Height="760"
         x:Class="Tomba2_Randomizer.MainWindow"
-        Title="Tomba2 Randomizer v0.2.1.beta3">
+        Title="Tomba2 Randomizer v0.2.1.beta4">
     <Grid>
         <TabControl Name="TabControl" SelectionChanged="SelectingItemsControl_OnSelectionChanged">
             <TabItem Name="TabMain" Header="Main">
