@@ -292,6 +292,10 @@ public class MemoryManipulator
                             }
                             break;
 
+                        case 25: //ghost pig bag collected
+                            WriteMemory(-0x4e6b, 119, binPtr);
+                            break;
+
                         case 28: //last evil pig bag collected
                             if (!(ReadMemory(0xfac6, 5).Count(r => r == 1) == 5 && (ReadMemory(0xfad0) == 1 || newItemId == 28))) //prevent opening door to ??? if you don't have all robes and the last pig bag
                             {
@@ -1494,7 +1498,7 @@ public class MemoryManipulator
         if (pigDoors.Contains(warpDestination[1]) && (pigDoorsOpened & (byte)Math.Pow(2, pigDoors.IndexOf(warpDestination[1]))) == 0)
         {
             var bags = ReadMemory(0xf883, 7);
-            if (!bags.Any(b => b == 23 + pigDoors.IndexOf(warpDestination[1])) && warpDestination[1] != 8) //make sure you don't already have the bag
+            if (!bags.Any(b => b == 23 + pigDoors.IndexOf(warpDestination[1])) && warpDestination[1] != 8 && warpDestination[1] != 6) //make sure you don't already have the bag
             {
                 Enqueue(writeQueueWarp, 0xf883, bags);
                 Enqueue(writeQueueWarp, warpDestination[1] == 0 ? 0x4e81d : 0x4e26d, [4]);
@@ -1647,6 +1651,11 @@ public class MemoryManipulator
                     WriteMemory(0x222ec, 0, binPtr);
                     WriteMemory(0x222d4, new byte[4], binPtr);
                 }
+
+                if (ReadMemory(0xfa22) == 48) //disable travelling to circus village
+                {
+                    WriteMemory(-0x4e6b, 123, binPtr);
+                }
                 
                 //custom tiny pig tracking
                 WriteMemory(0x2b610, [153, 1], binPtr);
@@ -1656,7 +1665,7 @@ public class MemoryManipulator
                 WriteMemory(0x2b688, 8, binPtr);
                 break;
             case 7:
-                if (ReadMemory(0xf8d5) != 255) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
+                if (ReadMemory(0xf8d5) != 255 || ReadMemory(0xfa22) == 48) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
                 WriteMemory(0x1687c, new byte[4], binPtr); //disable losing paon grass on failure
                 WriteMemory(0x1689c, new byte[36], binPtr); //disable losing paon grass on failure
                 WriteMemory(0x192f4, 100, binPtr); //prevent gaining duplicate items from elder pig (paon grass)

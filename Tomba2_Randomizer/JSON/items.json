@@ -513,6 +513,14 @@
 		"address": "0xfadb",
 		"requirements": [
 			{
+				"items": [ 1 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 10 ]
+			},
+			{
 				"items": [ 11 ],
 				"areas": [ 10 ]
 			},
@@ -1140,7 +1148,7 @@
 		"address": "0xfaf8",
 		"requirements": [
 			{
-				"items": [ 9 ],
+				"items": [ 9, 15 ],
 				"areas": [ 10 ]
 			}
 		],
@@ -1375,19 +1383,9 @@
 		"address": "0xfb07",
 		"requirements": [
 			{
-				"items": [ 1 ],
 				"events": [ 5 ]
 			},
 			{
-				"items": [ 2 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 1 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 2 ],
 				"events": [ 48 ]
 			}
 		],
@@ -1983,6 +1981,14 @@
 		"address": "0xfb52",
 		"requirements": [
 			{
+				"items": [ 1 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 12 ],
+				"areas": [ 10 ]
+			},
+			{
 				"items": [ 11 ],
 				"areas": [ 10 ]
 			},
@@ -2011,6 +2017,14 @@
 		"color": "Pink",
 		"address": "0xfb53",
 		"requirements": [
+			{
+				"items": [ 1, 132 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 2, 132 ],
+				"areas": [ 10 ]
+			},
 			{
 				"items": [ 11, 132 ],
 				"areas": [ 10 ]
