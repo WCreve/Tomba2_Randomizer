@@ -694,13 +694,13 @@ public class MemoryManipulator
                 WriteMemory(0x37eec, itemId);
                 break;
 
-            //case 11: //pants
-            //case 12:
-            //    var pantsFound = ReadMemory(0xf9cf);
-            //    itemId = (byte)(pantsFound == 0 ? 11 : 12);
+            case 11: //pants
+            case 12:
+                var pantsFound = ReadMemory(0xf9cf);
+                itemId = (byte)(pantsFound == 0 ? 11 : 12);
 
-            //    WriteMemory(0xf9cf, ++pantsFound);
-            //    break;
+                WriteMemory(0xf9cf, ++pantsFound);
+                break;
 
             case 18: //evil pig robes
             case 19:
@@ -714,7 +714,7 @@ public class MemoryManipulator
                 break;
 
             case 28: //last pig bag
-                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 5) //allow unlocking door to ??? if you have all the pig bags
+                if (ReadMemory(0xf870) == 1 && ReadMemory(0xfac6, 5).Count(r => r == 1) == 5) //allow unlocking door to ??? if you have all the pig robes
                 {
                     WriteMemory(0xa8b8, [6, 0, 37, 162, 1, 0, 4, 36, 213, 8, 1, 12, 33, 40, 128, 0], binPtr);
                 }
