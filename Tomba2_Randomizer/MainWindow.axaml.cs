@@ -891,9 +891,22 @@ public partial class MainWindow : Window
                 var randomItem = randomizer.RandomizedItems.FirstOrDefault(ri => ri.Key.Id == item).Value;
                 if (randomItem != null)
                 {
-                    var border = (Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == randomItem.Id);
-                    if (border != null) ToggleItem(border);
+                    if (randomItem.Id == 10 || randomItem.Id == 11)
+                    {
+                        var pantsObtained = memory.ReadMemory(0xf9cf);
+                        if (pantsObtained > 0)
+                        {
+                            ToggleItem((Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == 10));
+                            if (pantsObtained == 2) ToggleItem((Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == 11));
+                        }
+                    }
+                    else
+                    {
+                        var border = (Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == randomItem.Id);
+                        if (border != null) ToggleItem(border);
+                    }
                 }
+                
             }
             else
             {

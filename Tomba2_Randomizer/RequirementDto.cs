@@ -8,4 +8,6 @@ public class RequirementDto
     public List<int> Areas { get; set; }
     public List<int> Events { get; set; }
     public int AP { get; set; }
+    public bool Active { get; set; } = true;
+    public byte SpecialRequirementGroup { get; set; }
 }

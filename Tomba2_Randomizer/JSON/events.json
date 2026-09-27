@@ -2190,7 +2190,39 @@
 		"requirements": [
 			{
 				"items": [ 104 ],
-				"events": [ 32, 64 ]
+				"events": [ 21, 64 ],
+				"areas": [ 4 ],
+				"specialRequirementGroup": 0,
+				"active": false
+			},
+			{
+				"events": [ 21, 64, 131 ],
+				"areas": [ 4 ],
+				"specialRequirementGroup": 0,
+				"active": false
+			},
+			{
+				"items": [ 104 ],
+				"events": [ 32, 64 ],
+				"specialRequirementGroup": 1,
+				"active": false
+			},
+			{
+				"events": [ 33, 64, 131 ],
+				"specialRequirementGroup": 1,
+				"active": false
+			},
+			{
+				"items": [ 36, 104 ],
+				"events": [ 38, 64 ],
+				"specialRequirementGroup": 2,
+				"active": false
+			},
+			{
+				"items": [ 36 ],
+				"events": [ 38, 64, 131 ],
+				"specialRequirementGroup": 2,
+				"active": false
 			}
 		]
 	},

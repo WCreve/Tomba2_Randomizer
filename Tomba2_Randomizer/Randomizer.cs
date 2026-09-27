@@ -68,6 +68,9 @@ namespace Tomba2_Randomizer
 
                     group.AP = reqDto.AP;
 
+                    group.Active = reqDto.Active;
+                    group.SpecialRequirementGroup = reqDto.SpecialRequirementGroup;
+
                     item.RequirementGroups.Add(group);
                 }
             }
@@ -103,6 +106,9 @@ namespace Tomba2_Randomizer
 
                     group.AP = reqDto.AP;
 
+                    group.Active = reqDto.Active;
+                    group.SpecialRequirementGroup = reqDto.SpecialRequirementGroup;
+
                     area.RequirementGroups.Add(group);
                 }
             }
@@ -137,6 +143,9 @@ namespace Tomba2_Randomizer
                     }
 
                     group.AP = reqDto.AP;
+
+                    group.Active = reqDto.Active;
+                    group.SpecialRequirementGroup = reqDto.SpecialRequirementGroup;
 
                     eventvar.RequirementGroups.Add(group);
                 }
@@ -190,6 +199,8 @@ namespace Tomba2_Randomizer
 
         public byte ForestSeesaws { get; private set; }
 
+        public byte MouseColour { get; private set; }
+
         public int Seed { get; private set; }
 
         public bool ResetTracker { get; set; }
@@ -211,6 +222,8 @@ namespace Tomba2_Randomizer
             var backtrackCount = 0;
             var furthestProgress = 0;
             var stuckStreak = 0;
+
+            MiscRandomization();
 
             while (RandomItemPool.Count > 0)
             {
@@ -295,13 +308,7 @@ namespace Tomba2_Randomizer
                 DebugString += $"{pair.Key.Name} gives {pair.Value.Name}\n";
             }
 
-            if (Settings.ShuffleMusic)
-            {
-                ShuffleMusic();
-            }
-
-            BeachBarrels = (byte)r.Next(1, 255);
-            ForestSeesaws = (byte)r.Next(1, 15);
+            DebugString += $"\nMouse colour: {(MouseColour == 0 ? "Red" : MouseColour == 1 ? "White" : "Blue")}\n";
         }
 
         private class PlacementStep
@@ -403,8 +410,8 @@ namespace Tomba2_Randomizer
                 {
                     if (unlockedItems.Contains(item)) continue;
 
-                    bool canUnlock = item.RequirementGroups.Count == 0 || item.RequirementGroups.Any(rg => rg.Items.All(requiredItem => obtainedItems.Contains(requiredItem)) &&
-                            rg.Events.All(e => unlockedEvents.Contains(e)) && rg.Areas.All(a => unlockedAreas.Contains(a)) && availableAP >= rg.AP);
+                    bool canUnlock = item.RequirementGroups.Count(rg => rg.Active) == 0 || item.RequirementGroups.Any(rg => rg.Items.All(requiredItem => obtainedItems.Contains(requiredItem)) &&
+                            rg.Events.All(e => unlockedEvents.Contains(e)) && rg.Areas.All(a => unlockedAreas.Contains(a)) && availableAP >= rg.AP && rg.Active);
 
                     if (canUnlock)
                     {
@@ -417,8 +424,8 @@ namespace Tomba2_Randomizer
                 {
                     if (unlockedEvents.Contains(ev)) continue;
 
-                    bool canUnlock = ev.RequirementGroups.Count == 0 || ev.RequirementGroups.Any(rg => rg.Items.All(requiredItem => obtainedItems.Contains(requiredItem)) &&
-                            rg.Events.All(e => unlockedEvents.Contains(e)) && rg.Areas.All(a => unlockedAreas.Contains(a)) && availableAP >= rg.AP);
+                    bool canUnlock = ev.RequirementGroups.Count(rg => rg.Active) == 0 || ev.RequirementGroups.Any(rg => rg.Items.All(requiredItem => obtainedItems.Contains(requiredItem)) &&
+                            rg.Events.All(e => unlockedEvents.Contains(e)) && rg.Areas.All(a => unlockedAreas.Contains(a)) && availableAP >= rg.AP && rg.Active);
 
                     if (canUnlock)
                     {
@@ -431,8 +438,8 @@ namespace Tomba2_Randomizer
                 {
                     if (unlockedAreas.Contains(area)) continue;
 
-                    bool canUnlock = area.RequirementGroups.Count == 0 || area.RequirementGroups.Any(rg => rg.Items.All(requiredItem => obtainedItems.Contains(requiredItem)) &&
-                            rg.Events.All(e => unlockedEvents.Contains(e)) && rg.Areas.All(a => unlockedAreas.Contains(a)));
+                    bool canUnlock = area.RequirementGroups.Count(rg => rg.Active) == 0 || area.RequirementGroups.Any(rg => rg.Items.All(requiredItem => obtainedItems.Contains(requiredItem)) &&
+                            rg.Events.All(e => unlockedEvents.Contains(e)) && rg.Areas.All(a => unlockedAreas.Contains(a)) && rg.Active);
 
                     if (canUnlock)
                     {
@@ -467,6 +474,20 @@ namespace Tomba2_Randomizer
             hypotheticalUnlockCache[(pickup, reward)] = unlocks;
 
             return unlocks;
+        }
+
+        private void MiscRandomization()
+        {
+            if (Settings.ShuffleMusic)
+            {
+                ShuffleMusic();
+            }
+
+            BeachBarrels = (byte)r.Next(1, 255);
+            ForestSeesaws = (byte)r.Next(1, 15);
+
+            MouseColour = (byte)r.Next(0, 3);
+            events[132].RequirementGroups.ForEach(rg => rg.Active = MouseColour == rg.SpecialRequirementGroup);
         }
 
         private void ShuffleMusic() => r.Shuffle(MusicTracks);

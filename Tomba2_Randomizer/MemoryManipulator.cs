@@ -1264,6 +1264,13 @@ public class MemoryManipulator
                     {
                         switch (ReadMemory(0xf870)) //current area
                         {
+                            case 0:
+                                if (!writeQueuePopup.Any(p => p.DequeueTimeStamp + 120 > ReadTimer()))
+                                {
+                                    QueueCustomPopup("Introduce yourself at the{n}{O}Mouse Temple{W} first!");
+                                }
+                                break;
+
                             case 1:
                                 var missingRobeCount = ReadMemory(0xfac6, 5).Count(r => r == 0);
                                 if (missingRobeCount > 0) QueueCustomPopup("You are missing {P}" + missingRobeCount + " {G}Evil Pig Robe" + (missingRobeCount > 1 ? "s" : "") +"{W}!");
@@ -1446,39 +1453,6 @@ public class MemoryManipulator
 
                 break;
 
-            case 5:
-                //if (warpDestination[0] == 6) //travelling backwards from donglin
-                //{
-                //    if (ReadMemory(0xf8cd) != 255) //static explosion event not completed
-                //    {
-                //        var kujaraPurified = (ReadMemory(0xfe56) & 32) == 32;
-                //        var hasSquirrelClothes = ReadMemory(0xfac3) == 1;
-
-                //        if (kujaraPurified || hasSquirrelClothes)
-                //        {
-                //            WriteMemory(0x65210, [250, 56, 52, 208, 104, 57, 10, 1], globalPtr); //overwrite warp destination coordinates to put player outside of Pham's hut
-                //            Enqueue(writeQueueWarp, 0x65210, [0, 43, 192, 208, 0, 78, 10, 43], globalPtr); //revert changes after warp
-
-                //            if (!kujaraPurified)
-                //            {
-                //                if (ReadMemory(0x37eef) != 15) //auto-equip squirrel clothes if not equipped (maybe add invisibility checks etc)
-                //                {
-                //                    Enqueue(writeQueueWarp, 0xf88f, [15]); 
-                //                    Enqueue(writeQueueWarp, 0x37eef, [15]);
-                //                    Enqueue(writeQueueWarp, 0xf81d, [1]);
-                //                    Enqueue(writeQueueWarp, 0x37e84, [4, 17, 0]);
-                //                }
-                //            }
-                //        }
-                //        else
-                //        {
-                //            WriteMemory(0xf83a, 5); //just warp to start of summit if you can't do anything there
-                //        }
-                //    }
-                //}
-                
-                break;
-
             case 6:
                 var ghostsAlive = ReadMemory(0xfa14);
 
@@ -1489,22 +1463,13 @@ public class MemoryManipulator
                 }
 
                 break;
-        }
 
-
-        //Prepare pig doors in case player gets the pig bag for that area in that area
-        var pigDoorsOpened = ReadMemory(0xfa17);
-        var pigDoors = new byte[] { 6, 8, 1, 4, 0 };
-        if (pigDoors.Contains(warpDestination[1]) && (pigDoorsOpened & (byte)Math.Pow(2, pigDoors.IndexOf(warpDestination[1]))) == 0)
-        {
-            var bags = ReadMemory(0xf883, 7);
-            if (!bags.Any(b => b == 23 + pigDoors.IndexOf(warpDestination[1])) && warpDestination[1] != 8 && warpDestination[1] != 6) //make sure you don't already have the bag
-            {
-                Enqueue(writeQueueWarp, 0xf883, bags);
-                Enqueue(writeQueueWarp, warpDestination[1] == 0 ? 0x4e81d : 0x4e26d, [4]);
-
-                WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
-            }
+            case 8:
+                if (warpDestination[0] == 16) //nishiki wing warp
+                {
+                    WriteMemory(0xfa48, randomizer.MouseColour);
+                }
+                break;
         }
 
         if (ReadMemory(0xfadc) > 0) 
@@ -1549,6 +1514,11 @@ public class MemoryManipulator
 
                     WriteMemory(0xc954, new byte[96], binPtr);
                     WriteMemory(0xc9c0, new byte[4], binPtr);
+                }
+
+                if (ReadMemory(0xfa4e) == 0) //prevent nishiki wing teleport to mouse temple if haven't received wings from mouse
+                {
+                    WriteMemory(0x16d88, [12, 128, 3, 60, 1, 0, 2, 36, 241, 249, 98, 160, 141, 155, 4, 8, 3, 20, 2, 0], binPtr);
                 }
 
                 //custom tiny pig tracking

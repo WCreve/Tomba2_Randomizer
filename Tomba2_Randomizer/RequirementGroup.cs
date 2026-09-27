@@ -8,4 +8,6 @@ public class RequirementGroup
     public List<Area> Areas { get; set; } = [];
     public List<Event> Events { get; set; } = [];
     public int AP { get; set; } = new();
+    public bool Active { get; set; }
+    public byte SpecialRequirementGroup { get; set; }
 }
