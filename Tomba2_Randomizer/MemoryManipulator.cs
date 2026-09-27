@@ -228,7 +228,7 @@ public class MemoryManipulator
                             var area = ReadMemory(0xf870);
                             newItemId = randomizer.RandomizedItems.First(r => r.Key.InternalId == (area == 0 ? 11 : 12)).Value.InternalId; //check which pants you're picking up based on current area
 
-                            UpdateTracker((byte)(area == 0 ? 11 : 12));
+                            UpdateTracker((byte)(area == 0 ? 10 : 11));
                             customTracker = true;
                             break;
 
@@ -694,13 +694,13 @@ public class MemoryManipulator
                 WriteMemory(0x37eec, itemId);
                 break;
 
-            case 11: //pants
-            case 12:
-                var pantsFound = ReadMemory(0xf9cf);
-                itemId = (byte)(pantsFound == 0 ? 11 : 12);
+            //case 11: //pants
+            //case 12:
+            //    var pantsFound = ReadMemory(0xf9cf);
+            //    itemId = (byte)(pantsFound == 0 ? 11 : 12);
 
-                WriteMemory(0xf9cf, ++pantsFound);
-                break;
+            //    WriteMemory(0xf9cf, ++pantsFound);
+            //    break;
 
             case 18: //evil pig robes
             case 19:
