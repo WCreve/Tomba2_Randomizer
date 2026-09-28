@@ -160,7 +160,11 @@ public class MemoryManipulator
 
         WriteMemory(0x2838c, 73, globalPtr); //disable attaching crab basket to tomba on area load
 
-        WriteMemory(0xd338, [12, 128, 2, 60, 176, 248, 68, 160, 12, 128, 2, 60, 177, 248, 69, 160, 8, 0, 224, 3, 0, 0, 0, 0], globalPtr); //override AddInventoryQuantity function
+        WriteMemory(0xd338, [12, 128, 2, 60, 176, 248, 68, 160, 12, 128, 2, 60, 177, 248, 69, 160, randomizer.RandomizedItems.First(ri => ri.Value.Id == 10).Key.InternalId, 0, 2, 36,
+                    4, 0, 130, 16, 0, 0, 0, 0, randomizer.RandomizedItems.First(ri => ri.Value.Id == 11).Key.InternalId, 0, 2, 36, 15, 0, 130, 20, 0, 0, 0, 0, 12, 128, 3, 60, 207, 249,
+                    98, 144, 0, 0, 0, 0, 1, 0, 66, 36, 207, 249, 98, 160, 141, 248, 98, 160, 14, 128, 3, 60, 237, 126, 98, 160, 240, 255, 189, 39, 0, 0, 191, 175, 106, 159, 1, 12, 0, 0,
+                    0, 0, 0, 0, 191, 143, 16, 0, 189, 39, 8, 0, 224, 3, 0, 0, 0, 0], globalPtr); //override AddInventoryQuantity function
+
 
         WriteMemory(0xd4d8, [12, 128, 2, 60, 2, 0, 3, 36, 178, 248, 67, 160], globalPtr); //override AddItemWithMessage function
 
@@ -697,9 +701,7 @@ public class MemoryManipulator
             case 11: //pants
             case 12:
                 var pantsFound = ReadMemory(0xf9cf);
-                itemId = (byte)(pantsFound == 0 ? 11 : 12);
-
-                WriteMemory(0xf9cf, ++pantsFound);
+                itemId = (byte)(pantsFound == 1 ? 11 : 12);
                 break;
 
             case 18: //evil pig robes
