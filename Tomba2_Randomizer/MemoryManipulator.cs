@@ -521,6 +521,10 @@ public class MemoryManipulator
                             }
                             break;
 
+                        case 70: //trolley ticket collected
+                            SetFlagTrolleyTicket();
+                            break;
+
                         case 80: //snow firefly box collected
                             SetFlagSnowFireflyBox();
                             break;
@@ -1555,7 +1559,7 @@ public class MemoryManipulator
                     WriteMemory(0x10fd8, [12, 128, 3, 60, 1, 0, 2, 36, 241, 249, 98, 160, 0, 0, 2, 36, 5, 0, 98, 162, 0, 0, 0, 0, 0, 0, 0, 0], binPtr);
                 }
 
-                WriteMemory(0xe524, 17, binPtr); //skip trolley completion check so you can still get trolley ticket from man if you've already done the trolley
+                WriteMemory(0xe538, [82, 1, 98, 144, 0, 0, 0, 0, 32, 0, 66, 48, 9, 0, 64, 20, 0, 0, 0, 0, 102, 121, 4, 8, 94, 0, 32, 162], binPtr); //make sure you can still get trolley ticket from man if you've handed in the ticket
 
                 break;
             case 3:
@@ -1985,6 +1989,7 @@ public class MemoryManipulator
     private void SetFlagSnowFireflyBox() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_0100));
     private void SetFlagGetwellPlant() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0000_1000));
     private void SetFlag100YearOldAmulet() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0001_0000));
+    private void SetFlagTrolleyTicket() => WriteMemory(0xf9c2, (byte)(ReadMemory(0xf9c2) | 0b_0010_0000));
 
     private void ShuffleMusic()
     {
