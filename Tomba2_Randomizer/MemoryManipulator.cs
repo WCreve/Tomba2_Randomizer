@@ -1617,13 +1617,6 @@ public class MemoryManipulator
 
                 WriteMemory(0x162a4, randomizer.ForestSeesaws, binPtr); //treasure house cutscene and event only pops when seesaw status changes from the default randomized one
 
-                if (ReadMemory(0xfb48) == 0) //prevent issues if you load into circus village without a large flower seed but you get it there and try to plant it
-                {
-                    WriteMemory(0x221d6, 50, binPtr);
-                    WriteMemory(0x222ec, 0, binPtr);
-                    WriteMemory(0x222d4, new byte[4], binPtr);
-                }
-
                 if (ReadMemory(0xfa22) == 48) //disable travelling to circus village
                 {
                     WriteMemory(-0x4e6b, 123, binPtr);
@@ -1658,6 +1651,13 @@ public class MemoryManipulator
                 if (ReadMemory(0xfae8) == 0 && ReadMemory(0xf8dc) != 255) //prevent statue explosion cutscene if player doesn't have the carpenter book
                 {
                     WriteMemory(0x19544, [12, 128, 3, 60, 1, 0, 2, 36, 165, 165, 4, 8, 241, 249, 98, 160], binPtr);
+                }
+
+                if (ReadMemory(0xfb48) == 0) //prevent issues if you load into circus village without a large flower seed but you get it there and try to plant it
+                {
+                    WriteMemory(0x221d6, 50, binPtr);
+                    WriteMemory(0x222ec, 0, binPtr);
+                    WriteMemory(0x222d4, new byte[4], binPtr);
                 }
 
                 if (ReadMemory(0xf8d8) != 255 & (ReadMemory(0xfe56) & 128) == 128) //allow moveable ball to spawn if circus has been purified
