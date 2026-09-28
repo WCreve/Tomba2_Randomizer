@@ -194,12 +194,10 @@ namespace Tomba2_Randomizer
         }
 
         public byte[] MusicTracks { get; private set; } = [0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 20, 24, 25, 26, 27, 32, 33, 34, 40, 41, 42, 48, 56];
-
         public byte BeachBarrels { get; private set; }
-
         public byte ForestSeesaws { get; private set; }
-
         public byte MouseColour { get; private set; }
+        public byte[] PigRobeHints { get; private set; } = [0, 1, 2, 3, 4];
 
         public int Seed { get; private set; }
 
@@ -478,10 +476,8 @@ namespace Tomba2_Randomizer
 
         private void MiscRandomization()
         {
-            if (Settings.ShuffleMusic)
-            {
-                ShuffleMusic();
-            }
+            if (Settings.ShuffleMusic) r.Shuffle(MusicTracks);
+            r.Shuffle(PigRobeHints);
 
             BeachBarrels = (byte)r.Next(1, 255);
             ForestSeesaws = (byte)r.Next(1, 15);
@@ -489,7 +485,5 @@ namespace Tomba2_Randomizer
             MouseColour = (byte)r.Next(0, 3);
             events[132].RequirementGroups.ForEach(rg => rg.Active = MouseColour == rg.SpecialRequirementGroup);
         }
-
-        private void ShuffleMusic() => r.Shuffle(MusicTracks);
     }
 }

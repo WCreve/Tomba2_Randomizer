@@ -1655,9 +1655,9 @@ public class MemoryManipulator
 
                 if (ReadMemory(0xfb48) == 0) //prevent issues if you load into circus village without a large flower seed but you get it there and try to plant it
                 {
-                    WriteMemory(0x221d6, 50, binPtr);
-                    WriteMemory(0x222ec, 0, binPtr);
-                    WriteMemory(0x222d4, new byte[4], binPtr);
+                    WriteMemory(0x121d6, 50, binPtr);
+                    WriteMemory(0x122ec, 0, binPtr);
+                    WriteMemory(0x122d4, new byte[4], binPtr);
                 }
 
                 if (ReadMemory(0xf8d8) != 255 & (ReadMemory(0xfe56) & 128) == 128) //allow moveable ball to spawn if circus has been purified
@@ -1786,12 +1786,14 @@ public class MemoryManipulator
 
         WriteMemory(isPurified ? 0x9c68 : 0x9c7c, ConvertToTombaText("Pig Robes are.{E}{n}"), dialoguePtr);
 
-        var robes = randomizer.RandomizedItems.Where(ri => ri.Value.Id > 15 && ri.Value.Id < 21).OrderBy(ri => ri.Value.Id).Select(ri => ri.Key).ToList();
-        WriteMemory(isPurified ? 0x9c77 : 0x9c8b, ConvertToTombaText("The Flame Pig Robe...{E}" + (robes[0].Color == ItemColor.Green ? "{G}" : (robes[0].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[0].DisplayName + "{W}!{E}{n}"), dialoguePtr);
-        WriteMemory(isPurified ? 0x9cc2 : 0x9cd6, ConvertToTombaText("The Ghost Pig Robe...{E}" + (robes[2].Color == ItemColor.Green ? "{G}" : (robes[2].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[2].DisplayName + "{W}!{E}{n}"), dialoguePtr);
-        WriteMemory(isPurified ? 0x9d4d : 0x9d61, ConvertToTombaText("The Earth Pig Robe...{E}" + (robes[3].Color == ItemColor.Green ? "{G}" : (robes[3].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[3].DisplayName + "{W}!{E}{n}"), dialoguePtr);
-        WriteMemory(isPurified ? 0x9dcd : 0x9de1, ConvertToTombaText("The Water Pig Robe...{E}" + (robes[4].Color == ItemColor.Green ? "{G}" : (robes[4].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[4].DisplayName + "{W}!{E}{n}"), dialoguePtr);
-        WriteMemory(isPurified ? 0x9e50 : 0x9e64, ConvertToTombaText("The Ice Pig Robe...{E}" + (robes[1].Color == ItemColor.Green ? "{G}" : (robes[1].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[1].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        int[] addresses = [0x9c77, 0x9cc2, 0x9d4d, 0x9dcd, 0x9e50];
+
+        var robes = randomizer.RandomizedItems.Where(ri => ri.Value.Id > 15 && ri.Value.Id < 21).Select(ri => ri.Key).ToList();
+
+        foreach (var hintIndex in randomizer.PigRobeHints)
+        {
+            WriteMemory(isPurified ? addresses[hintIndex] : addresses[hintIndex] + 20, ConvertToTombaText("The " + randomizer.RandomizedItems[robes[hintIndex]].DisplayName + "...{E}" + (robes[hintIndex].Color == ItemColor.Green ? "{G}" : (robes[0].Color == ItemColor.Blue ? "{B}" : "{P}")) + robes[hintIndex].DisplayName + "{W}!{E}{n}"), dialoguePtr);
+        }
     }
 
     private byte[] ConvertToTombaText(string input)
