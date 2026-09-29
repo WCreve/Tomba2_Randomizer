@@ -32,6 +32,7 @@ public partial class MainWindow : Window
     private List<AreaDto> areaDtos;
     private List<EventDto> eventDtos;
     private List<TeleportArea> teleportAreas;
+    private List<EvilPigDto> evilPigDtos;
 
     private List<ItemDto> itemDtosGUI;
 
@@ -87,6 +88,12 @@ public partial class MainWindow : Window
         {
             string json = sr.ReadToEnd();
             teleportAreas = JsonSerializer.Deserialize<List<TeleportArea>>(json, options);
+        }
+
+        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.pigdoors.json")))
+        {
+            string json = sr.ReadToEnd();
+            evilPigDtos = JsonSerializer.Deserialize<List<EvilPigDto>>(json, options);
         }
 
         var iconPaths = assembly.GetManifestResourceNames().Where(mrn => mrn.EndsWith(".png"));
@@ -704,11 +711,11 @@ public partial class MainWindow : Window
         CmbRecentSeeds.IsEnabled = false;
         TxtSeed.IsEnabled = false;
 
-        randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
+        if (ChkUseSeed.IsChecked == false) randomizer = new Randomizer(itemDtos, areaDtos, eventDtos, evilPigDtos);
+        else randomizer = new Randomizer(itemDtos, areaDtos, eventDtos, evilPigDtos, seed);
         randomizer.Settings = SetRandomizerSettings();
 
-        if (ChkUseSeed.IsChecked == false) await Task.Run(async () => randomizer.Randomize());
-        else await Task.Run(async () => randomizer.Randomize(seed));
+        await Task.Run(async () => randomizer.Randomize());
 
         if (ChkDebug.IsChecked == true)
         {
@@ -906,7 +913,7 @@ public partial class MainWindow : Window
                         if (border != null) ToggleItem(border);
                     }
                 }
-                
+
             }
             else
             {
@@ -928,7 +935,7 @@ public partial class MainWindow : Window
         var settings = new RandomizerSettings
         {
             ShuffleMusic = ChkSettingMusic.IsChecked == true,
-            BanGoldenPowder = ChkBanGoldenPowder.IsChecked == true            
+            BanGoldenPowder = ChkBanGoldenPowder.IsChecked == true
         };
         return settings;
     }

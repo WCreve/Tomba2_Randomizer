@@ -1,3 +1,4 @@
+using Avalonia.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +7,15 @@ namespace Tomba2_Randomizer
 {
     public class Randomizer
     {
+        private List<ItemDto> itemDtos;
+        private List<AreaDto> areaDtos;
+        private List<EventDto> eventDtos;
+        private List<EvilPigDto> evilPigDtos;
+
         private Dictionary<int, Item> items;
         private Dictionary<int, Area> areas;
         private Dictionary<int, Event> events;
+        private Dictionary<int, EvilPig> evilPigs;
 
         private Dictionary<int, Item> allItems;
         private Dictionary<int, Item> notRandomItems;
@@ -17,8 +24,18 @@ namespace Tomba2_Randomizer
 
         private Dictionary<(Item Pickup, Item Reward), HashSet<Item>> hypotheticalUnlockCache = new();
 
-        public Randomizer(List<ItemDto> itemDtos, List<AreaDto> areaDtos, List<EventDto> eventDtos)
+        public Randomizer(List<ItemDto> itemDtos, List<AreaDto> areaDtos, List<EventDto> eventDtos, List<EvilPigDto> evilPigDtos, int seed)
         {
+            Seed = seed;
+            r = new(seed);
+
+            this.itemDtos = itemDtos;
+            this.areaDtos = areaDtos;
+            this.eventDtos = eventDtos;
+            this.evilPigDtos = evilPigDtos;
+
+            ApplyRandomRequirementGroups();
+
             allItems = itemDtos.ToDictionary(
                 dto => dto.Id,
                 dto => new Item { Id = (byte)dto.Id, Name = dto.Name, DisplayName = dto.GUIName, CountAddress = Convert.ToInt32(dto.Address, 16), Color = dto.Color == "Green" ? ItemColor.Green : dto.Color == "Blue" ? ItemColor.Blue : ItemColor.Pink, NotRandom = dto.NotRandom }
@@ -150,6 +167,12 @@ namespace Tomba2_Randomizer
                     eventvar.RequirementGroups.Add(group);
                 }
             }
+
+        }
+
+        public Randomizer(List<ItemDto> itemDtos, List<AreaDto> areaDtos, List<EventDto> eventDtos, List<EvilPigDto> evilPigDtos) : this(itemDtos, areaDtos, eventDtos, evilPigDtos, (int)DateTime.Now.Ticks)
+        {
+
         }
 
         private List<Item> RandomItemPool
@@ -198,19 +221,16 @@ namespace Tomba2_Randomizer
         public byte ForestSeesaws { get; private set; }
         public byte MouseColour { get; private set; }
         public byte[] PigRobeHints { get; private set; } = [0, 1, 2, 3, 4];
+        public EvilPig[] EvilPigs { get; private set; } = [];
 
         public int Seed { get; private set; }
 
         public bool ResetTracker { get; set; }
         public List<byte> ItemTracker { get; set; } = [];
 
-        public void Randomize() => Randomize((int)DateTime.Now.Ticks);
-
-        public void Randomize(int seed)
+        public void Randomize()
         {
-            Seed = seed;
-
-            r = new(seed);
+            MiscRandomization();
 
             RandomizedItems = [];
             hypotheticalUnlockCache.Clear();
@@ -220,8 +240,6 @@ namespace Tomba2_Randomizer
             var backtrackCount = 0;
             var furthestProgress = 0;
             var stuckStreak = 0;
-
-            MiscRandomization();
 
             while (RandomItemPool.Count > 0)
             {
@@ -307,6 +325,12 @@ namespace Tomba2_Randomizer
             }
 
             DebugString += $"\nMouse colour: {(MouseColour == 0 ? "Red" : MouseColour == 1 ? "White" : "Blue")}\n";
+
+            DebugString += $"\nFlame Pig: {EvilPigs[0].Id}\n";
+            DebugString += $"Ice Pig: {EvilPigs[1].Id}\n";
+            DebugString += $"Ghost Pig: {EvilPigs[2].Id}\n";
+            DebugString += $"Earth Pig: {EvilPigs[3].Id}\n";
+            DebugString += $"Water Pig: {EvilPigs[4].Id}\n";
         }
 
         private class PlacementStep
@@ -472,6 +496,30 @@ namespace Tomba2_Randomizer
             hypotheticalUnlockCache[(pickup, reward)] = unlocks;
 
             return unlocks;
+        }
+
+        private void ApplyRandomRequirementGroups()
+        {
+            var pigs = evilPigDtos.ToArray();
+            var pigReqs = evilPigDtos.Select(p => p.Requirements).ToArray();
+
+            do
+            {
+                r.Shuffle(pigs);
+            }
+            while (pigs[0].PigBagId == 25);
+
+            for (int i = 0; i < pigs.Length; i++)
+            {
+                foreach (var req in pigReqs[i])
+                {
+                    req.Items ??= [];
+                    req.Items.Add(pigs[i].PigBagId);
+                }
+                eventDtos.First(e => e.Id == pigs[i].Event).Requirements = pigReqs[i];
+            }
+
+            EvilPigs = pigs.Select(p => new EvilPig { Id = p.Id, Area = p.Area, PigArea = p.PigArea, VictoryWarp = p.VictoryWarp, PigBagName = p.PigBagName, PigBagId = p.PigBagId, CLUT = p.CLUT, CLUTStartCursed = p.CLUTStartCursed, CLUTStartPurified = p.CLUTStartPurified, DoorDataAddress = p.DoorDataAddress, InInterior = p.InInterior }).ToArray();
         }
 
         private void MiscRandomization()

@@ -266,14 +266,7 @@
 		"name": "Capture Evil Flame Pig!",
 		"address": "0xf8c7",
 		"AP": 100000,
-		"primary": true,
-		"requirements": [
-			{
-				"items": [ 15, 21 ],
-				"areas": [ 6 ],
-				"events": [ 34 ]
-			}
-		]
+		"primary": true
 	},
 	{
 		"id": 20,
@@ -379,17 +372,7 @@
 		"name": "Capture Evil Ice Pig!",
 		"address": "0xf8cf",
 		"AP": 100000,
-		"primary": true,
-		"requirements": [
-			{
-				"items": [ 15, 22 ],
-				"areas": [ 10 ]
-			},
-			{
-				"items": [ 22, 126 ],
-				"areas": [ 10 ]
-			}
-		]
+		"primary": true
 	},
 	{
 		"id": 28,
@@ -513,21 +496,7 @@
 		"name": "Capture Evil Ghost Pig!",
 		"address": "0xf8d6",
 		"AP": 100000,
-		"primary": true,
-		"requirements": [
-			{
-				"items": [ 1, 23 ],
-				"areas": [ 2 ]
-			},
-			{
-				"items": [ 2, 23 ],
-				"areas": [ 2 ]
-			},
-			{
-				"items": [ 13, 23 ],
-				"areas": [ 2 ]
-			}
-		]
+		"primary": true
 	},
 	{
 		"id": 35,
@@ -636,13 +605,7 @@
 		"name": "Capture Evil Earth Pig!",
 		"address": "0xf8dd",
 		"AP": 100000,
-		"primary": true,
-		"requirements": [
-			{
-				"items": [ 24 ],
-				"areas": [ 4 ]
-			}
-		]
+		"primary": true
 	},
 	{
 		"id": 42,
@@ -742,73 +705,7 @@
 		"name": "Capture Evil Water Pig!",
 		"address": "0xf8e4",
 		"AP": 100000,
-		"primary": true,
-		"requirements": [
-			{
-				"items": [ 1, 25 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 2, 25 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 10, 25 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 11, 25 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 13, 25 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 14, 25 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 15, 25 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 25, 105 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 1, 25 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 2, 25 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 10, 25 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 11, 25 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 13, 25 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 14, 25 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 15, 25 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 25, 105 ],
-				"events": [ 48 ]
-			}
-		]
+		"primary": true
 	},
 	{
 		"id": 50,

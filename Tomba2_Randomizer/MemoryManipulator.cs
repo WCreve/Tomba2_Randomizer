@@ -97,6 +97,10 @@ public class MemoryManipulator
 
     public bool IsActive { get; set; }
 
+    public int[] EvilPigAreaDestinationAddresses = [0x173a8, 0x15968, 0x1d870, 0x13d50, 0x2c27c];
+    public int[] EvilPigReturnDestinationAddresses = [0x6c84, 0x57e4, 0x5cfc, 0x55b8, 0x600c];
+    public int[] EvilPigDoorCLUTOffsets = [0, 36, 72, 108, 144, 188, 232, 276, 336, 372, 408, 444, 480, 524, 568, 612];
+
     [DllImport("kernel32.dll")]
     private static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
@@ -916,7 +920,7 @@ public class MemoryManipulator
             var pigBagsStatusAmount = ReadMemory(0xf883);
             WriteMemory(0xf884 + pigBagsStatusAmount, itemId);
             WriteMemory(0xf883, (byte)(pigBagsStatusAmount + 1));
-            EnablePigDoor(itemId);
+            //EnablePigDoor(itemId);
         }
 
         var itemCounts = ReadMemory(0xfab4, 168);
@@ -1262,6 +1266,17 @@ public class MemoryManipulator
                         WriteMemory(0xf881, (byte)(ReadMemory(0xf881) | 8));
                         WriteMemory(0x37e8d, (byte)(ReadMemory(0x37e8d) | 66));
                     }
+                    else if (popups == 253)
+                    {
+                        byte[] areas = [6, 8, 1, 4, 0];
+                        foreach (var pig in randomizer.EvilPigs)
+                        {
+                            if (ReadMemory(0xf870) == areas[randomizer.EvilPigs.IndexOf(pig)] && ReadMemory(0xfab4 + pig.PigBagId + 2) == 1)
+                            {
+                                QueueCustomPopup("Your {P}" + pig.PigBagName + "{W} rumbles...");
+                            }
+                        }
+                    }
                     else
                     {
                         switch (ReadMemory(0xf870)) //current area
@@ -1474,6 +1489,20 @@ public class MemoryManipulator
                 break;
         }
 
+        ////Prepare pig doors in case player gets the pig bag for that area in that area
+        //var pigDoorsOpened = ReadMemory(0xfa17);
+        //var pigDoors = new byte[] { 6, 8, 1, 4, 0 };
+        //if (pigDoors.Contains(warpDestination[1]) && (pigDoorsOpened & (byte)Math.Pow(2, pigDoors.IndexOf(warpDestination[1]))) == 0)
+        //{
+        //    var bags = ReadMemory(0xf883, 7);
+        //    if (!bags.Any(b => b == 23 + pigDoors.IndexOf(warpDestination[1]))) //make sure you don't already have the bag
+        //    {
+        //        Enqueue(writeQueueWarp, 0xf883, bags);
+
+        //        WriteMemory(0xf883, [6, 23, 24, 25, 26, 27, 28]);
+        //    }
+        //}
+
         if (ReadMemory(0xfadc) > 0) 
         {
             if (warpDestination[1] == 0) //equip pink bucket if present in inventory and in starting beach
@@ -1488,8 +1517,7 @@ public class MemoryManipulator
                     WriteMemory(0xf88e, 0);
                     WriteMemory(0x37eee, 0);
                 }
-            }
-            
+            }            
         }
     }
 
@@ -1529,6 +1557,8 @@ public class MemoryManipulator
                 WriteMemory(0x180a8, [153, 1], binPtr);
                 WriteMemory(0x18100, [153, 1], binPtr);
                 WriteMemory(0x18108, 1, binPtr);
+
+                EditPigDoor(4);
                 break;
             case 1:
                 if (ReadMemory(0xf8bc) != 255) WriteMemory(-0x3ce8, [73, 0], binPtr); //disable travel to starting beach if win's windmill not completed
@@ -1546,6 +1576,8 @@ public class MemoryManipulator
                 WriteMemory(0x13ee4, [153, 1], binPtr);
                 WriteMemory(0x13f40, [153, 1], binPtr);
                 WriteMemory(0x13f48, 2, binPtr);
+
+                EditPigDoor(2);
                 break;
             case 2:
                 if (ReadMemory(0xf8bf) != 255) WriteMemory(0x25b8, new byte[128], binPtr); //disable travel to pipe area if pull and open not completed
@@ -1586,6 +1618,8 @@ public class MemoryManipulator
                 WriteMemory(0x29c7c, [153, 1], binPtr);
                 WriteMemory(0x29cd4, [153, 1], binPtr);
                 WriteMemory(0x29cdc, 4, binPtr);
+
+                EditPigDoor(3);
                 break;
             case 5:
                 if (ReadMemory(0xf8ca) != 255) WriteMemory(0x19e8c, 3, binPtr); //disable lift to ranch if let's take the lift not completed
@@ -1628,6 +1662,8 @@ public class MemoryManipulator
                 WriteMemory(0x2b624, [153, 1], binPtr);
                 WriteMemory(0x2b680, [153, 1], binPtr);
                 WriteMemory(0x2b688, 8, binPtr);
+
+                EditPigDoor(0);
                 break;
             case 7:
                 if (ReadMemory(0xf8d5) != 255 || ReadMemory(0xfa22) == 48) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
@@ -1707,6 +1743,15 @@ public class MemoryManipulator
                 WriteMemory(0x1e1bc, [153, 1], binPtr);
                 WriteMemory(0x1e1c4, 16, binPtr);
 
+                EditPigDoor(1);
+                break;
+
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+                ModifyEvilPigFight(area);
                 break;
 
             case 19:
@@ -2015,6 +2060,42 @@ public class MemoryManipulator
     private void DisableGoldenPowder()
     {
         WriteMemory(-0xaf20, [12, 128, 3, 60, 254, 0, 2, 36, 241, 249, 98, 160, 67, 212, 0, 8, 33, 16, 0, 0], globalPtr);
+    }
+
+    private void EditPigDoor(byte door)
+    {
+        bool purified = false;
+        var purifiedAreas = BitConverter.ToInt16(ReadMemory(0xfe56, 2));
+        switch (door)
+        {
+            case 0:
+                if ((purifiedAreas & 64) == 0) return;
+                purified = true;
+                break;
+            case 1: purified = (purifiedAreas & 256) != 0; break;
+            case 2: purified = (purifiedAreas & 2) != 0; break;
+            case 3: purified = (purifiedAreas & 16) != 0; break;
+            case 4: purified = true; break;
+        }
+        var doorData = randomizer.EvilPigs.First(p => p.Id - 1 == door);
+        var randomDoorData = randomizer.EvilPigs[door];
+        var clut = BitConverter.GetBytes(randomDoorData.CLUT);
+        foreach (var offset in EvilPigDoorCLUTOffsets)
+        {
+            WriteMemory((purified ? doorData.CLUTStartPurified : doorData.CLUTStartCursed) + offset, clut, binPtr);
+        }
+
+        WriteMemory(doorData.InInterior ? doorData.DoorDataAddress + 3 : doorData.DoorDataAddress + 9, (byte)(randomDoorData.Id - 1), binPtr);
+
+        WriteMemory(EvilPigAreaDestinationAddresses[door], (byte)(randomDoorData.PigArea * 0x10), binPtr);
+        Enqueue(writeQueueWarp, 0xf9f1, [253]);
+    }
+
+    private void ModifyEvilPigFight(byte area)
+    {
+        var evilPigIndex = randomizer.EvilPigs.ToList().FindIndex(p => p.PigArea == area);
+        var evilPig = randomizer.EvilPigs.First(p => p.Id - 1 == evilPigIndex);
+        WriteMemory(EvilPigReturnDestinationAddresses[area - 10] + 0x20 * (area - 10), [evilPig.VictoryWarp, evilPig.Area], binPtr);
     }
 
     private void HandleRewind(int time)

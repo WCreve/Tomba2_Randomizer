@@ -1,0 +1,172 @@
+[
+	{
+		"id": 1,
+		"area": 6,
+		"pigarea": 10,
+		"victorywarp": 7,
+		"event": 19,
+		"pigbagname": "Flame Pig Bag",
+		"pigbagid": 21,
+		"clut": 9311,
+		"clutstartpurified": 844694,
+		"doordataaddress": 206784,
+		"inInterior": true,
+		"requirements": [
+			{
+				"items": [ 15 ],
+				"areas": [ 6 ],
+				"events": [ 34 ]
+			}
+		]
+	},
+	{
+		"id": 2,
+		"area": 8,
+		"pigarea": 11,
+		"victorywarp": 12,
+		"event": 27,
+		"pigbagname": "Ice Pig Bag",
+		"pigbagid": 22,
+		"clut": 9375,
+		"clutstartpurified": 581166,
+		"clutstartcursed": 581166,
+		"doordataaddress": 204168,
+		"inInterior": true,
+		"requirements": [
+			{
+				"items": [ 15 ],
+				"areas": [ 10 ]
+			},
+			{
+				"items": [ 126 ],
+				"areas": [ 10 ]
+			}
+		]
+	},
+	{
+		"id": 3,
+		"area": 1,
+		"pigarea": 12,
+		"victorywarp": 5,
+		"event": 34,
+		"pigbagname": "Ghost Pig Bag",
+		"pigbagid": 23,
+		"clut": 8990,
+		"clutstartcursed": 713870,
+		"clutstartpurified": 715578,
+		"doordataaddress": 149424,
+		"inInterior": false,
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 2 ],
+				"areas": [ 2 ]
+			},
+			{
+				"items": [ 13 ],
+				"areas": [ 2 ]
+			}
+		]
+	},
+	{
+		"id": 4,
+		"area": 4,
+		"pigarea": 13,
+		"victorywarp": 4,
+		"event": 41,
+		"pigbagname": "Earth Pig Bag",
+		"pigbagid": 24,
+		"clut": 9119,
+		"clutstartcursed": 751298,
+		"clutstartpurified": 748894,
+		"doordataaddress": 197392,
+		"inInterior": false,
+		"requirements": [
+			{
+				"areas": [ 4 ]
+			}
+		]
+	},
+	{
+		"id": 5,
+		"area": 0,
+		"pigarea": 14,
+		"victorywarp": 11,
+		"event": 49,
+		"pigbagname": "Water Pig Bag",
+		"pigbagid": 25,
+		"clut": 9247,
+		"clutstartpurified": 897294,
+		"doordataaddress": 224896,
+		"inInterior": false,
+		"requirements": [
+			{
+				"items": [ 1 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 2 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 10 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 11 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 13 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 14 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 15 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 105 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 1 ],
+				"events": [ 48 ]
+			},
+			{
+				"items": [ 2 ],
+				"events": [ 48 ]
+			},
+			{
+				"items": [ 10 ],
+				"events": [ 48 ]
+			},
+			{
+				"items": [ 11 ],
+				"events": [ 5 ]
+			},
+			{
+				"items": [ 13 ],
+				"events": [ 48 ]
+			},
+			{
+				"items": [ 14 ],
+				"events": [ 48 ]
+			},
+			{
+				"items": [ 15 ],
+				"events": [ 48 ]
+			},
+			{
+				"items": [ 105 ],
+				"events": [ 48 ]
+			}
+		]
+	}
+]
