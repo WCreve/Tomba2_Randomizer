@@ -1,16 +1,13 @@
 using Avalonia;
-using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
-using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using MsBox.Avalonia;
-using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,7 +17,6 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Tomba2_Randomizer;
 
@@ -32,6 +28,8 @@ public partial class MainWindow : Window
     private List<AreaDto> areaDtos;
     private List<EventDto> eventDtos;
     private List<TeleportArea> teleportAreas;
+    private List<EvilPigDto> evilPigDtos;
+    private List<WarpCoordinate> warpCoordinates;
 
     private List<ItemDto> itemDtosGUI;
 
@@ -49,6 +47,7 @@ public partial class MainWindow : Window
     private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "T2Random", "data.json");
     private AppData appData;
 
+
     public MainWindow()
     {
         InitializeComponent();
@@ -57,43 +56,7 @@ public partial class MainWindow : Window
         areaDtos = new List<AreaDto>();
         eventDtos = new List<EventDto>();
 
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-        options.Converters.Add(new JsonStringEnumConverter());
-
-        var assembly = Assembly.GetExecutingAssembly();
-
-        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.items.json")))
-        {
-            string json = sr.ReadToEnd();
-            itemDtos = JsonSerializer.Deserialize<List<ItemDto>>(json, options);
-        }
-
-        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.areas.json")))
-        {
-            string json = sr.ReadToEnd();
-            areaDtos = JsonSerializer.Deserialize<List<AreaDto>>(json, options);
-        }
-
-        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.events.json")))
-        {
-            string json = sr.ReadToEnd();
-            eventDtos = JsonSerializer.Deserialize<List<EventDto>>(json, options);
-        }
-
-        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.teleports.json")))
-        {
-            string json = sr.ReadToEnd();
-            teleportAreas = JsonSerializer.Deserialize<List<TeleportArea>>(json, options);
-        }
-
-        var iconPaths = assembly.GetManifestResourceNames().Where(mrn => mrn.EndsWith(".png"));
-        foreach (var item in itemDtos.Where(i => !string.IsNullOrWhiteSpace(i.IconPath)))
-        {
-            item.Icon = new Bitmap(iconPaths.Where(p => p.Contains(item.IconPath)).Select(assembly.GetManifestResourceStream).FirstOrDefault(assembly.GetManifestResourceStream("Tomba2_Randomizer.Icons.missingicon.png")));
-        }
+        ReadJSONs();
 
         updateTabTimer = new DispatcherTimer();
         updateTabTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
@@ -704,11 +667,12 @@ public partial class MainWindow : Window
         CmbRecentSeeds.IsEnabled = false;
         TxtSeed.IsEnabled = false;
 
-        randomizer = new Randomizer(itemDtos, areaDtos, eventDtos);
+        if (ChkUseSeed.IsChecked == false) randomizer = new Randomizer(itemDtos, areaDtos, eventDtos, evilPigDtos);
+        else randomizer = new Randomizer(itemDtos, areaDtos, eventDtos, evilPigDtos, seed);
         randomizer.Settings = SetRandomizerSettings();
+        randomizer.WarpCoordinates = warpCoordinates.ToArray();
 
-        if (ChkUseSeed.IsChecked == false) await Task.Run(async () => randomizer.Randomize());
-        else await Task.Run(async () => randomizer.Randomize(seed));
+        await Task.Run(async () => randomizer.Randomize());
 
         if (ChkDebug.IsChecked == true)
         {
@@ -751,6 +715,7 @@ public partial class MainWindow : Window
         else existingSeed.Timestamp = DateTime.Now.Ticks;
         SaveAppData();
         UpdateRecentSeeds();
+        ReadJSONs();
     }
 
     private async void BtnJsonDeserializer_Click(object? sender, RoutedEventArgs e)
@@ -906,7 +871,7 @@ public partial class MainWindow : Window
                         if (border != null) ToggleItem(border);
                     }
                 }
-                
+
             }
             else
             {
@@ -928,7 +893,7 @@ public partial class MainWindow : Window
         var settings = new RandomizerSettings
         {
             ShuffleMusic = ChkSettingMusic.IsChecked == true,
-            BanGoldenPowder = ChkBanGoldenPowder.IsChecked == true            
+            BanGoldenPowder = ChkBanGoldenPowder.IsChecked == true
         };
         return settings;
     }
@@ -949,6 +914,59 @@ public partial class MainWindow : Window
             WriteIndented = true
         });
         File.WriteAllText(AppDataPath, json);
+    }
+
+    private void ReadJSONs()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        options.Converters.Add(new JsonStringEnumConverter());
+
+        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.items.json")))
+        {
+            string json = sr.ReadToEnd();
+            itemDtos = JsonSerializer.Deserialize<List<ItemDto>>(json, options);
+        }
+
+        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.areas.json")))
+        {
+            string json = sr.ReadToEnd();
+            areaDtos = JsonSerializer.Deserialize<List<AreaDto>>(json, options);
+        }
+
+        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.events.json")))
+        {
+            string json = sr.ReadToEnd();
+            eventDtos = JsonSerializer.Deserialize<List<EventDto>>(json, options);
+        }
+
+        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.teleports.json")))
+        {
+            string json = sr.ReadToEnd();
+            teleportAreas = JsonSerializer.Deserialize<List<TeleportArea>>(json, options);
+        }
+
+        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.pigdoors.json")))
+        {
+            string json = sr.ReadToEnd();
+            evilPigDtos = JsonSerializer.Deserialize<List<EvilPigDto>>(json, options);
+        }
+
+        using (StreamReader sr = new StreamReader(assembly.GetManifestResourceStream("Tomba2_Randomizer.JSON.warpcoordinates.json")))
+        {
+            string json = sr.ReadToEnd();
+            warpCoordinates = JsonSerializer.Deserialize<List<WarpCoordinate>>(json, options);
+        }
+
+        var iconPaths = assembly.GetManifestResourceNames().Where(mrn => mrn.EndsWith(".png"));
+        foreach (var item in itemDtos.Where(i => !string.IsNullOrWhiteSpace(i.IconPath)))
+        {
+            item.Icon = new Bitmap(iconPaths.Where(p => p.Contains(item.IconPath)).Select(assembly.GetManifestResourceStream).FirstOrDefault(assembly.GetManifestResourceStream("Tomba2_Randomizer.Icons.missingicon.png")));
+        }
     }
 
     private void CmbRecentSeeds_SelectionChanged(object? sender, SelectionChangedEventArgs e)

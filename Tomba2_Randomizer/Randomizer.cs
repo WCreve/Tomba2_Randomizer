@@ -6,9 +6,15 @@ namespace Tomba2_Randomizer
 {
     public class Randomizer
     {
+        private List<ItemDto> itemDtos;
+        private List<AreaDto> areaDtos;
+        private List<EventDto> eventDtos;
+        private List<EvilPigDto> evilPigDtos;
+
         private Dictionary<int, Item> items;
         private Dictionary<int, Area> areas;
         private Dictionary<int, Event> events;
+        private Dictionary<int, EvilPig> evilPigs;
 
         private Dictionary<int, Item> allItems;
         private Dictionary<int, Item> notRandomItems;
@@ -17,8 +23,18 @@ namespace Tomba2_Randomizer
 
         private Dictionary<(Item Pickup, Item Reward), HashSet<Item>> hypotheticalUnlockCache = new();
 
-        public Randomizer(List<ItemDto> itemDtos, List<AreaDto> areaDtos, List<EventDto> eventDtos)
+        public Randomizer(List<ItemDto> itemDtos, List<AreaDto> areaDtos, List<EventDto> eventDtos, List<EvilPigDto> evilPigDtos, int seed)
         {
+            Seed = seed;
+            r = new(seed);
+
+            this.itemDtos = itemDtos;
+            this.areaDtos = areaDtos;
+            this.eventDtos = eventDtos;
+            this.evilPigDtos = evilPigDtos;
+
+            ApplyRandomRequirementGroups();
+
             allItems = itemDtos.ToDictionary(
                 dto => dto.Id,
                 dto => new Item { Id = (byte)dto.Id, Name = dto.Name, DisplayName = dto.GUIName, CountAddress = Convert.ToInt32(dto.Address, 16), Color = dto.Color == "Green" ? ItemColor.Green : dto.Color == "Blue" ? ItemColor.Blue : ItemColor.Pink, NotRandom = dto.NotRandom }
@@ -150,6 +166,12 @@ namespace Tomba2_Randomizer
                     eventvar.RequirementGroups.Add(group);
                 }
             }
+
+        }
+
+        public Randomizer(List<ItemDto> itemDtos, List<AreaDto> areaDtos, List<EventDto> eventDtos, List<EvilPigDto> evilPigDtos) : this(itemDtos, areaDtos, eventDtos, evilPigDtos, (int)DateTime.Now.Ticks)
+        {
+
         }
 
         private List<Item> RandomItemPool
@@ -198,19 +220,17 @@ namespace Tomba2_Randomizer
         public byte ForestSeesaws { get; private set; }
         public byte MouseColour { get; private set; }
         public byte[] PigRobeHints { get; private set; } = [0, 1, 2, 3, 4];
+        public EvilPig[] EvilPigs { get; private set; } = [];
+        public WarpCoordinate[] WarpCoordinates { get; set; } = [];
 
         public int Seed { get; private set; }
 
         public bool ResetTracker { get; set; }
         public List<byte> ItemTracker { get; set; } = [];
 
-        public void Randomize() => Randomize((int)DateTime.Now.Ticks);
-
-        public void Randomize(int seed)
+        public void Randomize()
         {
-            Seed = seed;
-
-            r = new(seed);
+            MiscRandomization();
 
             RandomizedItems = [];
             hypotheticalUnlockCache.Clear();
@@ -220,8 +240,6 @@ namespace Tomba2_Randomizer
             var backtrackCount = 0;
             var furthestProgress = 0;
             var stuckStreak = 0;
-
-            MiscRandomization();
 
             while (RandomItemPool.Count > 0)
             {
@@ -307,6 +325,12 @@ namespace Tomba2_Randomizer
             }
 
             DebugString += $"\nMouse colour: {(MouseColour == 0 ? "Red" : MouseColour == 1 ? "White" : "Blue")}\n";
+
+            DebugString += $"\nFlame becomes {EvilPigs[0].PigBagName.Split(' ')[0]}\n";
+            DebugString += $"Ice becomes {EvilPigs[1].PigBagName.Split(' ')[0]}\n";
+            DebugString += $"Ghost becomes {EvilPigs[2].PigBagName.Split(' ')[0]}\n";
+            DebugString += $"Earth becomes {EvilPigs[3].PigBagName.Split(' ')[0]}\n";
+            DebugString += $"Water becomes {EvilPigs[4].PigBagName.Split(' ')[0]}\n";
         }
 
         private class PlacementStep
@@ -474,6 +498,45 @@ namespace Tomba2_Randomizer
             return unlocks;
         }
 
+        private void ApplyRandomRequirementGroups()
+        {
+            var pigs = evilPigDtos.ToArray();
+            var pigReqs = evilPigDtos.Select(p => p.Requirements).ToArray();
+
+            do
+            {
+                r.Shuffle(pigs);
+            }
+            while (pigs[0].PigBagId == 23);
+
+            for (int i = 0; i < pigs.Length; i++)
+            {
+                var pigEvent = eventDtos.First(e => e.Id == pigs[i].Event);
+                if (pigs.First(p => p.Id == i + 1).Coordinates.Count != 0)
+                {
+                    var randomCoords = pigs.First(p => p.Id == i + 1).Coordinates[r.Next(pigs.First(p => p.Id == i + 1).Coordinates.Count)];
+                    randomCoords.Active = true;
+
+                    if (randomCoords.Requirements.Count > 0) pigEvent.Requirements = randomCoords.Requirements.Where(r => r.Events == null || !r.Events.Contains(pigEvent.Id)).ToList();
+                    else pigEvent.Requirements = pigReqs[i];
+                }
+                else
+                {
+                    pigEvent.Requirements = pigReqs[i];
+                }
+
+                pigEvent.Requirements ??= [];
+
+                foreach (var req in pigEvent.Requirements)
+                {
+                    req.Items ??= [];
+                    req.Items.Add(pigs[i].PigBagId);
+                }
+            }
+
+            EvilPigs = pigs.Select(p => new EvilPig { Id = p.Id, Area = p.Area, PigArea = p.PigArea, VictoryWarp = p.VictoryWarp, PigBagName = p.PigBagName, PigBagId = p.PigBagId, CLUT = p.CLUT, CLUTStartCursed = p.CLUTStartCursed, CLUTStartPurified = p.CLUTStartPurified, DoorDataAddress = p.DoorDataAddress, InInterior = p.InInterior, DoorReturnWarpAddress = p.DoorReturnWarpAddress, Coordinates = p.Coordinates }).ToArray();
+        }
+
         private void MiscRandomization()
         {
             if (Settings.ShuffleMusic) r.Shuffle(MusicTracks);
@@ -484,6 +547,14 @@ namespace Tomba2_Randomizer
 
             MouseColour = (byte)r.Next(0, 3);
             events[132].RequirementGroups.ForEach(rg => rg.Active = MouseColour == rg.SpecialRequirementGroup);
+
+            foreach (var coordinatesPerArea in WarpCoordinates.Where(wc => wc.Area >= 10 && wc.Area <= 15))
+            {
+                foreach (var coordGroup in coordinatesPerArea.Coordinates.GroupBy(c => c.WarpIndex))
+                {
+                    coordGroup.ElementAt(r.Next(coordGroup.Count())).Active = true;
+                }           
+            }
         }
     }
 }
