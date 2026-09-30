@@ -1,4 +1,3 @@
-using Avalonia.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -222,6 +221,7 @@ namespace Tomba2_Randomizer
         public byte MouseColour { get; private set; }
         public byte[] PigRobeHints { get; private set; } = [0, 1, 2, 3, 4];
         public EvilPig[] EvilPigs { get; private set; } = [];
+        public WarpCoordinate[] WarpCoordinates { get; set; } = [];
 
         public int Seed { get; private set; }
 
@@ -326,11 +326,11 @@ namespace Tomba2_Randomizer
 
             DebugString += $"\nMouse colour: {(MouseColour == 0 ? "Red" : MouseColour == 1 ? "White" : "Blue")}\n";
 
-            DebugString += $"\nFlame Pig: {EvilPigs[0].Id}\n";
-            DebugString += $"Ice Pig: {EvilPigs[1].Id}\n";
-            DebugString += $"Ghost Pig: {EvilPigs[2].Id}\n";
-            DebugString += $"Earth Pig: {EvilPigs[3].Id}\n";
-            DebugString += $"Water Pig: {EvilPigs[4].Id}\n";
+            DebugString += $"\nFlame becomes {EvilPigs[0].PigBagName.Split(' ')[0]}\n";
+            DebugString += $"Ice becomes {EvilPigs[1].PigBagName.Split(' ')[0]}\n";
+            DebugString += $"Ghost becomes {EvilPigs[2].PigBagName.Split(' ')[0]}\n";
+            DebugString += $"Earth becomes {EvilPigs[3].PigBagName.Split(' ')[0]}\n";
+            DebugString += $"Water becomes {EvilPigs[4].PigBagName.Split(' ')[0]}\n";
         }
 
         private class PlacementStep
@@ -507,19 +507,34 @@ namespace Tomba2_Randomizer
             {
                 r.Shuffle(pigs);
             }
-            while (pigs[0].PigBagId == 25);
+            while (pigs[0].PigBagId == 23);
 
             for (int i = 0; i < pigs.Length; i++)
             {
-                foreach (var req in pigReqs[i])
+                var pigEvent = eventDtos.First(e => e.Id == pigs[i].Event);
+                if (pigs.First(p => p.Id == i + 1).Coordinates.Count != 0)
+                {
+                    var randomCoords = pigs.First(p => p.Id == i + 1).Coordinates[r.Next(pigs.First(p => p.Id == i + 1).Coordinates.Count)];
+                    randomCoords.Active = true;
+
+                    if (randomCoords.Requirements.Count > 0) pigEvent.Requirements = randomCoords.Requirements.Where(r => r.Events == null || !r.Events.Contains(pigEvent.Id)).ToList();
+                    else pigEvent.Requirements = pigReqs[i];
+                }
+                else
+                {
+                    pigEvent.Requirements = pigReqs[i];
+                }
+
+                pigEvent.Requirements ??= [];
+
+                foreach (var req in pigEvent.Requirements)
                 {
                     req.Items ??= [];
                     req.Items.Add(pigs[i].PigBagId);
                 }
-                eventDtos.First(e => e.Id == pigs[i].Event).Requirements = pigReqs[i];
             }
 
-            EvilPigs = pigs.Select(p => new EvilPig { Id = p.Id, Area = p.Area, PigArea = p.PigArea, VictoryWarp = p.VictoryWarp, PigBagName = p.PigBagName, PigBagId = p.PigBagId, CLUT = p.CLUT, CLUTStartCursed = p.CLUTStartCursed, CLUTStartPurified = p.CLUTStartPurified, DoorDataAddress = p.DoorDataAddress, InInterior = p.InInterior }).ToArray();
+            EvilPigs = pigs.Select(p => new EvilPig { Id = p.Id, Area = p.Area, PigArea = p.PigArea, VictoryWarp = p.VictoryWarp, PigBagName = p.PigBagName, PigBagId = p.PigBagId, CLUT = p.CLUT, CLUTStartCursed = p.CLUTStartCursed, CLUTStartPurified = p.CLUTStartPurified, DoorDataAddress = p.DoorDataAddress, InInterior = p.InInterior, DoorReturnWarpAddress = p.DoorReturnWarpAddress, Coordinates = p.Coordinates }).ToArray();
         }
 
         private void MiscRandomization()
@@ -532,6 +547,14 @@ namespace Tomba2_Randomizer
 
             MouseColour = (byte)r.Next(0, 3);
             events[132].RequirementGroups.ForEach(rg => rg.Active = MouseColour == rg.SpecialRequirementGroup);
+
+            foreach (var coordinatesPerArea in WarpCoordinates.Where(wc => wc.Area >= 10 && wc.Area <= 15))
+            {
+                foreach (var coordGroup in coordinatesPerArea.Coordinates.GroupBy(c => c.WarpIndex))
+                {
+                    coordGroup.ElementAt(r.Next(coordGroup.Count())).Active = true;
+                }           
+            }
         }
     }
 }

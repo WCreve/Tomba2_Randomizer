@@ -55,6 +55,7 @@
 		"clutstartcursed": 713870,
 		"clutstartpurified": 715578,
 		"doordataaddress": 149424,
+		"doorreturnwarpaddress": 413800,
 		"inInterior": false,
 		"requirements": [
 			{
@@ -68,6 +69,82 @@
 			{
 				"items": [ 13 ],
 				"areas": [ 2 ]
+			}
+		],
+		"coordinates": [
+			{
+				"x": 12352,
+				"y": 61399,
+				"z": 10688,
+				"returnx": 12352,
+				"returny": 60468,
+				"returnz": 11024,
+				"returnscene": 15,
+				"returndirection": 0
+			},
+			{
+				"x": 11283,
+				"y": 59560,
+				"z": 9065,
+				"returnx": 11003,
+				"returny": 58228,
+				"returnz": 9047,
+				"returnscene": 3,
+				"returndirection": 0
+			},
+			{
+				"x": 9982,
+				"y": 56209,
+				"z": 14348,
+				"returnx": 10707,
+				"returny": 56483,
+				"returnz": 14169,
+				"returnscene": 22,
+				"returndirection": 0,
+				"requirements": [
+					{
+						"events": [ 10, 17 ]
+					}
+				]
+			},
+			{
+				"x": 16447,
+				"y": 57433,
+				"z": 9024,
+				"returnx": 17207,
+				"returny": 58548,
+				"returnz": 9024,
+				"returnscene": 10,
+				"returndirection": 1,
+				"requirements": [
+					{
+						"items": [ 1 ],
+						"events": [ 10 ]
+					},
+					{
+						"items": [ 2 ],
+						"events": [ 10 ]
+					},
+					{
+						"items": [ 13 ],
+						"events": [ 10 ]
+					}
+				]
+			},
+			{
+				"x": 14144,
+				"y": 57833,
+				"z": 13288,
+				"returnx": 14144,
+				"returny": 59124,
+				"returnz": 12773,
+				"returnscene": 16,
+				"returndirection": 0,
+				"requirements": [
+					{
+						"events": [ 10 ]
+					}
+				]
 			}
 		]
 	},
@@ -83,10 +160,99 @@
 		"clutstartcursed": 751298,
 		"clutstartpurified": 748894,
 		"doordataaddress": 197392,
+		"doorreturnwarpaddress": 414136,
 		"inInterior": false,
 		"requirements": [
 			{
 				"areas": [ 4 ]
+			}
+		],
+		"coordinates": [
+			{
+				"x": 4032,
+				"y": 52986,
+				"z": 7706,
+				"returnx": 4302,
+				"returny": 54002,
+				"returnz": 7001,
+				"returnscene": 17,
+				"returndirection": 0
+			},
+			{
+				"x": 5568,
+				"y": 54700,
+				"z": 5019,
+				"returnx": 5568,
+				"returny": 55348,
+				"returnz": 6057,
+				"returnscene": 1,
+				"returndirection": 1,
+				"requirements": [
+					{
+						"items": [ 13 ],
+						"areas": [ 4 ]
+					},
+					{
+						"events": [ 27 ],
+						"areas": [ 4 ]
+					}
+				]
+			},
+			{
+				"x": 3987,
+				"y": 58270,
+				"z": 17132,
+				"returnx": 4188,
+				"returny": 57349,
+				"returnz": 16931,
+				"returnscene": 4,
+				"returndirection": 1,
+				"requirements": [
+					{
+						"items": [ 13 ],
+						"areas": [ 4 ]
+					},
+					{
+						"items": [ 1 ],
+						"events": [ 27 ],
+						"areas": [ 4 ]
+					},
+					{
+						"items": [ 2 ],
+						"events": [ 27 ],
+						"areas": [ 4 ]
+					}
+				]
+			},
+			{
+				"x": 3963,
+				"y": 54936,
+				"z": 17156,
+				"returnx": 4781,
+				"returny": 55189,
+				"returnz": 16338,
+				"returnscene": 4,
+				"returndirection": 0,
+				"requirements": [
+					{
+						"items": [ 1, 13 ],
+						"areas": [ 4 ]
+					},
+					{
+						"items": [ 2, 13 ],
+						"areas": [ 4 ]
+					}
+				]
+			},
+			{
+				"x": 3968,
+				"y": 55396,
+				"z": 5182,
+				"returnx": 3968,
+				"returny": 56603,
+				"returnz": 4936,
+				"returnscene": 15,
+				"returndirection": 0
 			}
 		]
 	},
@@ -101,71 +267,148 @@
 		"clut": 9247,
 		"clutstartpurified": 897294,
 		"doordataaddress": 224896,
+		"doorreturnwarpaddress": 413752,
 		"inInterior": false,
-		"requirements": [
+		"coordinates": [
 			{
-				"items": [ 1 ],
-				"events": [ 5 ]
+				"x": 16606,
+				"y": 60556,
+				"z": 11200,
+				"returnx": 15762,
+				"returny": 60916,
+				"returnz": 11354,
+				"returnscene": 28,
+				"returndirection": 1,
+				"requirements": [
+					{
+						"items": [ 1 ],
+						"events": [ 5 ]
+					},
+					{
+						"items": [ 2 ],
+						"events": [ 5 ]
+					},
+					{
+						"items": [ 10 ],
+						"events": [ 5 ]
+					},
+					{
+						"items": [ 11 ],
+						"events": [ 5 ]
+					},
+					{
+						"items": [ 13 ],
+						"events": [ 5 ]
+					},
+					{
+						"items": [ 14 ],
+						"events": [ 5 ]
+					},
+					{
+						"items": [ 15 ],
+						"events": [ 5 ]
+					},
+					{
+						"items": [ 105 ],
+						"events": [ 5 ]
+					},
+					{
+						"items": [ 1 ],
+						"events": [ 48 ]
+					},
+					{
+						"items": [ 2 ],
+						"events": [ 48 ]
+					},
+					{
+						"items": [ 10 ],
+						"events": [ 48 ]
+					},
+					{
+						"items": [ 11 ],
+						"events": [ 48 ]
+					},
+					{
+						"items": [ 13 ],
+						"events": [ 48 ]
+					},
+					{
+						"items": [ 14 ],
+						"events": [ 48 ]
+					},
+					{
+						"items": [ 15 ],
+						"events": [ 48 ]
+					},
+					{
+						"items": [ 105 ],
+						"events": [ 48 ]
+					}
+				]
 			},
 			{
-				"items": [ 2 ],
-				"events": [ 5 ]
+				"x": 17929,
+				"y": 64262,
+				"z": 9206,
+				"returnx": 17970,
+				"returny": 63348,
+				"returnz": 9165,
+				"returnscene": 34,
+				"returndirection": 1,
+				"requirements": [
+					{
+						"events": [ 5 ]
+					},
+					{
+						"events": [ 48 ]
+					}
+				]
 			},
 			{
-				"items": [ 10 ],
-				"events": [ 5 ]
+				"x": 9763,
+				"y": 62610,
+				"z": 5347,
+				"returnx": 10683,
+				"returny": 63346,
+				"returnz": 5293,
+				"returnscene": 9,
+				"returndirection": 1
 			},
 			{
-				"items": [ 11 ],
-				"events": [ 5 ]
+				"x": 14938,
+				"y": 64718,
+				"z": 10502,
+				"returnx": 14539,
+				"returny": 64120,
+				"returnz": 9795,
+				"returnscene": 22,
+				"returndirection": 1,
+				"requirements": [
+					{
+						"events": [ 5 ]
+					},
+					{
+						"events": [ 48 ]
+					}
+				]
 			},
 			{
-				"items": [ 13 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 14 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 15 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 105 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 1 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 2 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 10 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 11 ],
-				"events": [ 5 ]
-			},
-			{
-				"items": [ 13 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 14 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 15 ],
-				"events": [ 48 ]
-			},
-			{
-				"items": [ 105 ],
-				"events": [ 48 ]
+				"x": 14667,
+				"y": 60964,
+				"z": 9154,
+				"returnx": 14504,
+				"returny": 61495,
+				"returnz": 9978,
+				"returnscene": 22,
+				"returndirection": 0,
+				"requirements": [
+					{
+						"events": [ 5 ]
+					},
+					{
+						"events": [ 48 ]
+					}
+				]
 			}
 		]
 	}

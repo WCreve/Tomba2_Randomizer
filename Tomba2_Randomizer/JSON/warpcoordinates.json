@@ -1,0 +1,525 @@
+[
+	{
+		"area": 10,
+		"ptr": 414656,
+		"coordinates": [			
+			{
+				"warpindex": 0,
+				"x": 2496,
+				"y": 64820,
+				"z": 4455,
+				"scene": 16,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 3382,
+				"y": 64756,
+				"z": 2377,
+				"scene": 2,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 6443,
+				"y": 64884,
+				"z": 2347,
+				"scene": 6,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 6694,
+				"y": 63412,
+				"z": 2598,
+				"scene": 6,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 7100,
+				"y": 64844,
+				"z": 3127,
+				"scene": 7,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 7244,
+				"y": 64705,
+				"z": 5286,
+				"scene": 9,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 2879,
+				"y": 64883,
+				"z": 5821,
+				"scene": 15,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 3189,
+				"y": 63412,
+				"z": 6133,
+				"scene": 14,
+				"direction": 0
+			},
+			{
+				"x": 3924,
+				"y": 64805,
+				"z": 6634,
+				"scene": 13,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 4977,
+				"y": 64244,
+				"z": 6784,
+				"scene": 12,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 5911,
+				"y": 64721,
+				"z": 6644,
+				"scene": 11,
+				"direction": 1
+			}
+		]
+	},
+	{
+		"area": 11,
+		"ptr": 414672,
+		"coordinates": [
+			{
+				"warpindex": 0,
+				"x": 11392,
+				"y": 56948,
+				"z": 10648,
+				"scene": 2,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 9781,
+				"y": 58357,
+				"z": 6016,
+				"scene": 9,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 8704,
+				"y": 59103,
+				"z": 9584,
+				"scene": 16,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 6043,
+				"y": 57806,
+				"z": 10195,
+				"scene": 29,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 6016,
+				"y": 57140,
+				"z": 6972,
+				"scene": 30,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 10024,
+				"y": 57524,
+				"z": 8704,
+				"scene": 1,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 8732,
+				"y": 57458,
+				"z": 8704,
+				"scene": 1,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 6576,
+				"y": 57912,
+				"z": 8704,
+				"scene": 1,
+				"direction": 1
+			}
+		]
+	},
+	{
+		"area": 12,
+		"ptr": 414688,
+		"coordinates": [
+			{
+				"warpindex": 0,
+				"x": 2816,
+				"y": 60980,
+				"z": 5041,
+				"scene": 7,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 3000,
+				"y": 60980,
+				"z": 2831,
+				"scene": 5,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 3477,
+				"y": 60980,
+				"z": 2357,
+				"scene": 1,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 4515,
+				"y": 61844,
+				"z": 2176,
+				"scene": 16,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 5995,
+				"y": 61747,
+				"z": 2176,
+				"scene": 16,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 7798,
+				"y": 60980,
+				"z": 2363,
+				"scene": 14,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 8277,
+				"y": 60980,
+				"z": 2858,
+				"scene": 10,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 8448,
+				"y": 60964,
+				"z": 3906,
+				"scene": 8,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 8448,
+				"y": 60980,
+				"z": 5028,
+				"scene": 8,
+				"direction": 0
+			}
+		]
+	},
+	{
+		"area": 13,
+		"ptr": 414704,
+		"coordinates": [
+			{
+				"warpindex": 0,
+				"x": 8200,
+				"y": 63860,
+				"z": 9344,
+				"scene": 1,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 8377,
+				"y": 63860,
+				"z": 6848,
+				"scene": 13,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 10850,
+				"y": 63860,
+				"z": 6848,
+				"scene": 13,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 13012,
+				"y": 63860,
+				"z": 6848,
+				"scene": 13,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 12794,
+				"y": 63860,
+				"z": 9344,
+				"scene": 1,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 9275,
+				"y": 61940,
+				"z": 9344,
+				"scene": 1,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 9949,
+				"y": 60788,
+				"z": 9344,
+				"scene": 1,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 11855,
+				"y": 61940,
+				"z": 9344,
+				"scene": 1,
+				"direction": 0
+			}
+		]
+	},
+	{
+		"area": 14,
+		"ptr": 414720,
+		"coordinates": [
+			{
+				"warpindex": 0,
+				"x": 8400,
+				"y": 62004,
+				"z": 11472,
+				"scene": 1,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 8000,
+				"y": 62068,
+				"z": 9076,
+				"scene": 29,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 8530,
+				"y": 61748,
+				"z": 7561,
+				"scene": 24,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 10536,
+				"y": 61634,
+				"z": 7296,
+				"scene": 21,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 11850,
+				"y": 62388,
+				"z": 7466,
+				"scene": 19,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 12499,
+				"y": 62388,
+				"z": 8182,
+				"scene": 15,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 12544,
+				"y": 62388,
+				"z": 10327,
+				"scene": 13,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 11849,
+				"y": 62324,
+				"z": 11669,
+				"scene": 7,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 9937,
+				"y": 62388,
+				"z": 11840,
+				"scene": 5,
+				"direction": 1
+			},
+			{
+				"warpindex": 1,
+				"x": 12344,
+				"y": 62324,
+				"z": 11211,
+				"scene": 10,
+				"direction": 0
+			},
+			{
+				"warpindex": 1,
+				"x": 9937,
+				"y": 62388,
+				"z": 11840,
+				"scene": 5,
+				"direction": 1
+			},
+			{
+				"warpindex": 1,
+				"x": 12544,
+				"y": 62388,
+				"z": 9070,
+				"scene": 13,
+				"direction": 1
+			},
+			{
+				"warpindex": 1,
+				"x": 11811,
+				"y": 62388,
+				"z": 7450,
+				"scene": 19,
+				"direction": 0
+			},
+			{
+				"warpindex": 1,
+				"x": 10548,
+				"y": 61364,
+				"z": 7296,
+				"scene": 21,
+				"direction": 0
+			}
+		]
+	},
+	{
+		"area": 15,
+		"ptr": 414744,
+		"coordinates": [
+			{
+				"warpindex": 0,
+				"x": 6165,
+				"y": 56500,
+				"z": 5760,
+				"scene": 1,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 7130,
+				"y": 54900,
+				"z": 7040,
+				"scene": 6,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 8193,
+				"y": 54900,
+				"z": 7040,
+				"scene": 6,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 9486,
+				"y": 56180,
+				"z": 5760,
+				"scene": 1,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 8233,
+				"y": 57140,
+				"z": 7040,
+				"scene": 6,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 6503,
+				"y": 58036,
+				"z": 6823,
+				"scene": 4,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 6165,
+				"y": 58356,
+				"z": 5760,
+				"scene": 1,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 9039,
+				"y": 58356,
+				"z": 5760,
+				"scene": 1,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 8642,
+				"y": 59316,
+				"z": 6909,
+				"scene": 8,
+				"direction": 0
+			},
+			{
+				"warpindex": 0,
+				"x": 7912,
+				"y": 59316,
+				"z": 7040,
+				"scene": 6,
+				"direction": 1
+			},
+			{
+				"warpindex": 0,
+				"x": 6274,
+				"y": 59316,
+				"z": 6594,
+				"scene": 4,
+				"direction": 0
+			}
+		]
+	}
+]

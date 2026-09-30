@@ -27,6 +27,7 @@
       <None Remove="JSON\items.json" />
       <None Remove="JSON\teleports.json" />
       <None Remove="JSON\pigdoors.json" />
+      <None Remove="JSON\warpcoordinates.json" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="JSON\**\*.*" />

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Tomba2_Randomizer
 {
@@ -17,7 +15,9 @@ namespace Tomba2_Randomizer
         public int CLUTStartCursed { get; set; }
         public int CLUTStartPurified { get; set; }
         public int DoorDataAddress { get; set; }
+        public int DoorReturnWarpAddress { get; set; }
         public bool InInterior { get; set; }
         public List<RequirementDto> Requirements { get; set; } = [];
+        public List<PigDoorCoordinates> Coordinates { get; set; } = [];
     }
 }
