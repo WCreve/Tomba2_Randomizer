@@ -1576,7 +1576,7 @@ public class MemoryManipulator
                 WriteMemory(0x18108, 1, binPtr);
 
                 EditPigDoor(4);
-                WriteMemory(0x2c284, EvilPigDoorMiscData[randomizer.EvilPigs.ToList().FindIndex(p => p.Id == 5)], binPtr);
+                WriteMemory(0x2c284, (byte)(randomizer.EvilPigs[4].PigBagId + 2) , binPtr);
                 break;
             case 1:
                 if (ReadMemory(0xf8bc) != 255) WriteMemory(-0x3ce8, [73, 0], binPtr); //disable travel to starting beach if win's windmill not completed
@@ -1596,7 +1596,7 @@ public class MemoryManipulator
                 WriteMemory(0x13f48, 2, binPtr);
 
                 EditPigDoor(2);
-                WriteMemory(0x1d878, EvilPigDoorMiscData[randomizer.EvilPigs.ToList().FindIndex(p => p.Id == 2)], binPtr);
+                WriteMemory(0x1d878, (byte)(randomizer.EvilPigs[2].PigBagId + 2), binPtr);
                 break;
             case 2:
                 if (ReadMemory(0xf8bf) != 255) WriteMemory(0x25b8, new byte[128], binPtr); //disable travel to pipe area if pull and open not completed
@@ -1639,7 +1639,7 @@ public class MemoryManipulator
                 WriteMemory(0x29cdc, 4, binPtr);
 
                 EditPigDoor(3);
-                WriteMemory(0x13d58, EvilPigDoorMiscData[randomizer.EvilPigs.ToList().FindIndex(p => p.Id == 4)], binPtr);
+                WriteMemory(0x13d58, (byte)(randomizer.EvilPigs[3].PigBagId + 2), binPtr);
                 break;
             case 5:
                 if (ReadMemory(0xf8ca) != 255) WriteMemory(0x19e8c, 3, binPtr); //disable lift to ranch if let's take the lift not completed
@@ -1684,7 +1684,7 @@ public class MemoryManipulator
                 WriteMemory(0x2b688, 8, binPtr);
 
                 EditPigDoor(0);
-                WriteMemory(0x173b0, EvilPigDoorMiscData[randomizer.EvilPigs.ToList().FindIndex(p => p.Id == 1)]);
+                WriteMemory(0x173b0, (byte)(randomizer.EvilPigs[0].PigBagId + 2));
                 break;
             case 7:
                 if (ReadMemory(0xf8d5) != 255 || ReadMemory(0xfa22) == 48) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
@@ -1765,7 +1765,7 @@ public class MemoryManipulator
                 WriteMemory(0x1e1c4, 16, binPtr);
 
                 EditPigDoor(1);
-                WriteMemory(0x15970, EvilPigDoorMiscData[randomizer.EvilPigs.ToList().FindIndex(p => p.Id == 2)], binPtr);
+                WriteMemory(0x15970, (byte)(randomizer.EvilPigs[1].PigBagId + 2), binPtr);
                 break;
 
             case 10:
