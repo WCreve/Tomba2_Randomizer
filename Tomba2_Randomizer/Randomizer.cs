@@ -527,6 +527,13 @@ namespace Tomba2_Randomizer
 
                 pigEvent.Requirements ??= [];
 
+                if (pigEvent.Requirements == null || pigEvent.Requirements.Count == 0)
+                {
+                    pigEvent.Requirements = [];
+                    pigEvent.Requirements.Add(new RequirementDto { Items = new List<int> { pigs[i].PigBagId } });
+                    
+                }
+
                 foreach (var req in pigEvent.Requirements)
                 {
                     req.Items ??= [];
