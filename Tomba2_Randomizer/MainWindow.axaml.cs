@@ -47,6 +47,7 @@ public partial class MainWindow : Window
     private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "T2Random", "data.json");
     private AppData appData;
 
+    Window trackerWindow;
 
     public MainWindow()
     {
@@ -839,9 +840,11 @@ public partial class MainWindow : Window
 
     private void TrackItemTracker(object? sender, EventArgs e)
     {
+        var activeTracker = (Canvas)(trackerWindow == null || !trackerWindow.IsVisible ? CnvItemTracker : trackerWindow.Content);
+
         if (randomizer.ResetTracker)
         {
-            foreach (var border in CnvItemTracker.Children.OfType<Border>())
+            foreach (var border in activeTracker.Children.OfType<Border>())
             {
                 border.BorderBrush = Brush.Parse("Gray");
                 border.Child.Opacity = 0.5;
@@ -861,13 +864,13 @@ public partial class MainWindow : Window
                         var pantsObtained = memory.ReadMemory(0xf9cf);
                         if (pantsObtained > 0)
                         {
-                            ToggleItem((Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == 10));
-                            if (pantsObtained == 2) ToggleItem((Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == 11));
+                            ToggleItem((Border)activeTracker.Children.FirstOrDefault(i => (byte)i.Tag == 10));
+                            if (pantsObtained == 2) ToggleItem((Border)activeTracker.Children.FirstOrDefault(i => (byte)i.Tag == 11));
                         }
                     }
                     else
                     {
-                        var border = (Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == randomItem.Id);
+                        var border = (Border)activeTracker.Children.FirstOrDefault(i => (byte)i.Tag == randomItem.Id);
                         if (border != null) ToggleItem(border);
                     }
                 }
@@ -875,7 +878,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                var border = (Border)CnvItemTracker.Children.FirstOrDefault(i => (byte)i.Tag == item);
+                var border = (Border)activeTracker.Children.FirstOrDefault(i => (byte)i.Tag == item);
                 if (border != null) ToggleItem(border);
             }
         }
@@ -993,6 +996,8 @@ public partial class MainWindow : Window
 
     private void BtnStopRandomizer_Click(object? sender, RoutedEventArgs e)
     {
+        if (trackerWindow != null && trackerWindow.IsVisible) trackerWindow.Close();
+
         CnvRandomizerActive.IsVisible = false;
         CnvRandomizerSetup.IsVisible = true;
         LblRandomizer.Content = "No randomizer loaded. Start the randomizer before loading or starting a save!";
@@ -1002,11 +1007,13 @@ public partial class MainWindow : Window
 
     private void SldItemsPerRow_ValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
+        var activeTracker = (Canvas)(trackerWindow == null || !trackerWindow.IsVisible ? CnvItemTracker : trackerWindow.Content);
+
         if (SldItemsPerRow != null)
         {
             var i = 0;
             var itemsPerRow = (int)SldItemsPerRow.Value;
-            foreach (var border in CnvItemTracker.Children.OfType<Border>())
+            foreach (var border in activeTracker.Children.OfType<Border>())
             {
                 border.Margin = new Thickness(10 + 32 * (i % itemsPerRow), 10 + 32 * (i / itemsPerRow), 0, 0);
                 i++;
@@ -1018,12 +1025,48 @@ public partial class MainWindow : Window
 
     private void BtnToggleBackground_Click(object? sender, RoutedEventArgs e)
     {
-        if (CnvItemTracker.Background == Brush.Parse("LimeGreen")) CnvItemTracker.Background = Brush.Parse("Transparent");
-        else CnvItemTracker.Background = Brush.Parse("LimeGreen");
+        var activeTracker = (Canvas)(trackerWindow == null || !trackerWindow.IsVisible ? CnvItemTracker : trackerWindow.Content);
+
+        if (activeTracker.Background == Brush.Parse("LimeGreen")) activeTracker.Background = Brush.Parse("White");
+        else activeTracker.Background = Brush.Parse("LimeGreen");
     }
 
     private void ChkItemTrackerType_IsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (memory != null && memory.IsActive) memory.ResetTracker();
+    }
+
+    private void BtnPopoutTracker_Click(object? sender, RoutedEventArgs e)
+    {
+        trackerWindow = new Window
+        {
+            Title = "Item Tracker",
+            Content = new Canvas(),
+            Topmost = true,
+            Width = appData.TrackerWindowWidth,
+            Height = appData.TrackerWindowHeight
+        };
+        trackerWindow.Closed += PopoutTrackerClosed;
+
+        var parent1 = CnvItemTracker;
+        var parent2 = (Canvas)trackerWindow.Content;
+        var children = parent1.Children.ToList();
+        parent1.Children.Clear();
+        foreach (var child in children)
+        {
+            parent2.Children.Add(child);
+        }
+        trackerWindow.Background = CnvItemTracker.Background;
+        CnvItemTracker.Background = Brush.Parse("White");
+        BtnPopoutTracker.IsEnabled = false;
+        trackerWindow.Show();
+    }
+
+    private void PopoutTrackerClosed(object? sender, EventArgs e)
+    {
+        InitializeItemTracker();
+        BtnPopoutTracker.IsEnabled = true;
+        appData.TrackerWindowWidth = ((Window)sender).Width;
+        appData.TrackerWindowHeight = ((Window)sender).Height;
     }
 }

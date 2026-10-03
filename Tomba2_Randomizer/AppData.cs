@@ -9,6 +9,9 @@ namespace Tomba2_Randomizer
 
         public int ItemsPerRow { get; set; } = 16;
 
+        public double TrackerWindowWidth { get; set; } = 1024;
+        public double TrackerWindowHeight { get; set; } = 768;
+
         public List<RandomizerSeed> SeedHistory 
         {
             get

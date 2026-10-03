@@ -37,9 +37,10 @@
                         <TextBlock Canvas.Left="235" Canvas.Top="195" Text="{Binding #SldItemsPerRow.Value}" />
                         <Label Canvas.Left="30" Canvas.Top="210" Content="Items per row"></Label>
                         <Slider Name="SldItemsPerRow" Canvas.Left="150" Canvas.Top="200" Width="200" Minimum="7" Maximum="26" TickFrequency="1" Value="16" IsSnapToTickEnabled="True" ValueChanged="SldItemsPerRow_ValueChanged"></Slider>
-                        <Button Name="BtnToggleBackground" Content="Toggle Background" Canvas.Left="30" Canvas.Top="260" Click="BtnToggleBackground_Click"></Button>
-                        <CheckBox Name="ChkItemTrackerType" Content="Show randomized items" Canvas.Left="30" Canvas.Top="310" IsChecked="True" IsCheckedChanged="ChkItemTrackerType_IsCheckedChanged"></CheckBox>
-                        <Canvas Name="CnvItemTracker" Canvas.Left="400" Canvas.Top="20" Width="950" Height="800"></Canvas>
+                        <Button Name="BtnPopoutTracker" Content="Popout Item tracker" Canvas.Left="30" Canvas.Top="260" Click="BtnPopoutTracker_Click"></Button>
+                        <Button Name="BtnToggleBackground" Content="Toggle Background" Canvas.Left="30" Canvas.Top="300" Click="BtnToggleBackground_Click"></Button>
+                        <CheckBox Name="ChkItemTrackerType" Content="Show randomized items" Canvas.Left="30" Canvas.Top="350" IsChecked="True" IsCheckedChanged="ChkItemTrackerType_IsCheckedChanged"></CheckBox>
+                        <Canvas Name="CnvItemTracker" Canvas.Left="400" Canvas.Top="20" Width="950" Height="800" Background="White"></Canvas>
                     </Canvas>
                 </Canvas>
             </TabItem>
