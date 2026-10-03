@@ -139,6 +139,7 @@ public class MemoryManipulator
         writeQueueWarp = new List<QueuedChange>();
         writeQueueSafe = new List<QueuedChange>();
         writeQueuePopup = new List<QueuedChange>();
+        writeQueueActor = new List<QueuedChange>();
 
         WriteMemory(0xa468, new byte[12], globalPtr); //disable auto-equipping weapons on pickup
         WriteMemory(0xa478, new byte[4], globalPtr);
@@ -186,6 +187,9 @@ public class MemoryManipulator
 
         SetEvilPigPlayerSpawnpoints();
 
+        Enqueue(writeQueueSafe, 0xf9f1, [252]);
+        SaveSeedInMemory();
+
         WriteMemory(0xf8b3, 1); //initialized
     }
 
@@ -200,6 +204,7 @@ public class MemoryManipulator
                 {
                     if (ReadMemory(0xf8b3) == 0) InitializeGame();
                     loadedBin = currentBin;
+                    VerifySeed();
                     EditBinMemory();
                 }
             }
@@ -645,7 +650,7 @@ public class MemoryManipulator
                 WriteMemory(0xf8b0, [0, 0, 0]);
             }
 
-            if (ReadMemory(0x37e85) == 0 && ReadMemory(0x37ff7) == 1)
+            if (ReadMemory(0x37e85) == 0 && ReadMemory(0x37ff7) == 1 && ReadMemory(0xf8b6) != 0)
             {
                 foreach (var item in writeQueueSafe.Where(i => i.DequeueTimeStamp == 0))
                 {
@@ -1293,6 +1298,10 @@ public class MemoryManipulator
                             }
                         }
                     }
+                    else if (popups == 252)
+                    {
+                        QueueCustomPopup("Randomizer initialized!{n}Seed: " + randomizer.Seed);
+                    }
                     else
                     {
                         switch (ReadMemory(0xf870)) //current area
@@ -1681,7 +1690,7 @@ public class MemoryManipulator
                 WriteMemory(0x2b688, 8, binPtr);
 
                 EditPigDoor(0);
-                WriteMemory(0x173b0, (byte)(randomizer.EvilPigs[0].PigBagId + 2));
+                WriteMemory(0x173b0, (byte)(randomizer.EvilPigs[0].PigBagId + 2), binPtr);
                 break;
             case 7:
                 if (ReadMemory(0xf8d5) != 255 || ReadMemory(0xfa22) == 48) WriteMemory(-0x5750, [73, 0], binPtr); //disable travel to deep forest if use rock crabs for balance not completed
@@ -2028,6 +2037,17 @@ public class MemoryManipulator
         for (byte i = 0; i < trackerItems.Length; i++)
         {
             if (trackerItems[i]) randomizer.ItemTracker.Add(i);
+        }
+    }
+
+    private void SaveSeedInMemory() => WriteMemory(0xf95a, BitConverter.GetBytes(randomizer.Seed));
+    private int ReadSeedFromMemory() => BitConverter.ToInt32(ReadMemory(0xf95a, 4));
+    private void VerifySeed()
+    {
+        var seed = ReadSeedFromMemory();
+        if (randomizer.Seed != seed)
+        {
+            QueueCustomPopup("{O}Warning{W}: Different seed detected!{n}Original seed: " + seed + "{n}New seed: " + randomizer.Seed);
         }
     }
 

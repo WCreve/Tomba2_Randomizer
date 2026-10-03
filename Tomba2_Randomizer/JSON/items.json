@@ -790,11 +790,13 @@
 			{
 				"items": [ 1 ],
 				"areas": [ 4 ],
+				"events": [ 27 ],
 				"AP": 500000
 			},
 			{
 				"items": [ 2 ],
 				"areas": [ 4 ],
+				"events": [ 27 ],
 				"AP": 500000
 			},
 			{
@@ -1056,23 +1058,7 @@
 		"address": "0xfaf3",
 		"requirements": [
 			{
-				"items": [ 1, 7 ],
-				"areas": [ 4 ]
-			},
-			{
-				"items": [ 2, 7 ],
-				"areas": [ 4 ]
-			},
-			{
 				"items": [ 7, 13 ],
-				"areas": [ 4 ]
-			},
-			{
-				"items": [ 1, 8 ],
-				"areas": [ 4 ]
-			},
-			{
-				"items": [ 2, 8 ],
 				"areas": [ 4 ]
 			},
 			{
@@ -1961,11 +1947,13 @@
 		"requirements": [
 			{
 				"items": [ 1 ],
-				"areas": [ 4 ]
+				"areas": [ 4 ],
+				"events": [ 27 ]
 			},
 			{
 				"items": [ 2 ],
-				"areas": [ 4 ]
+				"areas": [ 4 ],
+				"events": [ 27 ]
 			},
 			{
 				"items": [ 13 ],
