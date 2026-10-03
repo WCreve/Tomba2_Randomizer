@@ -18,6 +18,18 @@
 				"items": [ 13 ],
 				"events": [ 19 ],
 				"areas": [ 5 ]
+			},
+			{
+				"events": [ 19, 30 ]
+			},
+			{
+				"events": [ 19 ],
+				"areas": [ 9 ]
+			},
+			{
+				"items": [ 15 ],
+				"events": [ 19 ],
+				"areas": [ 10 ]
 			}
 		]
 	},

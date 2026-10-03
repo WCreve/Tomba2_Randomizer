@@ -187,6 +187,9 @@ public class MemoryManipulator
 
         SetEvilPigPlayerSpawnpoints();
 
+        WriteMemory(0x65468, BitConverter.GetBytes(randomizer.BerryNutsStartingCoordinates[0]), globalPtr);
+        WriteMemory(0x6546c, BitConverter.GetBytes(randomizer.BerryNutsStartingCoordinates[1]), globalPtr);
+
         Enqueue(writeQueueSafe, 0xf9f1, [252]);
         SaveSeedInMemory();
 

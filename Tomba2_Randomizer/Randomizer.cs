@@ -222,6 +222,7 @@ namespace Tomba2_Randomizer
         public byte[] PigRobeHints { get; private set; } = [0, 1, 2, 3, 4];
         public EvilPig[] EvilPigs { get; private set; } = [];
         public WarpCoordinate[] WarpCoordinates { get; set; } = [];
+        public short[] BerryNutsStartingCoordinates { get; set; } = [];
 
         public int Seed { get; private set; }
 
@@ -562,6 +563,8 @@ namespace Tomba2_Randomizer
                     coordGroup.ElementAt(r.Next(coordGroup.Count())).Active = true;
                 }           
             }
+
+            BerryNutsStartingCoordinates = [(short)r.Next(6500, 24500), (short)r.Next(6500, 24500)];
         }
     }
 }
