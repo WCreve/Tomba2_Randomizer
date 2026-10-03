@@ -1756,6 +1756,8 @@ public class MemoryManipulator
                     WriteMemory(0x294b8, [12, 128, 2, 60, 1, 0, 4, 36, 241, 249, 68, 160, 8, 0, 224, 3, 43, 0, 0, 162], binPtr);
                 }
 
+                WriteMemory(0x17348, new byte[4], binPtr); //taboo fruit pickup softlock prevention
+
                 WriteMemory(0x51a0, [82, 1], binPtr); //100 year old amulet spawn logic
                 WriteMemory(0x51a8, 16, binPtr);
                 WriteMemory(0x6160, new byte[8], binPtr);
